@@ -145,6 +145,11 @@
     node.hidden = !data.showMerch;
   });
 
+  /* ---------- Booking-Block ---------- */
+  document.querySelectorAll("[data-booking]").forEach(function (node) {
+    node.hidden = !data.showBooking;
+  });
+
   /* ---------- Jahr im Footer ---------- */
   document.querySelectorAll("[data-year]").forEach(function (node) {
     node.textContent = String(new Date().getFullYear());
