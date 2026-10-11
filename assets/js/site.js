@@ -84,9 +84,6 @@
     var title = el("h3", "release__title", release.title);
     title.title = release.title;
     text.appendChild(title);
-    var artists = el("p", "release__artists", release.artists);
-    artists.title = release.artists;
-    text.appendChild(artists);
     text.appendChild(el("p", "release__label", release.label));
 
     var actions = el("div", "release__actions");

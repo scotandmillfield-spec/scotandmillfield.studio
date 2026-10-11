@@ -43,7 +43,7 @@ In eckigen Klammern, z. B. `[BOOKING-E-MAIL]`, `[MANAGEMENT-E-MAIL]`, `[EPK-DOWN
 ## Browser-Cache
 
 CSS und JavaScript sind in den HTML-Dateien mit einer Versionsnummer eingebunden
-(`site.css?v=20261011b`). Nach Änderungen an `site.css`, `site.js` oder `data.js` die Nummer
+(`site.css?v=20261012a`). Nach Änderungen an `site.css`, `site.js` oder `data.js` die Nummer
 in `index.html`, `impressum.html` und `datenschutz.html` hochzählen, sonst zeigen Browser
 eventuell noch die alte Fassung aus dem Cache.
 
