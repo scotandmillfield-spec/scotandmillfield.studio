@@ -144,6 +144,15 @@ a:hover { color: var(--text); }
   color: var(--muted-2);
 }
 
+/* ---------- Marken-Icons ---------- */
+.icon { width: 22px; height: 22px; fill: currentColor; flex: 0 0 auto; }
+.icon-links { display: inline-flex; gap: 4px; }
+.icon-links a {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; color: var(--text-2);
+}
+.icon-links a:hover { color: var(--accent); }
+
 /* ---------- Status strip ---------- */
 .status {
   display: flex; justify-content: center; align-items: center; gap: 16px;
@@ -232,6 +241,10 @@ a:hover { color: var(--text); }
   text-decoration: none; color: var(--text); background: rgba(12, 13, 14, 0.5);
 }
 .btn + .btn { border-left: 1px solid rgba(255, 255, 255, 0.25); }
+.btn .icon { width: 20px; height: 20px; margin-right: 12px; }
+.btn--icon { width: 56px; padding: 0; }
+.btn--icon .icon { margin: 0; }
+.btn--icon:hover { background: rgba(12, 13, 14, 0.75); color: var(--accent); }
 .btn--primary { background: var(--accent); color: var(--bg); }
 .btn--primary:hover { color: var(--bg); filter: brightness(1.08); }
 
@@ -293,10 +306,11 @@ a:hover { color: var(--text); }
 .btn-play svg { fill: var(--accent); }
 .btn-play[aria-expanded="true"] { background: rgba(110, 140, 145, 0.16); }
 .release__beatport {
-  display: inline-flex; align-items: center; min-height: 44px;
-  color: var(--text-2); text-decoration: none;
-  font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+  display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px;
+  color: var(--text-2);
 }
+.release__beatport .icon { width: 20px; height: 20px; }
+.release__beatport:hover { color: var(--accent); }
 .player { border-radius: 12px; overflow: hidden; background: #15181A; }
 .player iframe { display: block; width: 100%; height: 152px; border: 0; }
 .releases .note { margin-top: 64px; }
@@ -464,19 +478,19 @@ a:hover { color: var(--text); }
 .press__cell .links { font-family: var(--mono); font-size: 13px; letter-spacing: 0.08em; line-height: 2; color: inherit; }
 
 /* ---------- Follow + Footer ---------- */
-.follow .wrap { display: flex; flex-wrap: wrap; border-right: 0; }
+.follow .wrap { display: flex; flex-wrap: wrap; }
 .follow__label {
   flex: 0 0 auto; display: flex; align-items: center; min-height: 72px; padding: 0 var(--gutter);
   border-right: 1px solid var(--line);
   font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
 }
 .follow a {
-  flex: 1 1 180px; display: flex; justify-content: space-between; align-items: center;
-  min-height: 72px; padding: 0 var(--gutter); border-right: 1px solid var(--line);
-  color: var(--text); text-decoration: none;
-  font-weight: 700; font-stretch: 125%; font-size: 16px; text-transform: uppercase;
+  flex: 0 0 auto; display: flex; justify-content: center; align-items: center;
+  width: 72px; min-height: 72px; border-right: 1px solid var(--line);
+  color: var(--text-2);
 }
-.follow a span:last-child { color: var(--accent); }
+.follow a:hover { color: var(--accent); background: rgba(255, 255, 255, 0.03); }
+.follow a .icon { width: 24px; height: 24px; }
 .footer .wrap { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
 .footer .wrap > div {
   padding: 40px var(--gutter); border-right: 1px solid var(--line);
