@@ -499,7 +499,10 @@ a:hover { color: var(--text); }
 .legal { max-width: 760px; margin: 0 auto; padding: 72px var(--gutter) 96px; }
 .legal h1 { margin: 0 0 32px; font-weight: 800; font-stretch: 125%; font-size: clamp(32px, 5vw, 56px); text-transform: uppercase; }
 .legal h2 { margin: 40px 0 12px; font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
-.legal p { font-size: 17px; line-height: 1.7; color: var(--text-2); }
+.legal p, .legal ul { font-size: 17px; line-height: 1.7; color: var(--text-2); }
+.legal ul { padding-left: 1.2em; }
+.legal li + li { margin-top: 4px; }
+.legal strong { color: var(--text); font-weight: 600; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 860px) {
