@@ -135,7 +135,6 @@ a:hover { color: var(--text); }
 }
 .section-head--ruled { border-bottom: 1px solid var(--line); }
 .amp { color: var(--accent); }
-.outline { color: transparent; -webkit-text-stroke: 1px var(--text-2); }
 .note {
   margin: 0;
   font-family: var(--mono);
@@ -353,44 +352,37 @@ a:hover { color: var(--text); }
 }
 
 /* ---------- Partners ---------- */
-.subhead {
-  margin: 0; padding: 16px var(--gutter);
-  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
-  font-family: var(--mono); font-weight: 400; font-size: 12px; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--muted);
-}
 .allies { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); }
 .ally {
-  display: flex; flex-direction: column; gap: 10px;
-  padding: 32px var(--gutter);
+  display: flex; flex-direction: column; gap: 12px;
+  padding: 48px var(--gutter);
   border-right: 1px solid var(--line);
   color: var(--text); text-decoration: none;
 }
 .ally:last-child { border-right: 0; }
+.ally:hover .ally__name, .ally:hover .ally__arrow { color: var(--accent); }
 .ally__name-row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
 .ally__name { font-weight: 900; font-stretch: 125%; font-size: clamp(28px, 3.6vw, 52px); line-height: 1; text-transform: uppercase; }
 .ally__arrow { font-family: var(--mono); font-size: 16px; color: var(--accent); }
 .ally__role { font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 .labels {
-  margin: 0; padding: 32px var(--gutter) 48px;
-  font-weight: 900; font-stretch: 125%; font-size: clamp(26px, 3.8vw, 56px);
-  line-height: 1.14; text-transform: uppercase; letter-spacing: -0.01em;
-}
-.labels a { color: var(--text); text-decoration: none; white-space: nowrap; }
-.labels a.outline { color: transparent; }
-.labels a:hover { color: var(--accent); -webkit-text-stroke-color: var(--accent); }
-.labels .sep { color: var(--accent); }
-.credits {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  margin: 0; padding: 40px var(--gutter) 48px;
   border-top: 1px solid var(--line);
-  font-family: var(--mono); font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; line-height: 2;
+  font-weight: 900; font-stretch: 125%; font-size: clamp(26px, 3.4vw, 48px);
+  line-height: 1.18; text-transform: uppercase; letter-spacing: -0.01em;
 }
-.credits > div { padding: 28px var(--gutter); border-right: 1px solid var(--line); }
-.credits > div:last-child { border-right: 0; }
-.credits h3 { margin: 0; font: inherit; color: var(--muted); }
-.credits ul { margin: 0; padding: 0; list-style: none; }
-.credits a { color: var(--text); text-decoration: none; }
-.credits a:hover { color: var(--accent); }
+.labels a { color: var(--muted-2); text-decoration: none; white-space: nowrap; transition: color 0.15s; }
+.labels a:hover { color: var(--text); }
+.labels .sep { color: var(--accent); }
+.worked {
+  margin: 0; padding: 24px var(--gutter) 32px;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono); font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; line-height: 2.1;
+}
+.worked__label { color: var(--muted); margin-right: 16px; }
+.worked a { color: var(--text-2); text-decoration: none; white-space: nowrap; }
+.worked a:hover { color: var(--accent); }
+.worked .sep { color: var(--accent); margin: 0 4px; }
 
 /* ---------- Story ---------- */
 .story .wrap { display: flex; flex-wrap: wrap; }
@@ -532,12 +524,10 @@ a:hover { color: var(--text); }
   .ruler__label--up { top: 8px; }
   .ruler__label--down { top: 80px; }
   .labels { font-size: clamp(20px, 6.4vw, 26px); }
-  .credits__spacer { display: none; }
-  .credits > div + div { padding-top: 0; }
   .tl__text { border-right: 0; padding-bottom: 8px; }
   .tl__labels { grid-column: 2; padding-top: 0; }
   .story__photo { min-height: 420px; border-right: 0; }
   .story__cells > div { border-right: 0 !important; border-bottom: 1px solid var(--line); }
-  .ally, .credits > div, .press__cell, .merch__item, .merch__intro, .live__media { border-right: 0; }
+  .ally, .press__cell, .merch__item, .merch__intro, .live__media { border-right: 0; }
   .ally, .press__cell { border-bottom: 1px solid var(--line); }
 }
