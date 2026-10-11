@@ -40,6 +40,13 @@ anderen Domain an diesen Stellen anpassen.
 In eckigen Klammern, z. B. `[BOOKING-E-MAIL]`, `[MANAGEMENT-E-MAIL]`, `[EPK-DOWNLOAD]`,
 `[LAUNCH-DATUM]`, sowie Impressum und Datenschutz.
 
+## Browser-Cache
+
+CSS und JavaScript sind in den HTML-Dateien mit einer Versionsnummer eingebunden
+(`site.css?v=20261011b`). Nach Änderungen an `site.css`, `site.js` oder `data.js` die Nummer
+in `index.html`, `impressum.html` und `datenschutz.html` hochzählen, sonst zeigen Browser
+eventuell noch die alte Fassung aus dem Cache.
+
 ## Veröffentlichen
 
 **Automatisch (aktiv):** Jeder Push auf `main` lädt die Seite per GitHub Action
