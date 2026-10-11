@@ -25,6 +25,7 @@ Alles Wiederkehrende steht in `assets/js/data.js`:
 - **Neues Release:** oben in `releases` einen Eintrag ergänzen, Cover nach `assets/img/covers/` legen
 - **Spotify-Link je Release:** `spotify` – leer lassen = Play lädt den Künstler-Player
 - **Live-Bereich:** `showLive: true` blendet „Live / Sets“ samt Navigationspunkt ein
+- **Booking-Block:** `showBooking: true` blendet unter „Press & Booking“ den Block „Booking“ ein (derzeit aus)
 - **Merch-Bereich:** `showMerch: true` blendet „Merch“ samt Navigationspunkt ein (derzeit aus;
   das Anmeldeformular hat noch keinen Versanddienst)
 

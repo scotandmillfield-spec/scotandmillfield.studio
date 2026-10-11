@@ -22,6 +22,9 @@ window.SITE_DATA = {
   // Abschnitt "Merch" samt Navigationspunkt ein- (true) oder ausblenden (false).
   showMerch: false,
 
+  // Block "Booking" unter Press & Booking ein- (true) oder ausblenden (false).
+  showBooking: false,
+
   releases: [
     {
       title: "Seven Degrees",
