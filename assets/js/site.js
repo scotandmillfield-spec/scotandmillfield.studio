@@ -136,6 +136,11 @@
     node.hidden = !data.showLive;
   });
 
+  /* ---------- Merch-Bereich ---------- */
+  document.querySelectorAll("[data-merch]").forEach(function (node) {
+    node.hidden = !data.showMerch;
+  });
+
   /* ---------- Jahr im Footer ---------- */
   document.querySelectorAll("[data-year]").forEach(function (node) {
     node.textContent = String(new Date().getFullYear());

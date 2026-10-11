@@ -19,6 +19,9 @@ window.SITE_DATA = {
   // Abschnitt "Live / Sets" ein- (true) oder ausblenden (false).
   showLive: false,
 
+  // Abschnitt "Merch" samt Navigationspunkt ein- (true) oder ausblenden (false).
+  showMerch: false,
+
   releases: [
     {
       title: "Seven Degrees",

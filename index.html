@@ -6,11 +6,38 @@
 <title>Scot &amp; Millfield – Melodic Deep House &amp; Trance from the Ruhr</title>
 <meta name="description" content="Scot & Millfield – Daniel Lyall and Maik Drozdzynski from Mülheim an der Ruhr. Melodic deep house and trance between Balearic and Progressive. Releases on The Night Drive, Armada, Black Hole, Harthouse and Enhanced.">
 <meta name="theme-color" content="#0C0D0E">
-<!-- Für Social-Media-Vorschauen og:image und og:url später mit der vollen Domain eintragen -->
+<link rel="canonical" href="https://scotandmillfield.studio/">
+<!-- Social-Media-Vorschau: Links müssen absolut sein (volle Domain) -->
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="Scot & Millfield">
+<meta property="og:url" content="https://scotandmillfield.studio/">
 <meta property="og:title" content="Scot & Millfield">
 <meta property="og:description" content="Melodic deep house and trance from the Ruhr. Between Balearic and Progressive.">
-<meta property="og:image" content="assets/img/og-image.jpg">
+<meta property="og:image" content="https://scotandmillfield.studio/assets/img/og-image.jpg">
+<meta property="og:image:alt" content="Scot & Millfield on a bridge over the A40 at night">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MusicGroup",
+  "name": "Scot & Millfield",
+  "url": "https://scotandmillfield.studio/",
+  "image": "https://scotandmillfield.studio/assets/img/og-image.jpg",
+  "genre": ["Melodic Deep House", "Trance", "Balearic"],
+  "foundingDate": "1999",
+  "foundingLocation": { "@type": "Place", "name": "Mülheim an der Ruhr, Germany" },
+  "member": [
+    { "@type": "Person", "name": "Daniel Lyall" },
+    { "@type": "Person", "name": "Maik Drozdzynski" }
+  ],
+  "sameAs": [
+    "https://open.spotify.com/artist/6LTgaNvQ4z07MLP5Fs3plh",
+    "https://instagram.com/scotandmillfield",
+    "https://www.beatport.com/artist/scot-millfield/293357",
+    "https://soundcloud.com/scotandmillfield"
+  ]
+}
+</script>
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/css/site.css">
 </head>
@@ -31,7 +58,7 @@
       <a href="#partners">03 Partners</a>
       <a href="#story">04 Story</a>
       <a href="#live" data-live hidden>Live</a>
-      <a href="#merch">05 Merch</a>
+      <a href="#merch" data-merch hidden>Merch</a>
       <a href="#press" class="nav__press">Press &amp; Booking</a>
     </nav>
   </div>
@@ -122,7 +149,7 @@
       <div class="ruler__line" aria-hidden="true"></div>
       <div class="ruler__ticks" aria-hidden="true"></div>
       <span class="ruler__mark ruler__mark--key" style="left: 0%" aria-hidden="true"></span>
-      <span class="ruler__label ruler__label--up ruler__label--key" style="left: 0%">1999</span>
+      <span class="ruler__label ruler__label--up ruler__label--key ruler__label--start" style="left: 0%">1999</span>
       <span class="ruler__mark" style="left: 14.8%" aria-hidden="true"></span>
       <span class="ruler__label ruler__label--down ruler__label--minor" style="left: 14.8%">2003</span>
       <span class="ruler__mark" style="left: 44.4%" aria-hidden="true"></span>
@@ -182,19 +209,19 @@
 
     <h3 class="subhead" style="border-top: 0">Labels</h3>
     <p class="labels">
-      <a href="https://www.beatport.com/label/the-night-drive/128416" target="_blank" rel="noopener">The Night Drive</a> <span class="sep">/</span>
-      <a class="outline" href="https://www.armadamusic.com" target="_blank" rel="noopener">Armada Music</a> <span class="sep">/</span>
-      <a href="https://www.beatport.com/label/black-hole-recordings/72" target="_blank" rel="noopener">Black Hole</a> <span class="sep">/</span>
-      <a class="outline" href="https://www.beatport.com/label/harthouse/2886" target="_blank" rel="noopener">Harthouse</a> <span class="sep">/</span>
-      <a href="https://www.beatport.com/label/enhanced-recordings/1301" target="_blank" rel="noopener">Enhanced</a> <span class="sep">/</span>
-      <a class="outline" href="https://www.beatport.com/label/magik-muzik/293" target="_blank" rel="noopener">Magik Muzik</a> <span class="sep">/</span>
-      <a href="https://www.beatport.com/label/submental-records/107154" target="_blank" rel="noopener">Submental</a> <span class="sep">/</span>
-      <a class="outline" href="https://www.beatport.com/label/ssl-music/63443" target="_blank" rel="noopener">SSL Music</a> <span class="sep">/</span>
-      <a href="https://www.beatport.com/search/labels?q=Dance+Of+Toads" target="_blank" rel="noopener">Dance Of Toads</a> <span class="sep">/</span>
-      <a class="outline" href="https://www.beatport.com/search/labels?q=Stereo+Poems" target="_blank" rel="noopener">Stereo Poems</a> <span class="sep">/</span>
-      <a href="https://www.beatport.com/label/blue-dot-chill/126631" target="_blank" rel="noopener">Blue Dot Chill</a> <span class="sep">/</span>
-      <a class="outline" href="https://www.youlovedance.de" target="_blank" rel="noopener">You Love Dance</a> <span class="sep">/</span>
-      <a href="https://www.beatport.com/label/zyx/1027" target="_blank" rel="noopener">ZYX Music</a> <span class="sep">/</span>
+      <a href="https://www.beatport.com/label/the-night-drive/128416" target="_blank" rel="noopener">The Night Drive</a> <span class="sep" aria-hidden="true">/</span>
+      <a class="outline" href="https://www.armadamusic.com" target="_blank" rel="noopener">Armada Music</a> <span class="sep" aria-hidden="true">/</span>
+      <a href="https://www.beatport.com/label/black-hole-recordings/72" target="_blank" rel="noopener">Black Hole</a> <span class="sep" aria-hidden="true">/</span>
+      <a class="outline" href="https://www.beatport.com/label/harthouse/2886" target="_blank" rel="noopener">Harthouse</a> <span class="sep" aria-hidden="true">/</span>
+      <a href="https://www.beatport.com/label/enhanced-recordings/1301" target="_blank" rel="noopener">Enhanced</a> <span class="sep" aria-hidden="true">/</span>
+      <a class="outline" href="https://www.beatport.com/label/magik-muzik/293" target="_blank" rel="noopener">Magik Muzik</a> <span class="sep" aria-hidden="true">/</span>
+      <a href="https://www.beatport.com/label/submental-records/107154" target="_blank" rel="noopener">Submental</a> <span class="sep" aria-hidden="true">/</span>
+      <a class="outline" href="https://www.beatport.com/label/ssl-music/63443" target="_blank" rel="noopener">SSL Music</a> <span class="sep" aria-hidden="true">/</span>
+      <a href="https://www.beatport.com/search/labels?q=Dance+Of+Toads" target="_blank" rel="noopener">Dance Of Toads</a> <span class="sep" aria-hidden="true">/</span>
+      <a class="outline" href="https://www.beatport.com/search/labels?q=Stereo+Poems" target="_blank" rel="noopener">Stereo Poems</a> <span class="sep" aria-hidden="true">/</span>
+      <a href="https://www.beatport.com/label/blue-dot-chill/126631" target="_blank" rel="noopener">Blue Dot Chill</a> <span class="sep" aria-hidden="true">/</span>
+      <a class="outline" href="https://www.youlovedance.de" target="_blank" rel="noopener">You Love Dance</a> <span class="sep" aria-hidden="true">/</span>
+      <a href="https://www.beatport.com/label/zyx/1027" target="_blank" rel="noopener">ZYX Music</a> <span class="sep" aria-hidden="true">/</span>
       <a class="outline" href="https://www.beatport.com/label/future-sequence/89874" target="_blank" rel="noopener">Future Sequence</a>
     </p>
 
@@ -212,7 +239,7 @@
         </ul>
       </div>
       <div>
-        <h3 aria-hidden="true">&nbsp;</h3>
+        <h3 class="credits__spacer" aria-hidden="true">&nbsp;</h3>
         <ul>
           <li><a href="https://www.beatport.com/artist/simonic/1199539" target="_blank" rel="noopener">Simonic ↗</a></li>
           <li><a href="https://www.beatport.com/artist/simon-alves/133088" target="_blank" rel="noopener">Simon Alves ↗</a></li>
@@ -306,11 +333,11 @@
   </div>
 </section>
 
-<!-- 05 MERCH -->
-<section class="section merch" id="merch">
+<!-- MERCH – ein-/ausblendbar über showMerch in assets/js/data.js -->
+<section class="section merch" id="merch" data-merch hidden>
   <div class="wrap">
     <div class="merch__intro">
-      <p class="eyebrow">05 / Merch</p>
+      <p class="eyebrow">Merch</p>
       <h2 class="h2">Drop 01</h2>
       <p class="lead">Apparel and prints. Launch: [LAUNCH-DATUM]. Get notified first.</p>
       <form class="field" data-notify>
@@ -342,12 +369,12 @@
   </div>
 </section>
 
-<!-- 06 PRESS & BOOKING -->
+<!-- 05 PRESS & BOOKING -->
 <section class="section" id="press">
   <div class="wrap">
     <div class="section-head section-head--ruled">
       <div>
-        <p class="eyebrow">06 / Press &amp; booking</p>
+        <p class="eyebrow">05 / Press &amp; booking</p>
         <h2 class="h2">Work with us</h2>
       </div>
     </div>
