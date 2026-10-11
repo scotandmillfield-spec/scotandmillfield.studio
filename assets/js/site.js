@@ -31,6 +31,7 @@
   }
 
   var PLAY_ICON = '<svg width="10" height="10" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5v17l15-8.5z"></path></svg>';
+  var BEATPORT_ICON = '<svg class="icon" aria-hidden="true"><use href="#i-beatport"></use></svg>';
   var CLOSE_ICON = '<svg width="10" height="10" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v14H5z"></path></svg>';
 
   /* ---------- Releases ---------- */
@@ -100,8 +101,11 @@
     actions.appendChild(btn);
 
     if (release.beatport) {
-      var bp = el("a", "release__beatport", "Beatport ↗");
+      var bp = el("a", "release__beatport");
+      bp.innerHTML = BEATPORT_ICON;
       bp.href = release.beatport;
+      bp.title = "Beatport";
+      bp.setAttribute("aria-label", release.title + " on Beatport");
       bp.target = "_blank";
       bp.rel = "noopener";
       actions.appendChild(bp);
