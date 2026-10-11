@@ -162,7 +162,6 @@ a:hover { color: var(--text); }
   font-family: var(--mono); font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
 }
 .status:hover { color: var(--bg); }
-.status__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--bg); flex: 0 0 auto; }
 
 /* ---------- Header / Nav ---------- */
 .site-header { border-bottom: 1px solid var(--line); }
