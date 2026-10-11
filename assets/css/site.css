@@ -280,10 +280,6 @@ a:hover { color: var(--text); }
   text-transform: uppercase; overflow-wrap: anywhere;
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden;
 }
-.release__artists {
-  margin: 0; font-size: 14px; line-height: 1.45; color: var(--text-2);
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden;
-}
 .release__label {
   margin: 0; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em;
   text-transform: uppercase; color: var(--muted-2);

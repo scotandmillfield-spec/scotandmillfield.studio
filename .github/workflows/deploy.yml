@@ -26,7 +26,7 @@ jobs:
             open --user $SFTP_USER --env-password sftp://$SFTP_HOST;
             rm -r -f scotandmillfield/.git scotandmillfield/.github;
             mirror --reverse --delete --verbose \
-              --exclude-glob .git/ --exclude-glob .github/ \
+              --exclude-glob .git/ --exclude-glob .github/ --exclude-glob epk/ \
               --exclude-glob .gitkeep --exclude-glob .nojekyll --exclude-glob README.md \
               ./ scotandmillfield;
             chmod -R 755 scotandmillfield"
