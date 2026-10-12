@@ -1,0 +1,38 @@
+<!-- Abschnitt "Merch" – zum Aktivieren in index.html vor "05 PRESS & BOOKING" einsetzen,
+     "hidden" und "data-merch" entfernen, Navigation ergänzen und ein Anmeldeformular mit
+     Versanddienst anbinden (Datenschutzerklärung anpassen!). -->
+<!-- MERCH – ein-/ausblendbar über showMerch in assets/js/data.js -->
+<section class="section merch" id="merch" data-merch hidden>
+  <div class="wrap">
+    <div class="merch__intro">
+      <p class="eyebrow">Merch</p>
+      <h2 class="h2">Drop 01</h2>
+      <p class="lead">Apparel and prints. Launch: [LAUNCH-DATUM]. Get notified first.</p>
+      <form class="field" data-notify>
+        <label for="merch-email">E-mail address</label>
+        <div class="field__row">
+          <input id="merch-email" type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+          <button type="submit">Notify me</button>
+        </div>
+        <p class="note" data-notify-msg aria-live="polite"></p>
+      </form>
+    </div>
+    <div class="merch__items">
+      <div class="merch__item">
+        <span class="k">M.01 — APPAREL</span>
+        <svg viewBox="0 0 120 100" width="70%" fill="none" stroke="#5F6A6C" stroke-width="1.2" aria-hidden="true"><path d="M40 8 L20 18 L6 40 L22 48 L28 38 L28 94 L92 94 L92 38 L98 48 L114 40 L100 18 L80 8 C76 18 68 22 60 22 C52 22 44 18 40 8 Z"></path></svg>
+        <span class="v">[PRODUKT]</span>
+      </div>
+      <div class="merch__item">
+        <span class="k">M.02 — PRINTS</span>
+        <svg viewBox="0 0 100 120" width="52%" fill="none" stroke="#5F6A6C" stroke-width="1.2" aria-hidden="true"><rect x="8" y="6" width="84" height="108"></rect><path d="M20 90 L44 54 L60 74 L70 62 L84 90 Z"></path><circle cx="70" cy="34" r="8"></circle></svg>
+        <span class="v">[PRODUKT]</span>
+      </div>
+      <div class="merch__item">
+        <span class="k">M.03 — VINYL</span>
+        <svg viewBox="0 0 100 100" width="58%" fill="none" stroke="#5F6A6C" stroke-width="1.2" aria-hidden="true"><circle cx="50" cy="50" r="46"></circle><circle cx="50" cy="50" r="30"></circle><circle cx="50" cy="50" r="14"></circle><circle cx="50" cy="50" r="3"></circle></svg>
+        <span class="v">[PRODUKT]</span>
+      </div>
+    </div>
+  </div>
+</section>

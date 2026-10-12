@@ -1,6 +1,6 @@
 /* Scot & Millfield – Seitenlogik
- * Liest assets/js/data.js (window.SITE_DATA) und baut Releases, Hörerzahl und
- * den Live-Bereich auf. Der Spotify-Player wird erst nach Klick auf "Load player"
+ * Liest assets/js/data.js (window.SITE_DATA) und setzt Releases und Kennzahlen ein
+ * (dieselben Inhalte schreibt scripts/build-releases.mjs vorab ins HTML, für Suchmaschinen). Der Spotify-Player wird erst nach Klick auf "Load player"
  * geladen (Zwei-Klick-Lösung, vorher keine Verbindung zu Spotify).
  */
 (function () {
@@ -115,32 +115,9 @@
     });
   }
 
-  /* ---------- Live-Bereich ---------- */
-  document.querySelectorAll("[data-live]").forEach(function (node) {
-    node.hidden = !data.showLive;
-  });
-
-  /* ---------- Merch-Bereich ---------- */
-  document.querySelectorAll("[data-merch]").forEach(function (node) {
-    node.hidden = !data.showMerch;
-  });
-
-  /* ---------- Booking-Block ---------- */
-  document.querySelectorAll("[data-booking]").forEach(function (node) {
-    node.hidden = !data.showBooking;
-  });
-
   /* ---------- Jahr im Footer ---------- */
   document.querySelectorAll("[data-year]").forEach(function (node) {
     node.textContent = String(new Date().getFullYear());
   });
 
-  /* ---------- Formulare (noch ohne Versanddienst) ---------- */
-  document.querySelectorAll("[data-notify]").forEach(function (form) {
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      var msg = form.querySelector("[data-notify-msg]");
-      if (msg) msg.textContent = "Thanks – sign-up will open soon.";
-    });
-  });
 })();

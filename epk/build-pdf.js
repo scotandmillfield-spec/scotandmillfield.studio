@@ -1,4 +1,4 @@
-// Erzeugt epk/scot-and-millfield-epk.pdf aus epk/epk.html (A4, 2 Seiten).
+// Erzeugt assets/press/scot-and-millfield-epk.pdf (Download auf der Website) aus epk/epk.html (A4, 2 Seiten).
 // Aufruf: node epk/build-pdf.js   (benötigt Playwright mit Chromium)
 const path = require("path");
 const fs = require("fs");
@@ -19,12 +19,12 @@ const { chromium } = require("playwright");
   await page.goto("file://" + tmp, { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready);
   await page.pdf({
-    path: path.join(dir, "scot-and-millfield-epk.pdf"),
+    path: path.join(dir, "..", "assets", "press", "scot-and-millfield-epk.pdf"),
     format: "A4",
     printBackground: true,
     preferCSSPageSize: true,
   });
   await browser.close();
   fs.unlinkSync(tmp);
-  console.log("epk/scot-and-millfield-epk.pdf erstellt");
+  console.log("assets/press/scot-and-millfield-epk.pdf erstellt");
 })();
