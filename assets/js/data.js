@@ -19,6 +19,9 @@ window.SITE_DATA = {
   // Abschnitt "Live / Sets" ein- (true) oder ausblenden (false).
   showLive: false,
 
+  // Anzahl der Release-Kacheln unter "Latest output" (neueste zuerst).
+  showReleases: 4,
+
   // Abschnitt "Merch" samt Navigationspunkt ein- (true) oder ausblenden (false).
   showMerch: false,
 

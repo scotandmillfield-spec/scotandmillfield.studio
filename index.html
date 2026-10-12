@@ -39,7 +39,7 @@
 }
 </script>
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/css/site.css?v=20261012">
+<link rel="stylesheet" href="assets/css/site.css?v=20261012b">
 </head>
 <body>
 <!-- Marken-Icons (Simple Icons, CC0) – lokal eingebettet, keine Verbindung zu Drittanbietern -->
@@ -139,7 +139,18 @@
       <div class="release-grid" id="release-grid">
         <noscript><p class="note">Listen to all releases on <a href="https://open.spotify.com/artist/6LTgaNvQ4z07MLP5Fs3plh">Spotify</a>.</p></noscript>
       </div>
-      <p class="note">Privacy: the Spotify player only loads after you press Play. Without a Spotify login, tracks play as 30-second previews. <a href="datenschutz.html">Privacy policy</a></p>
+      <aside class="toptracks" aria-label="Popular on Spotify">
+        <p class="toptracks__head"><svg class="icon" aria-hidden="true"><use href="#i-spotify"></use></svg>Popular on Spotify</p>
+        <div class="toptracks__frame" id="toptracks">
+          <div class="toptracks__gate">
+            <p class="toptracks__title">Top tracks</p>
+            <p class="toptracks__text">Our most played songs in one player – no need to open each release.</p>
+            <button type="button" class="btn-play" data-load-toptracks><svg width="10" height="10" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5v17l15-8.5z"></path></svg><span>Load player</span></button>
+            <a class="toptracks__link" href="https://open.spotify.com/artist/6LTgaNvQ4z07MLP5Fs3plh" target="_blank" rel="noopener">Open in Spotify ↗</a>
+          </div>
+        </div>
+        <p class="note">Privacy: the Spotify player only loads after you click “Load player”. Without a Spotify login, tracks play as 30-second previews. <a href="datenschutz.html">Privacy policy</a></p>
+      </aside>
     </div>
   </div>
 </section>
@@ -420,7 +431,7 @@
   </div>
 </footer>
 
-<script src="assets/js/data.js?v=20261012"></script>
-<script src="assets/js/site.js?v=20261012"></script>
+<script src="assets/js/data.js?v=20261012b"></script>
+<script src="assets/js/site.js?v=20261012b"></script>
 </body>
 </html>
