@@ -1,0 +1,30 @@
+<!-- Abschnitt "Live / Sets" – zum Aktivieren in index.html vor "05 PRESS & BOOKING" einsetzen,
+     "hidden" und "data-live" entfernen und in der Navigation <a href="#live">Live</a> ergänzen. -->
+<!-- LIVE / SETS – ein-/ausblendbar über showLive in assets/js/data.js -->
+<section class="section" id="live" data-live hidden>
+  <div class="wrap">
+    <div class="section-head section-head--ruled">
+      <div>
+        <p class="eyebrow">Live / Sets</p>
+        <h2 class="h2">On the decks</h2>
+      </div>
+    </div>
+    <div class="live__body">
+      <div class="live__media">
+        <a class="live__frame" href="#live" aria-label="Play DJ set">
+          <img src="assets/img/live-steel.jpg" alt="" loading="lazy">
+          <span class="live__play" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"></path></svg>Play [SET-VIDEO]</span>
+        </a>
+      </div>
+      <div class="live__info">
+        <div>
+          <div class="k">Next set</div>
+          <p class="v">[DATUM · ORT]</p>
+          <div class="k" style="margin-top: 20px">Recorded sets</div>
+          <p style="margin: 8px 0 0"><a href="#live">[SET-LINK]</a></p>
+        </div>
+        <p class="note">The video loads from YouTube after your click.</p>
+      </div>
+    </div>
+  </div>
+</section>

@@ -4,8 +4,6 @@
  * Diese Datei ist die einzige Stelle, an der Zahlen und Releases gepflegt werden.
  * Die Seite liest sie beim Laden aus (funktioniert auch lokal per Doppelklick).
  *
- * spotify: Link zum Track/Album auf Spotify ("Teilen → Link kopieren").
- *          Leer lassen = Play-Knopf lädt den Künstler-Player.
  * date:    ISO-Format JJJJ-MM-TT, Anzeige erfolgt als TT.MM.JJJJ.
  * Reihenfolge: neueste zuerst.
  */
@@ -20,17 +18,8 @@ window.SITE_DATA = {
 
   monthlyListenersAsOf: "2026-10-12",
 
-  // Abschnitt "Live / Sets" ein- (true) oder ausblenden (false).
-  showLive: false,
-
   // Anzahl der Release-Kacheln unter "Latest output" (neueste zuerst).
   showReleases: 4,
-
-  // Abschnitt "Merch" samt Navigationspunkt ein- (true) oder ausblenden (false).
-  showMerch: false,
-
-  // Block "Booking" unter Press & Booking ein- (true) oder ausblenden (false).
-  showBooking: false,
 
   releases: [
     {

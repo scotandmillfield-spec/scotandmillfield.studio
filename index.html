@@ -16,6 +16,7 @@
 <meta property="og:image" content="https://scotandmillfield.studio/assets/img/og-image.jpg">
 <meta property="og:image:alt" content="Scot & Millfield on a bridge over the A40 at night">
 <meta name="twitter:card" content="summary_large_image">
+<!-- JSONLD:START – automatisch aus assets/js/data.js (scripts/build-releases.mjs) -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -23,23 +24,94 @@
   "name": "Scot & Millfield",
   "url": "https://scotandmillfield.studio/",
   "image": "https://scotandmillfield.studio/assets/img/og-image.jpg",
-  "genre": ["Melodic Deep House", "Trance", "Balearic"],
+  "logo": "https://scotandmillfield.studio/assets/img/icon-512.png",
+  "description": "Balearic Deep House, forged in the Ruhr. Daniel Lyall and Maik Drozdzynski from Mülheim an der Ruhr, releasing on The Night Drive, Armada, Black Hole, Enhanced and Harthouse.",
+  "genre": [
+    "Balearic Deep House",
+    "Deep House",
+    "Melodic House",
+    "Trance"
+  ],
   "foundingDate": "1999",
-  "foundingLocation": { "@type": "Place", "name": "Mülheim an der Ruhr, Germany" },
+  "foundingLocation": {
+    "@type": "Place",
+    "name": "Mülheim an der Ruhr, Germany"
+  },
   "member": [
-    { "@type": "Person", "name": "Daniel Lyall" },
-    { "@type": "Person", "name": "Maik Drozdzynski" }
+    {
+      "@type": "OrganizationRole",
+      "roleName": "Producer",
+      "member": {
+        "@type": "Person",
+        "name": "Daniel Lyall"
+      }
+    },
+    {
+      "@type": "OrganizationRole",
+      "roleName": "Producer",
+      "member": {
+        "@type": "Person",
+        "name": "Maik Drozdzynski"
+      }
+    }
   ],
   "sameAs": [
     "https://open.spotify.com/artist/6LTgaNvQ4z07MLP5Fs3plh",
     "https://instagram.com/scotandmillfield",
     "https://www.beatport.com/artist/scot-millfield/293357",
     "https://soundcloud.com/scotandmillfield"
+  ],
+  "track": [
+    {
+      "@type": "MusicRecording",
+      "name": "Seven Degrees",
+      "byArtist": {
+        "@type": "MusicGroup",
+        "name": "Scot & Millfield × Simonic"
+      },
+      "datePublished": "2026-08-28",
+      "url": "https://www.beatport.com/release/seven-degrees/7199918"
+    },
+    {
+      "@type": "MusicRecording",
+      "name": "Broken Pieces",
+      "byArtist": {
+        "@type": "MusicGroup",
+        "name": "Scot & Millfield"
+      },
+      "datePublished": "2026-06-19",
+      "url": "https://www.beatport.com/release/broken-pieces/6949903"
+    },
+    {
+      "@type": "MusicRecording",
+      "name": "Anamnisi (take control)",
+      "byArtist": {
+        "@type": "MusicGroup",
+        "name": "Scot & Millfield, aqeliki"
+      },
+      "datePublished": "2026-03-13",
+      "url": "https://www.beatport.com/release/anamnisi-take-control/5894328"
+    },
+    {
+      "@type": "MusicRecording",
+      "name": "Astralight",
+      "byArtist": {
+        "@type": "MusicGroup",
+        "name": "Scot & Millfield, Björn Mandry"
+      },
+      "datePublished": "2026-01-30",
+      "url": "https://www.beatport.com/release/astralight/5888464"
+    }
   ]
 }
 </script>
+<!-- JSONLD:END -->
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/css/site.css?v=20261012e">
+<link rel="icon" href="assets/img/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preload" as="image" href="assets/img/hero-a40.webp" type="image/webp" media="(min-width: 901px)">
+<link rel="preload" as="image" href="assets/img/hero-a40-1200.webp" type="image/webp" media="(max-width: 900px)">
+<link rel="stylesheet" href="assets/css/site.css?v=20261012f">
 </head>
 <body>
 <!-- Marken-Icons (Simple Icons, CC0) – lokal eingebettet, keine Verbindung zu Drittanbietern -->
@@ -64,8 +136,6 @@
       <a href="#timeline">02 Timeline</a>
       <a href="#partners">03 Partners</a>
       <a href="#story">04 Story</a>
-      <a href="#live" data-live hidden>Live</a>
-      <a href="#merch" data-merch hidden>Merch</a>
       <a href="#press" class="nav__press">Press &amp; Booking</a>
     </nav>
   </div>
@@ -76,6 +146,8 @@
 <!-- HERO -->
 <section class="hero" aria-label="Intro">
   <picture>
+    <source media="(max-width: 900px)" srcset="assets/img/hero-a40-1200.webp" type="image/webp">
+    <source srcset="assets/img/hero-a40.webp" type="image/webp">
     <source media="(max-width: 900px)" srcset="assets/img/hero-a40-1200.jpg">
     <img class="hero__img" src="assets/img/hero-a40.jpg" alt="Night sky over the A40 motorway, Scot &amp; Millfield as silhouettes on a bridge" width="2400" height="1350" fetchpriority="high">
   </picture>
@@ -137,7 +209,44 @@
     </div>
     <div class="releases">
       <div class="release-grid" id="release-grid">
-        <noscript><p class="note">Listen to all releases on <a href="https://open.spotify.com/artist/6LTgaNvQ4z07MLP5Fs3plh">Spotify</a>.</p></noscript>
+        <!-- RELEASES:START – automatisch aus assets/js/data.js (scripts/build-releases.mjs) -->
+        <article class="release">
+          <div class="release__cover"><img src="assets/img/covers/seven-degrees.webp" alt="Cover: Seven Degrees" loading="lazy" width="500" height="500"></div>
+          <div class="release__text">
+            <span class="release__meta">R.01 · 28.08.2026</span>
+            <h3 class="release__title" title="Seven Degrees">Seven Degrees</h3>
+            <p class="release__label">Submental Records</p>
+          </div>
+          <div class="release__actions"><a class="release__beatport" href="https://www.beatport.com/release/seven-degrees/7199918" title="Beatport" aria-label="Seven Degrees on Beatport" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-beatport"></use></svg></a></div>
+        </article>
+        <article class="release">
+          <div class="release__cover"><img src="assets/img/covers/broken-pieces.webp" alt="Cover: Broken Pieces" loading="lazy" width="500" height="500"></div>
+          <div class="release__text">
+            <span class="release__meta">R.02 · 19.06.2026</span>
+            <h3 class="release__title" title="Broken Pieces">Broken Pieces</h3>
+            <p class="release__label">The Night Drive</p>
+          </div>
+          <div class="release__actions"><a class="release__beatport" href="https://www.beatport.com/release/broken-pieces/6949903" title="Beatport" aria-label="Broken Pieces on Beatport" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-beatport"></use></svg></a></div>
+        </article>
+        <article class="release">
+          <div class="release__cover"><img src="assets/img/covers/anamnisi.webp" alt="Cover: Anamnisi (take control)" loading="lazy" width="500" height="500"></div>
+          <div class="release__text">
+            <span class="release__meta">R.03 · 13.03.2026</span>
+            <h3 class="release__title" title="Anamnisi (take control)">Anamnisi (take control)</h3>
+            <p class="release__label">The Night Drive</p>
+          </div>
+          <div class="release__actions"><a class="release__beatport" href="https://www.beatport.com/release/anamnisi-take-control/5894328" title="Beatport" aria-label="Anamnisi (take control) on Beatport" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-beatport"></use></svg></a></div>
+        </article>
+        <article class="release">
+          <div class="release__cover"><img src="assets/img/covers/astralight.webp" alt="Cover: Astralight" loading="lazy" width="500" height="500"></div>
+          <div class="release__text">
+            <span class="release__meta">R.04 · 30.01.2026</span>
+            <h3 class="release__title" title="Astralight">Astralight</h3>
+            <p class="release__label">SSL Music</p>
+          </div>
+          <div class="release__actions"><a class="release__beatport" href="https://www.beatport.com/release/astralight/5888464" title="Beatport" aria-label="Astralight on Beatport" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-beatport"></use></svg></a></div>
+        </article>
+        <!-- RELEASES:END -->
       </div>
       <aside class="toptracks" aria-label="Popular on Spotify">
         <p class="toptracks__head"><svg class="icon" aria-hidden="true"><use href="#i-spotify"></use></svg>Popular on Spotify</p>
@@ -279,15 +388,15 @@
     <div class="wrap story__cells">
       <div>
         <h3>Origin</h3>
-        <p>Daniel Lyall and Maik Drozdzynski met at school. Inspired by York and Chicane, they founded Scot &amp; Millfield in 1999 – first studio steps with the Bass Bumpers.</p>
+        <p>Daniel Lyall and Maik Drozdzynski met at school in Mülheim an der Ruhr. Inspired by York and Chicane, they founded Scot &amp; Millfield in 1999 and took their first studio steps with the Bass Bumpers around Caba Kroll. Their first release followed in 2003.</p>
       </div>
       <div>
         <h3>Sound</h3>
-        <p>Melodic deep house, trance and chill-out with Balearic roots. Atmospheric, warm, built for the hour the sun goes down.</p>
+        <p>Balearic deep house with roots in trance and chill-out – atmospheric, warm and melodic, built for the hour the sun goes down. Highlights include “The Awakening” with York, featured on Dream Dance and Armada Chill, and an official remix of “Café del Mar”.</p>
       </div>
       <div>
         <h3>Reach</h3>
-        <p>Releases on The Night Drive, Armada, Black Hole, Enhanced and Harthouse. Listeners from London to Mexico City and Sydney.</p>
+        <p>Releases on The Night Drive, Armada, Black Hole, Enhanced, Harthouse and Magik Muzik; collaborations with York, Torsten Stenzel, Simon Alves and Björn Mandry. Managed and published by Hummingbird, with listeners from London to Mexico City and Sydney.</p>
       </div>
       <div class="story__stat">
         <strong data-listeners>136K</strong>
@@ -297,70 +406,7 @@
   </div>
 </section>
 
-<!-- LIVE / SETS – ein-/ausblendbar über showLive in assets/js/data.js -->
-<section class="section" id="live" data-live hidden>
-  <div class="wrap">
-    <div class="section-head section-head--ruled">
-      <div>
-        <p class="eyebrow">Live / Sets</p>
-        <h2 class="h2">On the decks</h2>
-      </div>
-    </div>
-    <div class="live__body">
-      <div class="live__media">
-        <a class="live__frame" href="#live" aria-label="Play DJ set">
-          <img src="assets/img/live-steel.jpg" alt="" loading="lazy">
-          <span class="live__play" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"></path></svg>Play [SET-VIDEO]</span>
-        </a>
-      </div>
-      <div class="live__info">
-        <div>
-          <div class="k">Next set</div>
-          <p class="v">[DATUM · ORT]</p>
-          <div class="k" style="margin-top: 20px">Recorded sets</div>
-          <p style="margin: 8px 0 0"><a href="#live">[SET-LINK]</a></p>
-        </div>
-        <p class="note">The video loads from YouTube after your click.</p>
-      </div>
-    </div>
-  </div>
-</section>
 
-<!-- MERCH – ein-/ausblendbar über showMerch in assets/js/data.js -->
-<section class="section merch" id="merch" data-merch hidden>
-  <div class="wrap">
-    <div class="merch__intro">
-      <p class="eyebrow">Merch</p>
-      <h2 class="h2">Drop 01</h2>
-      <p class="lead">Apparel and prints. Launch: [LAUNCH-DATUM]. Get notified first.</p>
-      <form class="field" data-notify>
-        <label for="merch-email">E-mail address</label>
-        <div class="field__row">
-          <input id="merch-email" type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
-          <button type="submit">Notify me</button>
-        </div>
-        <p class="note" data-notify-msg aria-live="polite"></p>
-      </form>
-    </div>
-    <div class="merch__items">
-      <div class="merch__item">
-        <span class="k">M.01 — APPAREL</span>
-        <svg viewBox="0 0 120 100" width="70%" fill="none" stroke="#5F6A6C" stroke-width="1.2" aria-hidden="true"><path d="M40 8 L20 18 L6 40 L22 48 L28 38 L28 94 L92 94 L92 38 L98 48 L114 40 L100 18 L80 8 C76 18 68 22 60 22 C52 22 44 18 40 8 Z"></path></svg>
-        <span class="v">[PRODUKT]</span>
-      </div>
-      <div class="merch__item">
-        <span class="k">M.02 — PRINTS</span>
-        <svg viewBox="0 0 100 120" width="52%" fill="none" stroke="#5F6A6C" stroke-width="1.2" aria-hidden="true"><rect x="8" y="6" width="84" height="108"></rect><path d="M20 90 L44 54 L60 74 L70 62 L84 90 Z"></path><circle cx="70" cy="34" r="8"></circle></svg>
-        <span class="v">[PRODUKT]</span>
-      </div>
-      <div class="merch__item">
-        <span class="k">M.03 — VINYL</span>
-        <svg viewBox="0 0 100 100" width="58%" fill="none" stroke="#5F6A6C" stroke-width="1.2" aria-hidden="true"><circle cx="50" cy="50" r="46"></circle><circle cx="50" cy="50" r="30"></circle><circle cx="50" cy="50" r="14"></circle><circle cx="50" cy="50" r="3"></circle></svg>
-        <span class="v">[PRODUKT]</span>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- 05 PRESS & BOOKING -->
 <section class="section" id="press">
@@ -378,13 +424,6 @@
         <p>Torsten Stenzel &amp; Adrian Zag</p>
         <p>Publishing: Hummingbird Music / Armada Music Publishing – incl. sync and licensing requests.</p>
         <p class="links"><a href="mailto:enquiries@hummingbirdmusic.group">enquiries@hummingbirdmusic.group</a><br><a href="https://hummingbirdmusic.group/" target="_blank" rel="noopener">hummingbirdmusic.group ↗</a></p>
-      </div>
-      <!-- Booking – ein-/ausblendbar über showBooking in assets/js/data.js -->
-      <div class="press__cell" data-booking hidden>
-        <h3>Booking</h3>
-        <p class="v">DJ sets &amp; live</p>
-        <p>Clubs, festivals and sunset sessions.</p>
-        <p class="links"><a href="#press">[BOOKING-E-MAIL]</a></p>
       </div>
       <div class="press__cell">
         <h3>Press kit</h3>
@@ -423,7 +462,7 @@
   </div>
 </footer>
 
-<script src="assets/js/data.js?v=20261012e"></script>
-<script src="assets/js/site.js?v=20261012e"></script>
+<script src="assets/js/data.js?v=20261012f"></script>
+<script src="assets/js/site.js?v=20261012f"></script>
 </body>
 </html>

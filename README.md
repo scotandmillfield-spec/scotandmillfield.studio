@@ -7,17 +7,26 @@ Statische Website im Design „Stahlwerk“. Kein Build-Schritt, keine externen 
 
 ```
 index.html              Startseite
-impressum.html          Impressum (Vorlage – ausfüllen!)
-datenschutz.html        Datenschutz (Vorlage – ausfüllen!)
+impressum.html          Impressum
+datenschutz.html        Datenschutzerklärung (Deutsch/Englisch)
 robots.txt, sitemap.xml Für Suchmaschinen (Domain scotandmillfield.studio)
 assets/css/site.css     Gestaltung (Farben oben unter :root)
-assets/js/data.js       Inhalte: Releases, Hörerzahl, Live-/Merch-Schalter
+assets/js/data.js       Inhalte: Releases, Hörerzahl, Streams
 assets/js/site.js       Logik: Release-Kacheln, Spotify-Player nach Klick
 assets/img/             Bilder, Cover, Favicon
 assets/fonts/           Schriften lokal (Archivo, DM Mono – SIL Open Font License)
+scripts/                Build (Releases ins HTML), tägliche Hörerzahl – nicht hochgeladen
+templates/              Noch nicht genutzte Abschnitte – nicht hochgeladen
 ```
 
 ## Inhalte pflegen
+
+Release-Kacheln, „Out now“-Zeile und strukturierte Daten (JSON-LD) werden beim Deploy aus
+`assets/js/data.js` direkt ins HTML geschrieben (`scripts/build-releases.mjs`), damit Suchmaschinen
+sie ohne JavaScript lesen. Lokal einmal `node scripts/build-releases.mjs` ausführen, um es vorab zu sehen.
+
+Noch nicht genutzte Abschnitte (Live / Sets, Merch, Booking) liegen als Vorlagen in `templates/`
+und werden nicht hochgeladen. Zum Aktivieren den Inhalt in `index.html` einsetzen.
 
 Alles Wiederkehrende steht in `assets/js/data.js`:
 
@@ -26,10 +35,6 @@ Alles Wiederkehrende steht in `assets/js/data.js`:
 - **Neues Release:** oben in `releases` einen Eintrag ergänzen, Cover nach `assets/img/covers/` legen
 - **Anzahl Release-Kacheln:** `showReleases` (Standard 4) – neue Releases oben eintragen, ältere rutschen raus
 - **Top-Tracks-Player:** rechts neben den Releases; lädt nach Klick auf „Load player“ den Spotify-Künstler-Player mit den beliebtesten Titeln
-- **Live-Bereich:** `showLive: true` blendet „Live / Sets“ samt Navigationspunkt ein
-- **Booking-Block:** `showBooking: true` blendet unter „Press & Booking“ den Block „Booking“ ein (derzeit aus)
-- **Merch-Bereich:** `showMerch: true` blendet „Merch“ samt Navigationspunkt ein (derzeit aus;
-  das Anmeldeformular hat noch keinen Versanddienst)
 
 Timeline, Partner und Texte stehen direkt in `index.html`.
 
@@ -59,7 +64,7 @@ Ohne Änderung passiert nichts.
 ## Browser-Cache
 
 CSS und JavaScript sind in den HTML-Dateien mit einer Versionsnummer eingebunden
-(`site.css?v=20261012e`). Nach Änderungen an `site.css`, `site.js` oder `data.js` die Nummer
+(`site.css?v=20261012f`). Nach Änderungen an `site.css`, `site.js` oder `data.js` die Nummer
 in `index.html`, `impressum.html` und `datenschutz.html` hochzählen, sonst zeigen Browser
 eventuell noch die alte Fassung aus dem Cache.
 
