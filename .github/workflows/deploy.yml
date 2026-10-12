@@ -32,8 +32,9 @@ jobs:
             rm -r -f scotandmillfield/.git scotandmillfield/.github;
             mirror --reverse --delete --verbose \
               --exclude-glob .git/ --exclude-glob .github/ --exclude-glob epk/ --exclude-glob scripts/ --exclude-glob templates/ \
-              --exclude-glob .gitkeep --exclude-glob .nojekyll --exclude-glob README.md \
+              --exclude-glob .gitkeep --exclude-glob .gitignore --exclude-glob .nojekyll --exclude-glob README.md \
               --exclude-glob *.html \
               ./ scotandmillfield;
             mput -O scotandmillfield *.html;
+            mput -O scotandmillfield/darktheatre darktheatre/*.html;
             chmod -R 755 scotandmillfield"

@@ -18,6 +18,7 @@ assets/press/           Pressemappe (EPK) als PDF zum Download
 assets/fonts/           Schriften lokal (Archivo, DM Mono – SIL Open Font License)
 scripts/                Build (Releases ins HTML), tägliche Hörerzahl – nicht hochgeladen
 templates/              Noch nicht genutzte Abschnitte – nicht hochgeladen
+darktheatre/            Virage – Dark Theatre: digitales Booklet zum Konzeptalbum (eigene Gestaltung, /darktheatre/)
 ```
 
 ## Inhalte pflegen
