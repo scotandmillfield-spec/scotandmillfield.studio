@@ -1,29 +1,12 @@
-// Virage – Dark Theatre: Vorhang, ein gemeinsamer Audio-Player für alle Akte, Akt-Navigation.
+// Virage – Dark Theatre: Hero-Zoom, ein gemeinsamer Audio-Player für alle Akte, Akt-Navigation.
 (function () {
   const doc = document.documentElement;
   const body = document.body;
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // ---------- Vorhang ----------
-  const curtain = document.querySelector(".curtain");
-  let seen = false;
-  try { seen = sessionStorage.getItem("dt-curtain") === "open"; } catch (e) {}
-  function reveal() { body.classList.add("is-revealed"); }
-  if (!curtain || seen || location.hash) {
-    if (curtain) curtain.classList.add("is-gone");
-    reveal();
-  } else {
-    body.classList.add("is-closed");
-    const open = () => {
-      curtain.classList.add("is-open");
-      body.classList.remove("is-closed");
-      reveal();
-      try { sessionStorage.setItem("dt-curtain", "open"); } catch (e) {}
-      setTimeout(() => curtain.classList.add("is-gone"), reduce ? 700 : 1900);
-    };
-    curtain.querySelector("[data-open]").addEventListener("click", open);
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !curtain.classList.contains("is-open")) open(); });
-  }
+  // ---------- Hero: langsames Heranfahren nach dem Laden ----------
+  const heroImg = document.querySelector(".hero img");
+  const reveal = () => requestAnimationFrame(() => requestAnimationFrame(() => body.classList.add("is-revealed")));
+  if (!heroImg || heroImg.complete) reveal(); else heroImg.addEventListener("load", reveal, { once: true });
 
   // ---------- Player ----------
   const audio = new Audio();
