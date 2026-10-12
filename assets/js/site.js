@@ -1,6 +1,6 @@
 /* Scot & Millfield – Seitenlogik
  * Liest assets/js/data.js (window.SITE_DATA) und baut Releases, Hörerzahl und
- * den Live-Bereich auf. Der Spotify-Player wird erst nach Klick auf "Play"
+ * den Live-Bereich auf. Der Spotify-Player wird erst nach Klick auf "Load player"
  * geladen (Zwei-Klick-Lösung, vorher keine Verbindung zu Spotify).
  */
 (function () {
@@ -30,41 +30,10 @@
     return "https://open.spotify.com/embed/" + m[1] + "/" + m[2] + "?utm_source=generator&theme=0";
   }
 
-  var PLAY_ICON = '<svg width="10" height="10" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5v17l15-8.5z"></path></svg>';
   var BEATPORT_ICON = '<svg class="icon" aria-hidden="true"><use href="#i-beatport"></use></svg>';
-  var CLOSE_ICON = '<svg width="10" height="10" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v14H5z"></path></svg>';
 
   /* ---------- Releases ---------- */
   var grid = document.getElementById("release-grid");
-  var openCard = null;
-
-  function closePlayer(card) {
-    if (!card) return;
-    var player = card.querySelector(".player");
-    if (player) player.remove();
-    var btn = card.querySelector(".btn-play");
-    btn.setAttribute("aria-expanded", "false");
-    btn.innerHTML = PLAY_ICON + "<span>Play</span>";
-    if (openCard === card) openCard = null;
-  }
-
-  function openPlayer(card, release) {
-    if (openCard && openCard !== card) closePlayer(openCard);
-    var src = embedUrl(release.spotify);
-    if (!src) return;
-    var player = el("div", "player");
-    var frame = document.createElement("iframe");
-    frame.src = src;
-    frame.title = "Spotify player: " + release.title;
-    frame.loading = "lazy";
-    frame.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
-    player.appendChild(frame);
-    card.appendChild(player);
-    var btn = card.querySelector(".btn-play");
-    btn.setAttribute("aria-expanded", "true");
-    btn.innerHTML = CLOSE_ICON + "<span>Close</span>";
-    openCard = card;
-  }
 
   function renderRelease(release, index) {
     var card = el("article", "release");
@@ -87,15 +56,6 @@
     text.appendChild(el("p", "release__label", release.label));
 
     var actions = el("div", "release__actions");
-    var btn = el("button", "btn-play");
-    btn.type = "button";
-    btn.setAttribute("aria-expanded", "false");
-    btn.innerHTML = PLAY_ICON + "<span>Play</span>";
-    btn.addEventListener("click", function () {
-      if (openCard === card) closePlayer(card);
-      else openPlayer(card, release);
-    });
-    actions.appendChild(btn);
 
     if (release.beatport) {
       var bp = el("a", "release__beatport");
@@ -116,7 +76,24 @@
 
   if (grid && releases.length) {
     grid.textContent = "";
-    releases.forEach(function (r, i) { grid.appendChild(renderRelease(r, i)); });
+    releases.slice(0, data.showReleases || 4).forEach(function (r, i) { grid.appendChild(renderRelease(r, i)); });
+  }
+
+  /* ---------- Top-Tracks-Player (erst nach Klick laden) ---------- */
+  var topBtn = document.querySelector("[data-load-toptracks]");
+  if (topBtn) {
+    topBtn.addEventListener("click", function () {
+      var src = embedUrl(data.spotifyArtist);
+      if (!src) return;
+      var frame = document.createElement("iframe");
+      frame.src = src;
+      frame.title = "Spotify player: Scot & Millfield – popular tracks";
+      frame.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
+      var box = document.getElementById("toptracks");
+      box.textContent = "";
+      box.appendChild(frame);
+      box.classList.add("is-loaded");
+    });
   }
 
   /* ---------- Status-Leiste: neuestes Release ---------- */

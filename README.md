@@ -23,7 +23,8 @@ Alles Wiederkehrende steht in `assets/js/data.js`:
 
 - **Hörerzahl:** `monthlyListeners` (erscheint im Streifen unter dem Hero und in der Story)
 - **Neues Release:** oben in `releases` einen Eintrag ergänzen, Cover nach `assets/img/covers/` legen
-- **Spotify-Link je Release:** `spotify` – leer lassen = Play lädt den Künstler-Player
+- **Anzahl Release-Kacheln:** `showReleases` (Standard 4) – neue Releases oben eintragen, ältere rutschen raus
+- **Top-Tracks-Player:** rechts neben den Releases; lädt nach Klick auf „Load player“ den Spotify-Künstler-Player mit den beliebtesten Titeln
 - **Live-Bereich:** `showLive: true` blendet „Live / Sets“ samt Navigationspunkt ein
 - **Booking-Block:** `showBooking: true` blendet unter „Press & Booking“ den Block „Booking“ ein (derzeit aus)
 - **Merch-Bereich:** `showMerch: true` blendet „Merch“ samt Navigationspunkt ein (derzeit aus;
@@ -57,7 +58,7 @@ Ohne Änderung passiert nichts.
 ## Browser-Cache
 
 CSS und JavaScript sind in den HTML-Dateien mit einer Versionsnummer eingebunden
-(`site.css?v=20261012a`). Nach Änderungen an `site.css`, `site.js` oder `data.js` die Nummer
+(`site.css?v=20261012b`). Nach Änderungen an `site.css`, `site.js` oder `data.js` die Nummer
 in `index.html`, `impressum.html` und `datenschutz.html` hochzählen, sonst zeigen Browser
 eventuell noch die alte Fassung aus dem Cache.
 
