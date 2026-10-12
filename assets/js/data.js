@@ -13,8 +13,8 @@ window.SITE_DATA = {
   spotifyArtist: "https://open.spotify.com/artist/6LTgaNvQ4z07MLP5Fs3plh",
 
   // Monatliche Hörer laut Spotify – von Hand aktualisieren.
-  monthlyListeners: "139K",
-  monthlyListenersAsOf: "2026-10-10",
+  monthlyListeners: "136K",
+  monthlyListenersAsOf: "2026-10-12",
 
   // Abschnitt "Live / Sets" ein- (true) oder ausblenden (false).
   showLive: false,
