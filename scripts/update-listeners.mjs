@@ -3,6 +3,7 @@
 // Aufruf: node scripts/update-listeners.mjs            (holt die Zahl von Spotify)
 //         node scripts/update-listeners.mjs --html f   (liest eine gespeicherte Seite, zum Testen)
 // Ausgabe für GitHub Actions: changed=true|false, listeners=139K
+// Sprünge über 25 % werden abgelehnt (Lauf schlägt fehl → E-Mail von GitHub).
 import { readFileSync, writeFileSync, appendFileSync } from "node:fs";
 
 const ARTIST_URL = "https://open.spotify.com/artist/6LTgaNvQ4z07MLP5Fs3plh";
@@ -87,6 +88,12 @@ async function main() {
   console.log(`Spotify: ${n} → ${value} (bisher ${current})`);
   output("listeners", value);
   if (current === value) { output("changed", "false"); return; }
+
+  // Schutz vor Ausreißern: mehr als 25 % Sprung an einem Tag nicht automatisch übernehmen
+  const before = current ? parseListeners(current + " monthly listeners") : null;
+  if (before && Math.abs(n - before) / before > 0.25 && !process.env.FORCE) {
+    throw new Error(`Unplausibler Sprung ${current} → ${value} – nicht übernommen (FORCE=1 erzwingt)`);
+  }
 
   data = data
     .replace(/monthlyListeners:\s*"[^"]*"/, `monthlyListeners: "${value}"`)
