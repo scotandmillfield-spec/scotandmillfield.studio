@@ -244,12 +244,12 @@ a:hover { color: var(--text); }
 /* ---------- Proof strip ---------- */
 .proof .wrap {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
-  gap: 12px 40px; padding: 18px var(--gutter);
+  gap: 12px 28px; padding: 18px var(--gutter);
   font-family: var(--mono); font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
 }
-.proof__labels { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; }
+.proof__labels { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
 .proof__labels .sep { color: var(--accent); }
-.proof__right { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 32px; }
+.proof__right { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; }
 .proof__stat { margin: 0; display: flex; align-items: baseline; gap: 12px; }
 .proof__stat strong {
   font-family: var(--sans); font-weight: 900; font-stretch: 125%; font-size: 26px; letter-spacing: 0;

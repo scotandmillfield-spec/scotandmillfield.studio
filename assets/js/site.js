@@ -103,6 +103,12 @@
   }
 
   /* ---------- Monatliche Hörer ---------- */
+  if (data.totalStreams) {
+    document.querySelectorAll("[data-streams]").forEach(function (node) {
+      node.textContent = data.totalStreams;
+    });
+  }
+
   if (data.monthlyListeners) {
     document.querySelectorAll("[data-listeners]").forEach(function (node) {
       node.textContent = data.monthlyListeners;
