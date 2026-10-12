@@ -1,20 +1,21 @@
 name: Monatliche Hörer aktualisieren
 
 # Täglich ca. 6 Uhr deutscher Sommerzeit (04:00 UTC; im Winter 5 Uhr).
-# Liest die Zahl von Spotify und öffnet bei einer Änderung einen Pull Request.
+# Liest die Zahl von Spotify, übernimmt eine Änderung direkt in main und startet den Deploy.
 on:
   schedule:
     - cron: "0 4 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Nur testen – keinen Pull Request öffnen"
+        description: "Nur testen – nichts übernehmen"
         type: boolean
         default: false
 
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 concurrency:
   group: monthly-listeners
@@ -39,22 +40,19 @@ jobs:
         id: listeners
         run: node scripts/update-listeners.mjs
 
-      - name: Pull Request öffnen oder aktualisieren
+      - name: Direkt in main übernehmen und veröffentlichen
         if: steps.listeners.outputs.changed == 'true' && inputs.dry_run != true
         env:
           GH_TOKEN: ${{ github.token }}
           VALUE: ${{ steps.listeners.outputs.listeners }}
         run: |
-          BRANCH=auto/monthly-listeners
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -B "$BRANCH"
           git commit -am "Monatliche Hörer: $VALUE ($(date -u +%F))"
-          git push --force origin "$BRANCH"
-          if [ -z "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')" ]; then
-            gh pr create --head "$BRANCH" --base main \
-              --title "Monatliche Hörer: $VALUE" \
-              --body "Automatisch von Spotify gelesen am $(date -u +%F). Mergen bringt die neue Zahl auf die Homepage."
-          else
-            gh pr edit "$BRANCH" --title "Monatliche Hörer: $VALUE"
+          git push origin HEAD:main
+          # Pushes dieser Routine lösen keine anderen Workflows aus – Deploy daher ausdrücklich starten
+          gh workflow run deploy.yml --ref main
+          # Alten PR aus der Zeit vor der Direkt-Übernahme schließen, falls noch offen
+          if [ -n "$(gh pr list --head auto/monthly-listeners --state open --json number --jq '.[0].number')" ]; then
+            gh pr close auto/monthly-listeners --delete-branch --comment "Erledigt – die Routine übernimmt die Zahl jetzt direkt in main."
           fi

@@ -44,13 +44,15 @@ In eckigen Klammern, z. B. `[BOOKING-E-MAIL]`, `[MANAGEMENT-E-MAIL]`, `[EPK-DOWN
 
 Die GitHub Action `.github/workflows/monthly-listeners.yml` läuft täglich um ca. 6 Uhr
 (04:00 UTC) und liest die monatlichen Hörer von der öffentlichen Spotify-Künstlerseite
-(`scripts/update-listeners.mjs`). Hat sich die gerundete Zahl geändert (z. B. 139K → 144K),
-öffnet sie einen Pull Request „Monatliche Hörer: …“ vom Branch `auto/monthly-listeners`.
-Mergen genügt – der Deploy zu STRATO startet dann wie gewohnt. Ohne Änderung passiert nichts.
+(`scripts/update-listeners.mjs`). Hat sich die gerundete Zahl geändert (z. B. 139K → 136K),
+schreibt sie die Zahl direkt in `main` und startet anschließend den Deploy zu STRATO.
+Ohne Änderung passiert nichts.
 
+- Schutz: Ein Sprung von mehr als 25 % an einem Tag wird nicht übernommen; der Lauf schlägt
+  dann fehl und GitHub schickt eine E-Mail.
 - Von Hand starten: Actions → „Monatliche Hörer aktualisieren“ → Run workflow
-- Voraussetzung: Settings → Actions → General → „Allow GitHub Actions to create and approve pull requests“
-- Schlägt der Lauf fehl, hat Spotify vermutlich den Seitenaufbau geändert; GitHub schickt dann eine E-Mail.
+  („Nur testen“ anhaken, um nur zu prüfen, ohne etwas zu übernehmen)
+- Schlägt der Lauf ohne Sprung fehl, hat Spotify vermutlich den Seitenaufbau geändert.
 
 ## Browser-Cache
 
