@@ -40,6 +40,18 @@ anderen Domain an diesen Stellen anpassen.
 In eckigen Klammern, z. B. `[BOOKING-E-MAIL]`, `[MANAGEMENT-E-MAIL]`, `[EPK-DOWNLOAD]`,
 `[LAUNCH-DATUM]`, sowie Impressum und Datenschutz.
 
+## Monatliche Hörer automatisch
+
+Die GitHub Action `.github/workflows/monthly-listeners.yml` läuft täglich um ca. 6 Uhr
+(04:00 UTC) und liest die monatlichen Hörer von der öffentlichen Spotify-Künstlerseite
+(`scripts/update-listeners.mjs`). Hat sich die gerundete Zahl geändert (z. B. 139K → 144K),
+öffnet sie einen Pull Request „Monatliche Hörer: …“ vom Branch `auto/monthly-listeners`.
+Mergen genügt – der Deploy zu STRATO startet dann wie gewohnt. Ohne Änderung passiert nichts.
+
+- Von Hand starten: Actions → „Monatliche Hörer aktualisieren“ → Run workflow
+- Voraussetzung: Settings → Actions → General → „Allow GitHub Actions to create and approve pull requests“
+- Schlägt der Lauf fehl, hat Spotify vermutlich den Seitenaufbau geändert; GitHub schickt dann eine E-Mail.
+
 ## Browser-Cache
 
 CSS und JavaScript sind in den HTML-Dateien mit einer Versionsnummer eingebunden
