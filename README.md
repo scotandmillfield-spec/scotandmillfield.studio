@@ -14,6 +14,7 @@ assets/css/site.css     Gestaltung (Farben oben unter :root)
 assets/js/data.js       Inhalte: Releases, Hörerzahl, Streams
 assets/js/site.js       Logik: Release-Kacheln, Spotify-Player nach Klick
 assets/img/             Bilder, Cover, Favicon
+assets/press/           Pressemappe (EPK) als PDF zum Download
 assets/fonts/           Schriften lokal (Archivo, DM Mono – SIL Open Font License)
 scripts/                Build (Releases ins HTML), tägliche Hörerzahl – nicht hochgeladen
 templates/              Noch nicht genutzte Abschnitte – nicht hochgeladen
@@ -44,8 +45,14 @@ anderen Domain an diesen Stellen anpassen.
 
 ## Offene Platzhalter
 
-In eckigen Klammern, z. B. `[BOOKING-E-MAIL]`, `[MANAGEMENT-E-MAIL]`, `[EPK-DOWNLOAD]`,
-`[LAUNCH-DATUM]`, sowie Impressum und Datenschutz.
+Nur noch in den geparkten Abschnitten unter `templates/` (z. B. `[BOOKING-E-MAIL]`, `[LAUNCH-DATUM]`).
+
+## Pressemappe (EPK)
+
+Quelle ist `epk/epk.html` (A4, 2 Seiten, Bilder für den Druck in `epk/img/`). PDF neu erzeugen
+mit `node epk/build-pdf.js` (benötigt Playwright mit Chromium); es landet direkt in
+`assets/press/scot-and-millfield-epk.pdf` und geht mit dem nächsten Deploy online.
+Hörerzahl und Streams stehen im EPK fest im Text und werden nicht automatisch aktualisiert.
 
 ## Monatliche Hörer automatisch
 
