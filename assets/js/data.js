@@ -14,6 +14,10 @@ window.SITE_DATA = {
 
   // Monatliche Hörer laut Spotify – von Hand aktualisieren.
   monthlyListeners: "136K",
+  // Streams gesamt laut Spotify for Artists (Export "songs-all"), abgerundet auf Mio. – von Hand pflegen.
+  totalStreams: "18M+",
+  totalStreamsAsOf: "2026-10-12",  // 18.280.850 Streams, 126 Songs
+
   monthlyListenersAsOf: "2026-10-12",
 
   // Abschnitt "Live / Sets" ein- (true) oder ausblenden (false).

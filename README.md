@@ -22,6 +22,7 @@ assets/fonts/           Schriften lokal (Archivo, DM Mono – SIL Open Font Lice
 Alles Wiederkehrende steht in `assets/js/data.js`:
 
 - **Hörerzahl:** `monthlyListeners` (erscheint im Streifen unter dem Hero und in der Story)
+- **Streams gesamt:** `totalStreams` (z. B. `18M+`) – Summe aus dem Spotify-for-Artists-Export, abgerundet auf Millionen; von Hand aktualisieren
 - **Neues Release:** oben in `releases` einen Eintrag ergänzen, Cover nach `assets/img/covers/` legen
 - **Anzahl Release-Kacheln:** `showReleases` (Standard 4) – neue Releases oben eintragen, ältere rutschen raus
 - **Top-Tracks-Player:** rechts neben den Releases; lädt nach Klick auf „Load player“ den Spotify-Künstler-Player mit den beliebtesten Titeln
@@ -58,7 +59,7 @@ Ohne Änderung passiert nichts.
 ## Browser-Cache
 
 CSS und JavaScript sind in den HTML-Dateien mit einer Versionsnummer eingebunden
-(`site.css?v=20261012d`). Nach Änderungen an `site.css`, `site.js` oder `data.js` die Nummer
+(`site.css?v=20261012e`). Nach Änderungen an `site.css`, `site.js` oder `data.js` die Nummer
 in `index.html`, `impressum.html` und `datenschutz.html` hochzählen, sonst zeigen Browser
 eventuell noch die alte Fassung aus dem Cache.
 
