@@ -519,6 +519,20 @@ a:hover { color: var(--text); }
 .legal ul { padding-left: 1.2em; }
 .legal li + li { margin-top: 4px; }
 .legal strong { color: var(--text); font-weight: 600; }
+.lang-switch { display: inline-flex; margin: -12px 0 24px; border: 1px solid rgba(255, 255, 255, 0.25); }
+.lang-switch button {
+  min-height: 40px; padding: 0 16px; border: 0; background: transparent; color: var(--text-2); cursor: pointer;
+  font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+}
+.lang-switch button + button { border-left: 1px solid rgba(255, 255, 255, 0.25); }
+.lang-switch button[aria-pressed="true"] { background: var(--accent); color: var(--bg); }
+.lang-switch { display: none; }
+.js .lang-switch { display: inline-flex; }
+.js .lang-panel:not(.is-active) { display: none; }
+.lang-panel + .lang-panel { margin-top: 64px; }
+.js .lang-panel + .lang-panel { margin-top: 0; }
+.legal__sub { display: block; margin-top: 8px; font-family: var(--mono); font-weight: 400; font-size: 13px; letter-spacing: 0.14em; color: var(--muted); }
+.legal__note { font-size: 14px !important; color: var(--muted) !important; font-style: italic; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 860px) {
