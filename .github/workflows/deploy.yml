@@ -21,6 +21,8 @@ jobs:
           SFTP_HOST: ${{ secrets.STRATO_HOST }}
           SFTP_USER: ${{ secrets.STRATO_USER }}
           LFTP_PASSWORD: ${{ secrets.STRATO_PASS }}
+        # Erst CSS/JS/Bilder, die HTML-Seiten zuletzt: Wer während des Uploads lädt,
+        # bekommt nie neues HTML mit alten Dateien (sonst landet Altes unter neuer ?v= im Cache).
         run: |
           lftp -c "set sftp:auto-confirm yes;
             open --user $SFTP_USER --env-password sftp://$SFTP_HOST;
@@ -28,5 +30,7 @@ jobs:
             mirror --reverse --delete --verbose \
               --exclude-glob .git/ --exclude-glob .github/ --exclude-glob epk/ --exclude-glob scripts/ \
               --exclude-glob .gitkeep --exclude-glob .nojekyll --exclude-glob README.md \
+              --exclude-glob *.html \
               ./ scotandmillfield;
+            mput -O scotandmillfield *.html;
             chmod -R 755 scotandmillfield"
