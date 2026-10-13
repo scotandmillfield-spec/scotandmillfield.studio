@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Morkant</title>
+<meta name="description" content="Die Chroniken von Morkant.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#060607">
+<link rel="preload" href="assets/fonts/im-fell-english-sc-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" as="image" href="assets/img/ferryman-600.webp" media="(max-width: 600px)">
+<link rel="preload" as="image" href="assets/img/ferryman.webp" media="(min-width: 601px)">
+<link rel="stylesheet" href="assets/css/morkant.css?v=20261013b">
+</head>
+<body>
+  <div class="backdrop" aria-hidden="true"></div>
+  <div class="stage" aria-hidden="true">
+    <picture>
+      <source type="image/webp" srcset="assets/img/ferryman-600.webp 600w, assets/img/ferryman.webp 941w" sizes="(max-aspect-ratio: 941/1672) 100vw, 56vh">
+      <img src="assets/img/ferryman.jpg" alt="" width="941" height="1672">
+    </picture>
+    <span class="lantern"></span>
+  </div>
+  <div class="fog fog--a" aria-hidden="true"></div>
+  <div class="fog fog--b" aria-hidden="true"></div>
+
+  <main class="gatehouse">
+    <p class="kicker">Die Chroniken von</p>
+    <h1>Morkant</h1>
+
+    <form id="gate" class="gate" autocomplete="off">
+      <label for="word" class="gate__prompt">Nenne das Wort, und der Fährmann setzt dich über.</label>
+      <div class="gate__row">
+        <input id="word" name="word" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="120" required>
+        <button type="submit">Übersetzen</button>
+      </div>
+      <p id="answer" class="gate__answer" role="status" aria-live="polite"></p>
+    </form>
+
+    <section id="reward" class="reward" tabindex="-1" hidden aria-live="polite">
+      <h2 class="reward__title"></h2>
+      <div class="reward__ask">
+        <p class="reward__question"></p>
+        <div class="reward__choices">
+          <button type="button" data-answer="yes">Ja</button>
+          <button type="button" data-answer="no">Nein</button>
+        </div>
+      </div>
+      <div class="reward__text" tabindex="-1" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <!-- Versiegelte Belohnung (AES-256-GCM, Schlüssel aus dem Passwort per PBKDF2). Erzeugt mit scripts/morkant-seal.mjs -->
+  <script type="application/json" id="vault">{"v":1,"iter":600000,"salt":"j6gUFwl1Oe8jhg841Brf9w==","iv":"cZorvH06ibVEto+K","ct":"6sA2Ifd4TPl4bBSSy2TCub9zpxayvMlXPpFBQod9B/hFDlHcmFUAgtdw7LrcX5Z3HPgCBB31a7wgZsUn8R5zQ/4/j++HziVXW/QC7vWPcT5p9ZDgocY+pvjn9hTd/2hL5lA6iWHclcwvf2VIvhR4mAD0PEUAnsoTnnBPIBgZmqH/HE/n7NkKj59vYvU6fB9mMwvUCd6ASUjB9xpmFANjHA1zfqaYb8Pj6kXDvulRbv/cnwgbh67cyESs54zqvwiMsNlCbobDuV7ARx3XTuyDqMI3Dr4hJhCapTkFbyHPq7wKjeFwk0HehL9raFl3c6LzICBgA/1UjodK29rqXbpQNNME4UHP79imzbdq"}</script>
+  <script src="assets/js/morkant.js?v=20261013b"></script>
+</body>
+</html>
