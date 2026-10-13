@@ -31,7 +31,7 @@ jobs:
             open --user $SFTP_USER --env-password sftp://$SFTP_HOST;
             rm -r -f scotandmillfield/.git scotandmillfield/.github;
             mirror --reverse --delete --verbose \
-              --exclude-glob .git/ --exclude-glob .github/ --exclude-glob epk/ --exclude-glob scripts/ --exclude-glob templates/ \
+              --exclude-glob .git/ --exclude-glob .github/ --exclude-glob epk/ --exclude-glob scripts/ --exclude-glob templates/ --exclude-glob content/ \
               --exclude-glob .gitkeep --exclude-glob .gitignore --exclude-glob .nojekyll --exclude-glob README.md \
               --exclude-glob *.html \
               ./ scotandmillfield;
