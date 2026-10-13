@@ -117,7 +117,14 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .act--scene .act__text, .act--scene .player { margin-left: 0; }
 .act--scene .act__text { color: var(--text); text-shadow: 0 1px 14px rgba(10,7,8,.9); }
 .act--scene .player { background: rgba(10,7,8,.55); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+/* Variante: Text rechts, wenn die Hauptfigur links steht */
+.act--right .act__body { margin-left: auto; padding-left: var(--pad); padding-right: calc(var(--pad) + 2vw + 40px); }
+.act--right .act__scene::after { background:
+    linear-gradient(270deg, rgba(10,7,8,.92) 0%, rgba(10,7,8,.75) 30%, rgba(10,7,8,.15) 58%, rgba(10,7,8,0) 75%),
+    linear-gradient(180deg, var(--bg) 0%, rgba(10,7,8,0) 18%, rgba(10,7,8,0) 78%, var(--bg) 100%); }
 @media (max-width: 760px) {
+  .act--right .act__body { margin-left: 0; padding-right: var(--pad); }
+  .act--right .act__scene::after { background: linear-gradient(180deg, var(--bg) 0%, rgba(10,7,8,0) 20%, rgba(10,7,8,.15) 55%, var(--bg) 100%); }
   .act--scene { display: block; min-height: 0; }
   .act__scene { position: relative; height: 62svh; }
   .act__scene img { object-position: 58% 50%; }

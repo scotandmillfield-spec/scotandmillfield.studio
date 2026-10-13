@@ -20,6 +20,7 @@ scripts/                Build (Releases ins HTML), tägliche Hörerzahl – nich
 templates/              Noch nicht genutzte Abschnitte – nicht hochgeladen
 content/                Texte im Original (z. B. Dark-Theatre-Geschichte DE/EN) – nicht hochgeladen
 darktheatre/            Virage – Dark Theatre: digitales Booklet zum Konzeptalbum (eigene Gestaltung, /darktheatre/)
+                        Bild für einen Akt einbauen: python3 scripts/darktheatre-scene.py <akt> <bild> [--right] [--pos "50% 50%"]
 ```
 
 ## Inhalte pflegen
