@@ -92,6 +92,17 @@ h1 { margin: 2px 0 clamp(14px, 3vh, 28px); font-family: "Fell SC", Georgia, seri
 .reward__title { margin: 0 0 12px; font-family: "Fell SC", Georgia, serif; font-weight: 400; font-size: clamp(22px, 2vh + 12px, 32px);
   letter-spacing: .1em; color: var(--lamp); }
 .reward__text p { margin: 0 0 .45em; font-size: clamp(18px, 1.2vh + 11px, 22px); line-height: 1.45; color: var(--bone); }
+/* Frage mit Ja/Nein */
+.reward__question { margin: 0 0 16px; font-style: italic; font-size: clamp(19px, 1.3vh + 11px, 24px); line-height: 1.4; color: var(--bone); }
+.reward__choices { display: flex; justify-content: center; gap: 14px; }
+.reward__choices button { font-family: "Fell SC", Georgia, serif; font-size: 17px; letter-spacing: .2em; color: var(--bone);
+  background: rgba(6,6,7,.55); border: 1px solid var(--line); padding: 10px 26px; cursor: pointer; transition: border-color .3s, color .3s; }
+.reward__choices button:hover, .reward__choices button:focus-visible { border-color: var(--lamp); color: var(--lamp); outline: none; }
+.is-answered .reward__ask { display: none; }
+.reward__text { outline: none; }
+.is-answered .reward__text { animation: rise 2s ease both; }
+.is-yes .reward__text p:first-child { font-family: "Fell SC", Georgia, serif; letter-spacing: .08em; color: var(--lamp); }
+.is-no .reward__text p { font-style: italic; color: var(--bone-2); }
 @keyframes rise { from { opacity: 0; transform: translateY(14px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
 
 @media (max-height: 560px) { .gatehouse { padding-top: 6vh; } h1 { font-size: 40px; margin-bottom: 10px; } }

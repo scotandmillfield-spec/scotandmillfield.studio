@@ -63,12 +63,22 @@
     }
   });
 
-  function show(text) {
-    const [title, ...lines] = text.split(/\r?\n/);
-    reward.querySelector(".reward__title").textContent = title;
-    const box = reward.querySelector(".reward__text");
+  function lines(box, list) {
     box.textContent = "";
-    lines.forEach((l) => { const p = document.createElement("p"); p.textContent = l; box.appendChild(p); });
+    list.forEach((l) => { const p = document.createElement("p"); p.textContent = l; box.appendChild(p); });
+  }
+
+  function show(text) {
+    const data = JSON.parse(text);
+    reward.querySelector(".reward__title").textContent = data.title;
+    reward.querySelector(".reward__question").textContent = data.question;
+    const box = reward.querySelector(".reward__text");
+    reward.querySelectorAll("[data-answer]").forEach((b) => b.addEventListener("click", () => {
+      const yes = b.dataset.answer === "yes";
+      reward.classList.add("is-answered", yes ? "is-yes" : "is-no");
+      lines(box, yes ? data.yes : data.no);
+      box.focus();
+    }));
     body.classList.add("is-open");
     reward.hidden = false;
     msg.textContent = "";

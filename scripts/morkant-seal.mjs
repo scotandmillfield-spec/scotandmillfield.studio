@@ -1,10 +1,11 @@
 // Morkant: versiegelt die Belohnung mit dem Passwort (PBKDF2-SHA256 + AES-256-GCM).
 // In morkant/index.html landet nur der verschlüsselte Block – weder Passwort noch Klartext.
 //
-// Aufruf (Passwort und Text NICHT in Dateien im Repo speichern):
-//   MORKANT_PASS='das passwort' MORKANT_TEXT=$'Zeile 1\nZeile 2' node scripts/morkant-seal.mjs
+// Aufruf (Passwort und Inhalt NICHT in Dateien im Repo speichern):
+//   MORKANT_PASS='das passwort' MORKANT_PAYLOAD='{"title":"…","question":"…","yes":["…"],"no":["…"]}' node scripts/morkant-seal.mjs
 //
-// Der Text darf mehrere Zeilen haben; die erste Zeile wird als Überschrift gezeigt.
+// title: Überschrift nach dem richtigen Wort; question: Ja/Nein-Frage;
+// yes / no: Zeilen, die nach der jeweiligen Antwort erscheinen.
 import { readFileSync, writeFileSync } from "node:fs";
 import { webcrypto as crypto } from "node:crypto";
 
@@ -14,8 +15,11 @@ const PAGE = "morkant/index.html";
 // Muss exakt zu normalize() in morkant/assets/js/morkant.js passen
 const normalize = (s) => s.normalize("NFC").trim().replace(/\s+/g, " ").toLocaleLowerCase("de");
 
-const pass = process.env.MORKANT_PASS, text = process.env.MORKANT_TEXT;
-if (!pass || !text) { console.error("MORKANT_PASS und MORKANT_TEXT setzen."); process.exit(1); }
+const pass = process.env.MORKANT_PASS, raw = process.env.MORKANT_PAYLOAD;
+if (!pass || !raw) { console.error("MORKANT_PASS und MORKANT_PAYLOAD setzen."); process.exit(1); }
+const payload = JSON.parse(raw);
+for (const k of ["title", "question", "yes", "no"]) if (!(k in payload)) throw new Error("Feld fehlt: " + k);
+const text = JSON.stringify(payload);
 
 const enc = new TextEncoder();
 const b64 = (u8) => Buffer.from(u8).toString("base64");

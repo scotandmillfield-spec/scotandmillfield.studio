@@ -11,7 +11,7 @@
 <link rel="preload" href="assets/fonts/im-fell-english-sc-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="assets/img/ferryman-600.webp" media="(max-width: 600px)">
 <link rel="preload" as="image" href="assets/img/ferryman.webp" media="(min-width: 601px)">
-<link rel="stylesheet" href="assets/css/morkant.css?v=20261013a">
+<link rel="stylesheet" href="assets/css/morkant.css?v=20261013b">
 </head>
 <body>
   <div class="backdrop" aria-hidden="true"></div>
@@ -40,12 +40,19 @@
 
     <section id="reward" class="reward" tabindex="-1" hidden aria-live="polite">
       <h2 class="reward__title"></h2>
-      <div class="reward__text"></div>
+      <div class="reward__ask">
+        <p class="reward__question"></p>
+        <div class="reward__choices">
+          <button type="button" data-answer="yes">Ja</button>
+          <button type="button" data-answer="no">Nein</button>
+        </div>
+      </div>
+      <div class="reward__text" tabindex="-1" aria-live="polite"></div>
     </section>
   </main>
 
   <!-- Versiegelte Belohnung (AES-256-GCM, Schlüssel aus dem Passwort per PBKDF2). Erzeugt mit scripts/morkant-seal.mjs -->
-  <script type="application/json" id="vault">{"v":1,"iter":600000,"salt":"fb3FQJEp5Z7KebnipyYnYA==","iv":"j2Z8Y2IjSIaHltlr","ct":"2ErjIllz6NnAlaemt94zuk1s1SJ4vPWFNKch6PGkBR4F9v6jdLKtyq/j4ms0ggMZhuM/zNHpShg0TgstRWy3O37M5M2axbmxfK/YL9sDqVZnr7G3UaAHo94p+YUrRnObRh+LhaHJsqhn"}</script>
-  <script src="assets/js/morkant.js?v=20261013a"></script>
+  <script type="application/json" id="vault">{"v":1,"iter":600000,"salt":"j6gUFwl1Oe8jhg841Brf9w==","iv":"cZorvH06ibVEto+K","ct":"6sA2Ifd4TPl4bBSSy2TCub9zpxayvMlXPpFBQod9B/hFDlHcmFUAgtdw7LrcX5Z3HPgCBB31a7wgZsUn8R5zQ/4/j++HziVXW/QC7vWPcT5p9ZDgocY+pvjn9hTd/2hL5lA6iWHclcwvf2VIvhR4mAD0PEUAnsoTnnBPIBgZmqH/HE/n7NkKj59vYvU6fB9mMwvUCd6ASUjB9xpmFANjHA1zfqaYb8Pj6kXDvulRbv/cnwgbh67cyESs54zqvwiMsNlCbobDuV7ARx3XTuyDqMI3Dr4hJhCapTkFbyHPq7wKjeFwk0HehL9raFl3c6LzICBgA/1UjodK29rqXbpQNNME4UHP79imzbdq"}</script>
+  <script src="assets/js/morkant.js?v=20261013b"></script>
 </body>
 </html>
