@@ -19,7 +19,8 @@ assets/fonts/           Schriften lokal (Archivo, DM Mono – SIL Open Font Lice
 scripts/                Build (Releases ins HTML), tägliche Hörerzahl – nicht hochgeladen
 templates/              Noch nicht genutzte Abschnitte – nicht hochgeladen
 morkant/                Morkant: Rätsel-Seite mit versiegelter Belohnung (/morkant/). Neu versiegeln:
-                        MORKANT_PASS='…' MORKANT_TEXT=$'Titel\nZeile' node scripts/morkant-seal.mjs
+                        MORKANT_PASS='…' MORKANT_PAYLOAD='{"title":…,"question":…,"yes":[…],"no":[…]}' node scripts/morkant-seal.mjs
+                        Breitbild-Version des Fotos: python3 scripts/morkant-widen.py <original> <ausgabe.jpg>
 content/                Texte im Original (z. B. Dark-Theatre-Geschichte DE/EN) – nicht hochgeladen
 darktheatre/            Virage – Dark Theatre: digitales Booklet zum Konzeptalbum (eigene Gestaltung, /darktheatre/)
                         Bild für einen Akt einbauen: python3 scripts/darktheatre-scene.py <akt> <bild> [--right] [--pos "50% 50%"]

@@ -20,25 +20,21 @@ html, body { height: 100%; }
 body { margin: 0; background: var(--bg); color: var(--bone); font-family: "Fell", Georgia, serif;
   overflow: hidden; -webkit-font-smoothing: antialiased; }
 
-/* Unscharfer Hintergrund für breite Bildschirme */
-.backdrop { position: fixed; inset: -40px; background: url("../img/ferryman-blur.jpg") center / cover no-repeat;
-  filter: brightness(.38) saturate(.8); }
-
-/* Das Bild selbst: Hochformat, mittig, seitlich ins Schwarz auslaufend */
-.stage { position: fixed; top: 0; bottom: 0; left: 50%; transform: translateX(-50%);
-  height: 100%; aspect-ratio: 941 / 1672; max-width: none;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 14%, #000 86%, transparent 100%);
-          mask-image: linear-gradient(90deg, transparent 0, #000 14%, #000 86%, transparent 100%); }
+/* Bild füllt den Bildschirm wie „cover“. Die Bühne hat genau die Größe des sichtbaren Bildes,
+   damit die Laterne immer an der richtigen Stelle sitzt. */
+.stage { position: fixed; left: 50%; top: 0; transform: translateX(-50%); }  /* oben anhängen: Mond und Maske bleiben sichtbar */
 .stage picture, .stage img { display: block; width: 100%; height: 100%; }
 .stage img { object-fit: cover; animation: drift 30s ease-in-out infinite alternate; }
 @keyframes drift { from { transform: scale(1); } to { transform: scale(1.04) translateY(-.6%); } }
-/* Hochformat-Bildschirme (Handy): Bild füllt alles */
-@media (max-aspect-ratio: 941/1672) {
-  .stage { left: 0; transform: none; width: 100%; aspect-ratio: auto; -webkit-mask-image: none; mask-image: none; }
+/* Hochformat: Original 941 × 1672 */
+.stage { width: max(100vw, 100vh * 941 / 1672); height: max(100vh, 100vw * 1672 / 941); --lx: 71.8%; }
+/* Querformat: erweitertes Bild 2972 × 1672 (Original sitzt mittig, Laterne entsprechend) */
+@media (min-aspect-ratio: 3/4) {
+  .stage { width: max(100vw, 100vh * 2972 / 1672); height: max(100vh, 100vw * 1672 / 2972); --lx: 56.9%; }
 }
 
 /* Laterne: warmes, flackerndes Licht an ihrer Position im Bild */
-.lantern { position: absolute; left: 71.8%; top: 63.6%; width: 46%; aspect-ratio: 1; transform: translate(-50%, -50%);
+.lantern { position: absolute; left: var(--lx); top: 63.6%; height: 26%; aspect-ratio: 1; transform: translate(-50%, -50%);
   border-radius: 50%; pointer-events: none; mix-blend-mode: screen;
   background: radial-gradient(circle, rgba(224,168,92,.42) 0%, rgba(224,168,92,.12) 30%, transparent 62%);
   animation: flicker 3.8s infinite; }

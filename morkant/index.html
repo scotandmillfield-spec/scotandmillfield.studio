@@ -9,15 +9,17 @@
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#060607">
 <link rel="preload" href="assets/fonts/im-fell-english-sc-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" as="image" href="assets/img/ferryman-600.webp" media="(max-width: 600px)">
-<link rel="preload" as="image" href="assets/img/ferryman.webp" media="(min-width: 601px)">
-<link rel="stylesheet" href="assets/css/morkant.css?v=20261013b">
+<link rel="preload" as="image" href="assets/img/ferryman-600.webp" media="(max-aspect-ratio: 3/4)">
+<link rel="preload" as="image" href="assets/img/ferryman-wide-1600.webp" media="(min-aspect-ratio: 3/4) and (max-width: 1600px)">
+<link rel="preload" as="image" href="assets/img/ferryman-wide.webp" media="(min-aspect-ratio: 3/4) and (min-width: 1601px)">
+<link rel="stylesheet" href="assets/css/morkant.css?v=20261013c">
 </head>
 <body>
-  <div class="backdrop" aria-hidden="true"></div>
   <div class="stage" aria-hidden="true">
     <picture>
-      <source type="image/webp" srcset="assets/img/ferryman-600.webp 600w, assets/img/ferryman.webp 941w" sizes="(max-aspect-ratio: 941/1672) 100vw, 56vh">
+      <!-- Querformat: links und rechts erweitertes Bild (scripts/morkant-widen.py), Hochformat: Original -->
+      <source type="image/webp" media="(min-aspect-ratio: 3/4)" srcset="assets/img/ferryman-wide-1600.webp 1600w, assets/img/ferryman-wide.webp 2972w" sizes="max(100vw, 177.8vh)">
+      <source type="image/webp" srcset="assets/img/ferryman-600.webp 600w, assets/img/ferryman.webp 941w" sizes="max(100vw, 56.3vh)">
       <img src="assets/img/ferryman.jpg" alt="" width="941" height="1672">
     </picture>
     <span class="lantern"></span>
@@ -53,6 +55,6 @@
 
   <!-- Versiegelte Belohnung (AES-256-GCM, Schlüssel aus dem Passwort per PBKDF2). Erzeugt mit scripts/morkant-seal.mjs -->
   <script type="application/json" id="vault">{"v":1,"iter":600000,"salt":"j6gUFwl1Oe8jhg841Brf9w==","iv":"cZorvH06ibVEto+K","ct":"6sA2Ifd4TPl4bBSSy2TCub9zpxayvMlXPpFBQod9B/hFDlHcmFUAgtdw7LrcX5Z3HPgCBB31a7wgZsUn8R5zQ/4/j++HziVXW/QC7vWPcT5p9ZDgocY+pvjn9hTd/2hL5lA6iWHclcwvf2VIvhR4mAD0PEUAnsoTnnBPIBgZmqH/HE/n7NkKj59vYvU6fB9mMwvUCd6ASUjB9xpmFANjHA1zfqaYb8Pj6kXDvulRbv/cnwgbh67cyESs54zqvwiMsNlCbobDuV7ARx3XTuyDqMI3Dr4hJhCapTkFbyHPq7wKjeFwk0HehL9raFl3c6LzICBgA/1UjodK29rqXbpQNNME4UHP79imzbdq"}</script>
-  <script src="assets/js/morkant.js?v=20261013b"></script>
+  <script src="assets/js/morkant.js?v=20261013c"></script>
 </body>
 </html>
