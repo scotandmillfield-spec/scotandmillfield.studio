@@ -58,8 +58,11 @@ try {
         ensureMigrationTable($pdo);
         $applied = $pdo->query("SELECT version FROM schema_migrations ORDER BY version")->fetchAll(PDO::FETCH_COLUMN);
         $all = array_map(fn($f) => basename($f), migrationFiles());
+        // schema version = number of the newest applied migration file, e.g. "002"
+        $latest = $applied ? end($applied) : null;
         out(200, [
             'ok' => true, 'db' => true,
+            'schema_version' => $latest ? preg_replace('/^(\d+).*/', '$1', $latest) : '000',
             'php' => PHP_VERSION,
             'server' => $pdo->getAttribute(PDO::ATTR_SERVER_VERSION),
             'applied' => $applied,

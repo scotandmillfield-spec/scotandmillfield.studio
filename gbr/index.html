@@ -76,7 +76,7 @@ async function health(){
   try{
     const h=await api("health");
     $("health").innerHTML=`<dt>Status</dt><dd class="ok">verbunden</dd><dt>PHP</dt><dd>${esc(h.php)}</dd><dt>Datenbank</dt><dd>${esc(h.server)}</dd>
-      <dt>Migrationen</dt><dd>${h.applied.length?esc(h.applied.join(", ")):"keine"}</dd>
+      <dt>Schema-Version</dt><dd>${esc(h.schema_version)}</dd><dt>Migrationen</dt><dd>${h.applied.length?esc(h.applied.join(", ")):"keine"}</dd>
       <dt>Ausstehend</dt><dd class="${h.pending.length?"bad":"ok"}">${h.pending.length?esc(h.pending.join(", ")):"keine"}</dd>`;
     if(!h.pending.length) await loadData();
   }catch(e){ $("health").innerHTML=`<dt>Status</dt><dd class="bad">${esc(e.message)}</dd>`; }

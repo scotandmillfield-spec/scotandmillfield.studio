@@ -9,6 +9,8 @@
 --    die Datenbank sichert zusätzlich das Wichtigste ab (CHECK, UNIQUE, FK).
 --  * Regeln, die MySQL 8 nicht als CHECK erlaubt (Bezug auf Auto-Increment-Spalten oder auf
 --    Spalten mit kaskadierenden Fremdschlüsseln), prüft die API – z. B. „Statement nicht in sich selbst übertragen“.
+--  * Schema-Änderungen nur als NEUE Datei (003_…, 004_…); eingespielte Dateien nie mehr ändern.
+--    Stand abrufbar über api.php?action=health → schema_version.
 --  * Ersetzt die beiden Spike-Tabellen (accounts, bookings) – darin waren nur Testdaten.
 -- =====================================================================================
 
