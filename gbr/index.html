@@ -1516,6 +1516,12 @@ async function restoreServerPart(st){
                fileBookings.length+" booking(s) and "+(Array.isArray(st.accounts)?st.accounts.length:0)+" account(s) — numbers, locks (Festschreibung), Storno links and „Klären“/private markers are kept.")){
       const r=await api("journal_import",{accounts:Array.isArray(st.accounts)?st.accounts:[], bookings:fileBookings});
       msg+=" Journal taken over: "+r.bookings+" booking(s), "+r.locked+" locked.";
+      if(r.skipped&&r.skipped.length){
+        msg+=" "+r.skipped.length+" booking(s) not taken over.";
+        alert("Journal taken over: "+r.bookings+" booking(s), "+r.locked+" locked.\n\nNot taken over (no effect on balances or the BWA):\n"+
+          r.skipped.map(x=>"#"+x.no+" · "+x.date.split("-").reverse().join(".")+" · "+deMoney(x.amount)+" · "+x.text+"\n   → "+x.reason).join("\n")+
+          "\n\nIf such a line needs a real contra-account, book it again manually.");
+      }
       await reloadJournal();
     } else if(fileBookings.length && bookings.length) msg+=" The journal stays as stored on the server.";
     const empty=!s.issuer || !Object.values(s.issuer).some(v=>v);
@@ -1524,7 +1530,11 @@ async function restoreServerPart(st){
       await api("setting_save",{key:"issuer", value:issuer});
       msg+=" Letterhead saved on the server.";
     }
-  }catch(e){ toast(e.message); }
+  }catch(e){
+    editId=null; renderEverything();
+    alert("Browser data restored, but the journal / letterhead could NOT be taken over to the server:\n\n"+e.message+"\n\nNothing of the journal was written (all or nothing).");
+    return;
+  }
   editId=null; renderEverything(); toast(msg,true);
 }
 function renderEverything(){
