@@ -25,12 +25,16 @@ declare(strict_types=1);
  *             POST bookings_lock  {year}      Festschreiben (skips „Klären“)
  *             POST booking_storno {id,date?}  locked bookings only
  *             POST bank_import    {rows:[{date,soll,haben,amount,text,beleg?,bank_key}]}
- *  (booking_add is kept for the spike test page: booking_save without id)
+ *             POST journal_import {accounts,bookings}   takeover from a browser-app backup, empty journal only
+ *  Settings   GET  settings                   {issuer:{…}|null}
+ *             POST setting_save   {key,value}
+ *  (booking_add is kept for the admin page: booking_save without id)
  */
 define('GBR_API', true);
 require __DIR__ . '/lib/bootstrap.php';
 require __DIR__ . '/lib/auth.php';
 require __DIR__ . '/lib/journal.php';
+require __DIR__ . '/lib/settings.php';
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
@@ -113,6 +117,11 @@ try {
     case 'bookings_lock':   requirePost(); out(200, ['ok' => true] + bookingsLock(body()));
     case 'booking_storno':  requirePost(); out(201, ['ok' => true, 'booking' => bookingStorno(body())]);
     case 'bank_import':     requirePost(); out(200, ['ok' => true] + bankImport(body()));
+    case 'journal_import':  requirePost(); out(200, ['ok' => true] + journalImport(body()));
+
+    /* ---- settings ---- */
+    case 'settings':        out(200, ['ok' => true, 'settings' => settingsAll()]);
+    case 'setting_save':    requirePost(); out(200, ['ok' => true, 'value' => settingSave(body())]);
 
     default: throw new ApiError('Unbekannte Aktion', 404);
     }

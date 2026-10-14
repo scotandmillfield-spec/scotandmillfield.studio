@@ -70,6 +70,36 @@ refused('unbekannte Aktion', call('gibtsnicht'));
 refused('Schreibaktion per GET', call('booking_save'), 'POST');
 refused('angemeldet, aber POST ohne X-GBR-Header', call('account_save', ['nr' => '4100', 'name' => 'x', 'art' => 'aufwand'], '', '', false), 'abgelehnt');
 
+echo "Übernahme aus Browser-Backup, Einstellungen\n";
+$legacy = [
+    ['id' => 'b1', 'no' => 1, 'date' => '2030-01-10', 'soll' => '4200', 'haben' => '1200', 'amount' => 300, 'text' => 'Miete Jan', 'beleg' => 'R1', 'source' => 'manual', 'locked' => true],
+    ['id' => 'b2', 'no' => 2, 'date' => '2030-01-15', 'soll' => '1200', 'haben' => '8000', 'amount' => 12.5, 'text' => 'Royalties', 'source' => 'fyrst', 'fkey' => '2030-01-15|+|12.50|Label', 'locked' => true, 'clarify' => true],
+    ['id' => 'b3', 'no' => 4, 'date' => '2030-02-01', 'soll' => '1200', 'haben' => '4200', 'amount' => 300, 'text' => 'Storno #1 · Miete Jan', 'source' => 'storno', 'locked' => true, 'stornoOf' => 1],
+    ['id' => 'b4', 'no' => 3, 'date' => '2030-01-20', 'soll' => '4920', 'haben' => '1210', 'amount' => 9.99, 'text' => 'Telefon privat', 'irrelevant' => true, 'clarify' => true],
+];
+$legacyAcc = [['nr' => '1200', 'name' => 'Bank', 'art' => 'aktiv'], ['nr' => '4925', 'name' => 'Porto', 'art' => 'aufwand']];
+refused('Übernahme mit fehlerhafter Buchung', call('journal_import', ['accounts' => [], 'bookings' => [['no' => 1, 'date' => '2030-13-01', 'soll' => '4200', 'haben' => '1200', 'amount' => 1]]]), 'nichts übernommen');
+check('danach Journal noch leer', call('bookings')['bookings'] === []);
+$ji = ok('Journal aus Backup übernehmen', call('journal_import', ['accounts' => $legacyAcc, 'bookings' => $legacy]));
+check('4 Buchungen, 3 festgeschrieben', ($ji['bookings'] ?? 0) === 4 && ($ji['locked'] ?? 0) === 3, $ji);
+$bk = []; foreach (call('bookings', null, '&year=2030')['bookings'] as $b) $bk[$b['no']] = $b;
+check('Nummern bleiben erhalten (1–4)', count($bk) === 4 && isset($bk[1], $bk[2], $bk[3], $bk[4]), array_keys($bk));
+check('Storno verknüpft mit Buchung #1', ($bk[4]['storno_of'] ?? 0) === $bk[1]['id'] && $bk[4]['source'] === 'storno', $bk[4] ?? null);
+check('Bankbuchung: Quelle bank, Schlüssel übernommen', $bk[2]['source'] === 'bank' && $bk[2]['bank_key'] === '2030-01-15|+|12.50|Label', $bk[2]);
+check('festgeschrieben ⇒ nicht „Klären“', $bk[2]['locked'] && !$bk[2]['clarify'], $bk[2]);
+check('offene Buchung: Klären + privat erhalten', !$bk[3]['locked'] && $bk[3]['clarify'] && $bk[3]['irrelevant'], $bk[3]);
+check('Konto aus Backup angelegt (4925)', in_array('4925', array_column(call('accounts')['accounts'], 'nr'), true));
+refused('zweite Übernahme', call('journal_import', ['accounts' => [], 'bookings' => $legacy]), 'nicht leer');
+$bi = ok('Bankzeile aus Backup erneut importieren', call('bank_import', ['rows' => [['date' => '2030-01-15', 'soll' => '1200', 'haben' => '8000', 'amount' => 12.5, 'text' => 'x', 'bank_key' => '2030-01-15|+|12.50|Label']]]));
+check('als Dublette erkannt', ($bi['added'] ?? 1) === 0 && ($bi['skipped_duplicates'] ?? 0) === 1, $bi);
+$set = ok('Einstellungen lesen', call('settings'));
+check('Briefkopf noch leer', array_key_exists('issuer', $set['settings'] ?? []) && $set['settings']['issuer'] === null, $set);
+$iss = ['name' => 'Test GbR', 'addr' => 'Teststr. 1 | 12345 Musterstadt', 'iban' => 'DE00 0000', 'bic' => 'TESTDEFF', 'taxNo' => '000/000', 'place' => 'Mülheim', 'signoff' => 'A & B', 'evil' => '<x>'];
+$sv = ok('Briefkopf speichern', call('setting_save', ['key' => 'issuer', 'value' => $iss]));
+check('unbekanntes Feld verworfen', !isset($sv['value']['evil']) && $sv['value']['place'] === 'Mülheim', $sv);
+check('Briefkopf gespeichert', (call('settings')['settings']['issuer']['name'] ?? '') === 'Test GbR');
+refused('unbekannte Einstellung', call('setting_save', ['key' => 'admin', 'value' => ['x' => 1]]), 'Unbekannte');
+
 echo "Kontenplan\n";
 $acc = ok('Konten lesen', call('accounts'));
 check('Startkonten vorhanden (1200, 8000)', count(array_filter($acc['accounts'], fn($a) => in_array($a['nr'], ['1200', '8000'], true))) === 2);
