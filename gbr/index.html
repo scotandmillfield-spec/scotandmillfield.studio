@@ -530,7 +530,6 @@ body.in-area .eyebrow{color:var(--area-accent)} body.in-area .eyebrow::before{ba
           <button class="btn" id="clearBtn" type="button">Clear singles</button>
         </div>
         <input type="file" id="fileInput" accept=".csv,text/csv" multiple hidden>
-        <input type="file" id="jsonInput" accept=".json,application/json" hidden>
       </div>
       <div class="chips" id="chips"></div>
       <div class="persist-hint" id="persistHint"></div>
@@ -894,6 +893,7 @@ body.in-area .eyebrow{color:var(--area-accent)} body.in-area .eyebrow::before{ba
         <div class="data-actions">
           <button class="btn amber" id="sBackup" type="button">Backup (download JSON)</button>
           <button class="btn" id="sRestore" type="button">Restore from file…</button>
+          <input type="file" id="jsonInput" hidden>
           <button class="btn danger" id="sClearAll" type="button">Clear browser data</button>
         </div>
         <div class="data-note">“Clear browser data” permanently deletes the singles, royalties, statements, invoice addresses, GEMA statements and label sales reports kept in this browser. Journal, chart of accounts and letterhead on the server are not touched.</div>
@@ -2844,6 +2844,7 @@ fi.onchange=()=>{ handleFiles(fi.files); fi.value=""; };
 ["dragleave","drop"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove("drag");}));
 dz.addEventListener("drop",e=>handleFiles(e.dataTransfer.files));
 document.getElementById("clearBtn").onclick=()=>{singles=[];for(const k in visible)delete visible[k];renderAll();saveState();toast("Singles cleared.",true);};
+// the backup input sits next to the Restore button, outside every dropzone (a click bubbling into a dropzone opened its picker instead)
 const ji=document.getElementById("jsonInput");
 ji.onchange=()=>{ if(ji.files[0]) importBackup(ji.files[0]); ji.value=""; };
 document.getElementById("sBackup").onclick=exportBackup;
