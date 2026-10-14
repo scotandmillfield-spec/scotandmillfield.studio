@@ -1,1 +1,3 @@
 epk/.epk-build.html
+# GbR app: database credentials live only on the server
+gbr/config.php
