@@ -196,6 +196,42 @@ footer{margin-top:38px; padding-top:22px; border-top:1px solid var(--line); colo
 .login-box input{background:var(--ink); border:1px solid var(--line); border-radius:8px; color:var(--text); font:14px Inter,system-ui,sans-serif; padding:10px 12px}
 .login-msg{min-height:18px; font-size:13px; color:var(--bad, #FF6B8A)}
 .btn[disabled]{opacity:.5; cursor:wait}
+/* ---- entry page: one big tile per area ---- */
+.area-back{display:none; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.06em; color:var(--muted); text-decoration:none; margin-bottom:14px}
+.area-back:hover{color:var(--amber)}
+body.in-area .area-back{display:inline-block}
+body.at-home #tabs{display:none}
+body.at-home header.top{border-bottom:none; margin-bottom:8px}
+.home{display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin:10px 0 40px}
+.home[hidden]{display:none}
+@media(max-width:920px){ .home{grid-template-columns:1fr} }
+.area-tile{position:relative; display:flex; flex-direction:column; min-height:400px; padding:32px 30px 28px; border-radius:20px; overflow:hidden;
+  color:inherit; text-decoration:none; border:1px solid var(--line);
+  background:linear-gradient(165deg, color-mix(in srgb, var(--accent) 22%, var(--panel)) 0%, var(--panel) 58%);
+  transition:transform .2s, border-color .2s, box-shadow .2s}
+.area-tile::before{content:""; position:absolute; inset:0 0 auto 0; height:4px; background:var(--accent)}
+.area-tile::after{content:attr(data-no); position:absolute; right:-10px; bottom:-52px; font:700 210px/1 'Space Grotesk',sans-serif; letter-spacing:-.06em;
+  color:transparent; -webkit-text-stroke:1.5px color-mix(in srgb, var(--accent) 38%, transparent); pointer-events:none; transition:transform .25s}
+.area-tile:hover, .area-tile:focus-visible{transform:translateY(-4px); border-color:var(--accent); box-shadow:0 26px 60px -26px var(--accent); outline:none}
+.area-tile:hover::after{transform:translate(-6px,-6px)}
+.area-tile .a-ic{width:62px; height:62px; border-radius:16px; display:grid; place-items:center; background:color-mix(in srgb, var(--accent) 16%, var(--ink));
+  border:1px solid color-mix(in srgb, var(--accent) 40%, var(--line))}
+.area-tile .a-ic svg{width:30px; height:30px; fill:none; stroke:var(--accent); stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round}
+.area-tile .a-kicker{margin-top:26px; font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:.24em; text-transform:uppercase; color:var(--accent)}
+.area-tile h2{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(30px,3.4vw,40px); line-height:1.02; letter-spacing:-.025em; margin:10px 0 12px}
+.area-tile p{margin:0; color:var(--muted); font-size:14.5px; max-width:32ch; position:relative}
+.area-tile .a-chips{display:flex; flex-wrap:wrap; gap:7px; margin-top:18px; position:relative}
+.area-tile .a-chips span{font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.05em; color:var(--text);
+  border:1px solid color-mix(in srgb, var(--accent) 35%, var(--line)); background:rgba(11,13,19,.45); border-radius:999px; padding:4px 11px}
+.area-tile .a-foot{margin-top:auto; padding-top:26px; display:flex; align-items:flex-end; justify-content:space-between; gap:12px; position:relative}
+.area-tile .a-stat{font-size:13px; color:var(--muted); line-height:1.45}
+.area-tile .a-stat b{color:var(--text); font-weight:600}
+.area-tile .a-stat .warn{color:#FF6B8A}
+.area-tile .a-go{flex:none; width:52px; height:52px; border-radius:50%; display:grid; place-items:center; background:var(--accent); color:var(--ink);
+  font:700 22px/1 'Space Grotesk',sans-serif; transition:transform .2s}
+.area-tile:hover .a-go{transform:translateX(4px)}
+#footCount{display:none}   /* singles counter of the (hidden) Analytics area */
+body.in-area .eyebrow{color:var(--area-accent)} body.in-area .eyebrow::before{background:var(--area-accent)}
 .modal{background:var(--panel); border:1px solid var(--line); border-radius:16px; width:100%; max-width:560px;
   max-height:88vh; display:flex; flex-direction:column; box-shadow:0 24px 70px rgba(0,0,0,.5)}
 .modal-head{display:flex; align-items:center; justify-content:space-between; padding:20px 22px 14px; border-bottom:1px solid var(--line)}
@@ -436,16 +472,17 @@ footer{margin-top:38px; padding-top:22px; border-top:1px solid var(--line); colo
     <div class="srv-bar"><span>Angemeldet als <span class="srv-user" id="srvUser">…</span></span>
       <a href="admin.html" title="Datenbank, Migrationen, Benutzer">Verwaltung</a>
       <button id="srvLogout" type="button">Abmelden</button></div>
-    <div class="eyebrow">Music-Business</div>
-    <h1>Lyall &amp; Drozdzynski <em>GbR</em></h1>
-    <p class="lede">Streaming, Royalties, GEMA, Rechnungen und Buchhaltung</p>
+    <a class="area-back" href="#">← Alle Bereiche</a>
+    <div class="eyebrow" id="areaEyebrow">Music-Business</div>
+    <h1 id="areaTitle">Lyall &amp; Drozdzynski <em>GbR</em></h1>
+    <p class="lede" id="areaLede">Wähle einen Bereich.</p>
 
     <div class="tabs" id="tabs">
-      <button class="tab on" data-tab="analytics" type="button">Analytics</button>
-      <button class="tab" data-tab="royalties" type="button">Royalties</button>
-      <button class="tab" data-tab="invoices" type="button">Invoices</button>
-      <button class="tab" data-tab="assets" type="button">Assets</button>
+      <button class="tab" data-tab="analytics" type="button" hidden>Analytics</button>
+      <button class="tab" data-tab="royalties" type="button" hidden>Royalties</button>
       <button class="tab" data-tab="books" type="button">Journal / BWA</button>
+      <button class="tab" data-tab="assets" type="button">Assets</button>
+      <button class="tab" data-tab="invoices" type="button">Invoices</button>
       <button class="tab" data-tab="gema" type="button">GEMA</button>
       <button class="tab" data-tab="streams" type="button">Stream-Analyzer</button>
       <button class="tab tab-gear" data-tab="settings" type="button" title="Settings" aria-label="Settings">
@@ -454,7 +491,34 @@ footer{margin-top:38px; padding-top:22px; border-top:1px solid var(--line); colo
     </div>
   </header>
 
-  <div class="tab-panel" id="tab-analytics">
+  <nav class="home" id="home" aria-label="Bereiche">
+    <a class="area-tile" href="#finance" data-no="01" style="--accent:#52E0A0">
+      <div class="a-ic"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16"/><path d="M8 15l3.5-4 3 2.5L20 7"/><path d="M16 7h4v4"/></svg></div>
+      <div class="a-kicker">Bereich 01</div>
+      <h2>Finance</h2>
+      <p>Buchhaltung der GbR – Journal, BWA, Anlagen und Rechnungen.</p>
+      <div class="a-chips"><span>Journal</span><span>BWA</span><span>Assets</span><span>Invoices</span></div>
+      <div class="a-foot"><div class="a-stat" id="statFinance"></div><span class="a-go">→</span></div>
+    </a>
+    <a class="area-tile" href="#gema" data-no="02" style="--accent:#FFB454">
+      <div class="a-ic"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+      <div class="a-kicker">Bereich 02</div>
+      <h2>GEMA-<br>Analyzer</h2>
+      <p>GEMA-Abrechnungen einlesen und nach Werk, Sparte und Zeitraum auswerten.</p>
+      <div class="a-chips"><span>Abrechnungen</span><span>Werke</span><span>Pivot</span></div>
+      <div class="a-foot"><div class="a-stat" id="statGema"></div><span class="a-go">→</span></div>
+    </a>
+    <a class="area-tile" href="#streams" data-no="03" style="--accent:#5DB1E6">
+      <div class="a-ic"><svg viewBox="0 0 24 24"><path d="M3 12h2M7 8v8M11 5v14M15 9v6M19 7v10M21 12h0"/></svg></div>
+      <div class="a-kicker">Bereich 03</div>
+      <h2>Stream-<br>Analyzer</h2>
+      <p>Label-Reports (XLSX/CSV) auswerten – Streams und Erlöse nach Track, Shop und Land.</p>
+      <div class="a-chips"><span>Label-Reports</span><span>Shops</span><span>Länder</span></div>
+      <div class="a-foot"><div class="a-stat" id="statStreams"></div><span class="a-go">→</span></div>
+    </a>
+  </nav>
+
+  <div class="tab-panel" id="tab-analytics" hidden>
     <div class="uploader">
       <div class="dropzone" id="dropzone">
         <div class="dz-icon"><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7 9m5-5l5 5"/><path d="M4 17v2a1 1 0 001 1h14a1 1 0 001-1v-2"/></svg></div>
@@ -533,17 +597,9 @@ footer{margin-top:38px; padding-top:22px; border-top:1px solid var(--line); colo
 
   <div class="tab-panel" id="tab-royalties" hidden>
     <div class="uploader">
-      <div class="dropzone" id="pdfDrop">
-        <div class="dz-icon"><svg viewBox="0 0 24 24"><path d="M14 3v5h5"/><path d="M7 3h8l5 5v11a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M9.5 13.5h1.2a1.3 1.3 0 010 2.6H9.5V12m4 0v4.1m0-4.1h1.6m-1.6 2h1.2"/></svg></div>
-        <div class="dz-text">
-          <div class="t">Drop a Melino royalty statement PDF, or click to browse</div>
-          <div class="s">Melino (English &amp; German) and LabelWorx statements are recognised automatically · multiple tracks per statement are detected · you confirm the figures before they're saved · re-importing the same half-year updates it</div>
-        </div>
-        <div class="dz-actions">
-          <button class="btn amber" id="royManualBtn" type="button">Enter manually</button>
-          <button class="btn" id="royClearBtn" type="button">Clear royalties</button>
-        </div>
-        <input type="file" id="pdfInput" accept="application/pdf,.pdf" multiple hidden>
+      <div class="dz-actions">
+        <button class="btn amber" id="royManualBtn" type="button">Enter manually</button>
+        <button class="btn" id="royClearBtn" type="button">Clear royalties</button>
       </div>
       <div class="persist-hint" id="royHint"></div>
     </div>
@@ -576,7 +632,17 @@ footer{margin-top:38px; padding-top:22px; border-top:1px solid var(--line); colo
     <section class="section">
       <div class="sec-head">
         <h2><span class="sec-no">&sect;</span> Invoices from statements</h2>
-        <p>Every imported royalty statement appears here — labels without an importable statement can be added manually. Open carryovers of a label are offered as extra lines on its next invoice. Edit your own letterhead details under the <b>gear</b> tab.</p>
+        <p>Drop a label's royalty statement PDF — it appears below as a statement you can invoice. Labels without an importable statement can be added manually. Open carryovers of a label are offered as extra lines on its next invoice. Edit your own letterhead details under the <b>gear</b> tab.</p>
+      </div>
+      <div class="uploader">
+        <div class="dropzone" id="pdfDrop">
+          <div class="dz-icon"><svg viewBox="0 0 24 24"><path d="M14 3v5h5"/><path d="M7 3h8l5 5v11a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M9.5 13.5h1.2a1.3 1.3 0 010 2.6H9.5V12m4 0v4.1m0-4.1h1.6m-1.6 2h1.2"/></svg></div>
+          <div class="dz-text">
+            <div class="t">Drop a royalty statement PDF, or click to browse</div>
+            <div class="s">Melino (English &amp; German) and LabelWorx statements are recognised automatically · multiple tracks per statement are detected · you confirm the figures before they're saved · re-importing the same statement updates it</div>
+          </div>
+          <input type="file" id="pdfInput" accept="application/pdf,.pdf" multiple hidden>
+        </div>
       </div>
       <div class="inv-tools"><button class="btn amber" id="invManualBtn" type="button">+ Add statement manually</button></div>
       <div class="inv-filter" id="invFilter"></div>
@@ -1462,6 +1528,7 @@ async function restoreServerPart(st){
   editId=null; renderEverything(); toast(msg,true);
 }
 function renderEverything(){
+  if(typeof renderHome==="function" && !currentArea()) renderHome();
   renderAll(); renderRoyalties(); renderInvoices(); renderBooks(); renderAssets();
   if(typeof renderGema==="function") renderGema();
   if(typeof renderStreams==="function") renderStreams();
@@ -1689,6 +1756,7 @@ function confirmReview(){
     ? { stmtNo, payable:Math.round(sum*100)/100, currency:pendingCurrency, periodStart:"", periodEnd:"", carryover:0 }
     : Object.assign({}, pendingParsed, { stmtNo:stmtNo||(pendingParsed&&pendingParsed.stmtNo), currency:pendingCurrency });
   captureStatement(cap, label, year, pendingHalf);
+  renderInvoices();
   toast(n?`${manualMode?"Saved":"Imported"} ${n} track${n>1?'s':''} for ${period}.`:"Nothing saved.", n>0);
   afterReview();
 }
@@ -1790,7 +1858,46 @@ function renderRoyaltySummary(){
 }
 
 /* ---- tabs ---- */
+/* ---- areas: entry page (#) and Finance / GEMA / Stream-Analyzer (#finance, #gema, #streams).
+   Analytics and Royalties are hidden for now. ---- */
+const AREAS={
+  finance:{accent:"#52E0A0", tabs:["books","assets","invoices","settings"], eyebrow:"Bereich 01 · Finance", title:"Finance",
+           lede:"Journal, BWA, Anlagen und Rechnungen der GbR – Journal und Kontenplan liegen auf dem Server."},
+  gema:   {accent:"#FFB454", tabs:["gema","settings"], eyebrow:"Bereich 02 · GEMA", title:"GEMA-<em>Analyzer</em>",
+           lede:"GEMA-Abrechnungen einlesen und auswerten."},
+  streams:{accent:"#5DB1E6", tabs:["streams","settings"], eyebrow:"Bereich 03 · Streams", title:"Stream-<em>Analyzer</em>",
+           lede:"Label-Reports einlesen und auswerten."}
+};
+const lastTab={};   // last opened tab per area (this visit)
+function currentArea(){ const a=location.hash.replace("#",""); return AREAS[a]?a:null; }
+function route(){
+  const area=currentArea(), A=AREAS[area];
+  document.body.classList.toggle("at-home",!A); document.body.classList.toggle("in-area",!!A);
+  document.getElementById("home").hidden=!!A;
+  document.getElementById("areaEyebrow").textContent=A?A.eyebrow:"Music-Business";
+  if(A) document.body.style.setProperty("--area-accent",A.accent);
+  document.getElementById("areaTitle").innerHTML=A?A.title:"Lyall &amp; Drozdzynski <em>GbR</em>";
+  document.getElementById("areaLede").textContent=A?A.lede:"Wähle einen Bereich.";
+  document.querySelectorAll(".tab").forEach(b=>{ b.hidden=!A||!A.tabs.includes(b.dataset.tab); });
+  if(!A){ document.querySelectorAll(".tab-panel").forEach(p=>p.hidden=true); renderHome(); window.scrollTo(0,0); return; }
+  switchTab(lastTab[area]&&A.tabs.includes(lastTab[area])?lastTab[area]:A.tabs[0]);
+  window.scrollTo(0,0);
+}
+function renderHome(){
+  const y=String(new Date().getFullYear());
+  const inYear=bookings.filter(b=>(b.date||"").slice(0,4)===y).length;
+  const clar=bookings.filter(b=>b.clarify&&!b.locked).length;
+  const open=bookings.filter(b=>!b.locked&&!b.clarify).length;
+  const fin=[]; if(srvUser){ fin.push(`<b>${inYear}</b> Buchung${inYear===1?"":"en"} ${y}`); if(open) fin.push(`<b>${open}</b> offen`); if(clar) fin.push(`<span class="warn"><b>${clar}</b> × Klären</span>`); }
+  document.getElementById("statFinance").innerHTML=fin.join(" · ");
+  const ng=(typeof gemaSets!=="undefined")?gemaSets.length:0, ns=(typeof stSets!=="undefined")?stSets.length:0;
+  document.getElementById("statGema").innerHTML=ng?`<b>${ng}</b> Abrechnung${ng===1?"":"en"} geladen`:"Noch keine Abrechnung";
+  document.getElementById("statStreams").innerHTML=ns?`<b>${ns}</b> Report${ns===1?"":"s"} geladen`:"Noch kein Report";
+}
+window.addEventListener("hashchange", route);
+
 function switchTab(name){
+  const ar=currentArea(); if(ar) lastTab[ar]=name;
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on",b.dataset.tab===name));
   document.getElementById("tab-analytics").hidden = name!=="analytics";
   document.getElementById("tab-royalties").hidden = name!=="royalties";
@@ -2536,7 +2643,7 @@ function saveManualStatement(){
 function renderInvoices(){
   const total=statements.length;
   const bar=document.getElementById("invFilter"), list=document.getElementById("invList");
-  if(total===0){ bar.innerHTML=""; list.innerHTML='<div class="panel empty-state">No statements yet — import a royalty PDF in the <b>Royalties</b> tab, or use <b>Add statement manually</b> for labels without an importable statement.</div>'; saveState(); return; }
+  if(total===0){ bar.innerHTML=""; list.innerHTML='<div class="panel empty-state">No statements yet — drop a royalty statement PDF above, or use <b>Add statement manually</b> for labels without an importable statement.</div>'; saveState(); return; }
   // status counts for the filter bar
   const counts={all:total, open:0, paid:0, carry:0};
   statements.forEach(s=>{ const st=s.status||"open"; counts[st]=(counts[st]||0)+1; });
@@ -3535,6 +3642,7 @@ async function stLoad(){
   try{ const v=JSON.parse(localStorage.getItem(ST_VIEW_KEY)||"null"); if(v&&typeof v==="object") stView=Object.assign(JSON.parse(JSON.stringify(ST_VIEW_DEFAULT)), v); }catch(e){}
   try{ const st=await IDB.get(ST_IDB_KEY); if(st) stLoadFrom(st); stPersist="ok"; }catch(e){ stPersist="fail"; }
   renderStreams();
+  if(!currentArea()) renderHome();
 }
 function stSaveView(){ try{ localStorage.setItem(ST_VIEW_KEY, JSON.stringify(stView)); }catch(e){} }
 
@@ -3887,6 +3995,7 @@ function initFolding(){
 initFolding();
 
 /* boot: browser data first, then log in and load journal, accounts and letterhead from the server */
+route();
 bootServer();
 </script>
 </body>
