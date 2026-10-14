@@ -200,6 +200,56 @@ function bankImport(array $in): array {
     $pdo->commit();
     return ['added' => count($added), 'skipped_duplicates' => $skipped, 'numbers' => $added];
 }
+/* one-time takeover of the journal from a JSON backup of the browser app: chart of accounts + all bookings
+   with their original numbers, locks and markers. Only into an empty journal; all or nothing. */
+function journalImport(array $in): array {
+    $accounts = $in['accounts'] ?? [];
+    $rows = $in['bookings'] ?? null;
+    if (!is_array($accounts) || !is_array($rows)) throw new ApiError('Keine Daten übergeben');
+    if (count($rows) > 20000) throw new ApiError('Zu viele Buchungen (max. 20000)');
+    $pdo = db();
+    $pdo->beginTransaction();
+    if ((int)$pdo->query("SELECT COUNT(*) FROM bookings FOR UPDATE")->fetchColumn() > 0)
+        throw new ApiError('Das Journal auf dem Server ist nicht leer – Übernahme nur in ein leeres Journal', 409);
+    $nAcc = 0;
+    foreach (array_values($accounts) as $i => $a) {
+        try { accountSave(is_array($a) ? $a : []); $nAcc++; }
+        catch (ApiError $e) { throw new ApiError('Konto ' . ($i + 1) . ': ' . $e->getMessage() . ' – nichts übernommen'); }
+    }
+    usort($rows, fn($a, $b) => ((int)($a['no'] ?? 0)) <=> ((int)($b['no'] ?? 0)));   // originals before their Storno
+    $idByNo = []; $nLocked = 0; $seen = [];
+    $ins = $pdo->prepare("INSERT INTO bookings (no, booking_date, soll, haben, amount, text, beleg, source, locked, locked_at,
+                                                clarify, irrelevant, storno_of, bank_key)
+                          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+    foreach ($rows as $i => $r) {
+        try {
+            if (!is_array($r)) throw new ApiError('ungültiger Eintrag');
+            $no = filter_var($r['no'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+            if ($no === false) throw new ApiError('Journalnummer fehlt');
+            if (isset($seen[$no])) throw new ApiError("Journalnummer $no doppelt");
+            $seen[$no] = true;
+            $soll = vText($r['soll'] ?? '', 10); $haben = vText($r['haben'] ?? '', 10);
+            if ($soll === '' || $haben === '' || $soll === $haben) throw new ApiError('Konten ungültig');
+            $source = match ((string)($r['source'] ?? '')) { 'fyrst', 'bank' => 'bank', 'storno' => 'storno', 'afa' => 'afa', default => 'manual' };
+            $locked = !empty($r['locked']);
+            $stornoOf = isset($r['stornoOf']) ? ($idByNo[(int)$r['stornoOf']] ?? null) : null;
+            $key = vText($r['fkey'] ?? ($r['bank_key'] ?? ''), 190);
+            $ins->execute([$no, vDate($r['date'] ?? ''), $soll, $haben, vAmount($r['amount'] ?? null), vText($r['text'] ?? '', 255),
+                           vText($r['beleg'] ?? '', 60), $source, $locked ? 1 : 0, $locked ? date('Y-m-d H:i:s') : null,
+                           !$locked && !empty($r['clarify']) ? 1 : 0, !empty($r['irrelevant']) ? 1 : 0, $stornoOf, $key === '' ? null : $key]);
+            $id = (int)$pdo->lastInsertId();
+            $idByNo[$no] = $id;
+            bookingLog($id, 'create');
+            if ($locked) $nLocked++;
+        } catch (ApiError | PDOException $e) {
+            $pdo->rollBack();
+            $msg = $e instanceof PDOException ? dbErrorMessage($e) : $e->getMessage();
+            throw new ApiError('Buchung ' . (is_array($r) && isset($r['no']) ? '#' . $r['no'] : ($i + 1)) . ': ' . $msg . ' – nichts übernommen');
+        }
+    }
+    $pdo->commit();
+    return ['accounts' => $nAcc, 'bookings' => count($idByNo), 'locked' => $nLocked];
+}
 function bookingHistory(int $id): array {
     $st = db()->prepare("SELECT l.action, l.snapshot, l.at, u.username FROM booking_log l LEFT JOIN users u ON u.id = l.user_id
                          WHERE l.booking_id=? ORDER BY l.id");
