@@ -26,6 +26,10 @@ declare(strict_types=1);
  *             POST booking_storno {id,date?}  locked bookings only
  *             POST bank_import    {rows:[{date,soll,haben,amount,text,beleg?,bank_key}]}
  *             POST journal_import {accounts,bookings}   takeover from a browser-app backup, empty journal only
+ *  Anlagen    GET  assets                     fixed assets (AfA schedule is computed in the app)
+ *             POST asset_save     {id?,name,cost,years,date,afa_account,asset_account}
+ *             POST asset_delete   {id}
+ *             POST assets_import  {assets:[…]}  takeover from the browser app, empty list only
  *  Settings   GET  settings                   {issuer:{…}|null}
  *             POST setting_save   {key,value}
  *  (booking_add is kept for the admin page: booking_save without id)
@@ -35,6 +39,7 @@ require __DIR__ . '/lib/bootstrap.php';
 require __DIR__ . '/lib/auth.php';
 require __DIR__ . '/lib/journal.php';
 require __DIR__ . '/lib/settings.php';
+require __DIR__ . '/lib/assets.php';
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
@@ -118,6 +123,12 @@ try {
     case 'booking_storno':  requirePost(); out(201, ['ok' => true, 'booking' => bookingStorno(body())]);
     case 'bank_import':     requirePost(); out(200, ['ok' => true] + bankImport(body()));
     case 'journal_import':  requirePost(); out(200, ['ok' => true] + journalImport(body()));
+
+    /* ---- fixed assets ---- */
+    case 'assets':          out(200, ['ok' => true, 'assets' => assetsList()]);
+    case 'asset_save':      requirePost(); $isNew = empty(body()['id']); out($isNew ? 201 : 200, ['ok' => true, 'asset' => assetSave(body())]);
+    case 'asset_delete':    requirePost(); assetDelete(body()); out(200, ['ok' => true]);
+    case 'assets_import':   requirePost(); out(200, ['ok' => true] + assetsImport(body()));
 
     /* ---- settings ---- */
     case 'settings':        out(200, ['ok' => true, 'settings' => settingsAll()]);

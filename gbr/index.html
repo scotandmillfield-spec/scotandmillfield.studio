@@ -888,7 +888,7 @@ body.in-area .eyebrow{color:var(--area-accent)} body.in-area .eyebrow::before{ba
 
     <section class="section">
       <div class="sec-head"><h2><span class="sec-no">&sect;</span> Data</h2>
-        <p><b>Journal, chart of accounts and letterhead are stored on the server.</b> Singles, royalties, statements, invoices, GEMA statements and label sales reports still live only in this browser until they move to the server as well — keep a backup. The backup contains everything. Restoring a backup restores the browser data; the journal from a backup is taken over only into an empty server journal.</p></div>
+        <p><b>Journal, chart of accounts, assets and letterhead are stored on the server.</b> Singles, royalties, statements, invoices, GEMA statements and label sales reports still live only in this browser until they move to the server as well — keep a backup. The backup contains everything. Restoring a backup restores the browser data; the journal from a backup is taken over only into an empty server journal.</p></div>
       <div class="panel issuer-panel">
         <div class="data-actions">
           <button class="btn amber" id="sBackup" type="button">Backup (download JSON)</button>
@@ -896,7 +896,7 @@ body.in-area .eyebrow{color:var(--area-accent)} body.in-area .eyebrow::before{ba
           <input type="file" id="jsonInput" hidden>
           <button class="btn danger" id="sClearAll" type="button">Clear browser data</button>
         </div>
-        <div class="data-note">“Clear browser data” permanently deletes the singles, royalties, statements, invoice addresses, GEMA statements and label sales reports kept in this browser. Journal, chart of accounts and letterhead on the server are not touched.</div>
+        <div class="data-note">“Clear browser data” permanently deletes the singles, royalties, statements, invoice addresses, GEMA statements and label sales reports kept in this browser. Journal, chart of accounts, assets and letterhead on the server are not touched.</div>
       </div>
     </section>
   </div>
@@ -1355,7 +1355,8 @@ function loadDemo(){
    Journal, chart of accounts and letterhead live in the database and are only changed through the API,
    which enforces the bookkeeping rules (locks, Storno, „Klären“, duplicate bank lines) and logs every change.
    The other areas are still kept in this browser until they move to the server as well. */
-const SERVER_OWNED=["accounts","bookings","bookingSeq","issuer"];   // never written to localStorage
+const SERVER_OWNED=["accounts","bookings","bookingSeq","issuer","assets"];   // never written to localStorage
+let legacyAssets=[];   // assets found in this browser's storage from before they moved to the server
 let srvUser=null;
 async function api(action, data){
   let r;
@@ -1382,6 +1383,17 @@ async function reloadJournal(){
   bookings=b.bookings.map(x=>fromServerBooking(x,noById));
   bookingSeq=bookings.reduce((m,x)=>Math.max(m,x.no||0),0);
 }
+function fromServerAsset(a){
+  return {id:String(a.id), name:a.name, cost:+a.cost, years:+a.years, date:a.date, afaKonto:a.afa_account, assetKonto:a.asset_account};
+}
+async function reloadAssets(){ assets=(await api("assets")).assets.map(fromServerAsset); }
+/* one-time move: assets kept in this browser go to the server if the server has none yet */
+async function takeOverLegacyAssets(list, source){
+  if(!list.length || assets.length) return "";
+  const r=await api("assets_import",{assets:list});
+  await reloadAssets();
+  return r.assets+" asset(s) from "+source+" moved to the server.";
+}
 async function reloadSettings(){
   const s=(await api("settings")).settings;
   issuer=Object.assign({}, ISSUER_DEFAULT, s.issuer||{});
@@ -1407,12 +1419,16 @@ async function startServerSession(user){
   srvUser=user;
   document.getElementById("loginOverlay").classList.add("hidden");
   document.getElementById("srvUser").textContent=user.display_name||user.username;
-  try{ await Promise.all([reloadJournal(), reloadSettings()]); }
+  try{ await Promise.all([reloadJournal(), reloadSettings(), reloadAssets()]); }
   catch(e){ toast("Could not load data from the server: "+e.message); }
-  editId=null; renderEverything();
+  try{ const m=await takeOverLegacyAssets(legacyAssets, "this browser"); legacyAssets=[]; if(m) toast(m,true); }
+  catch(e){ alert("Assets of this browser could not be moved to the server:\n\n"+e.message+"\n\nThey stay in this browser and are tried again at the next login; nothing was written."); }
+  editId=null; renderEverything(); saveState();      // saveState drops the moved assets from the browser storage
 }
 async function bootServer(){
-  loadState(); renderEverything(); updatePersistHint();      // browser-side areas first
+  loadState(); stateLoaded=true;                             // before anything is drawn – drawing saves the state
+  legacyAssets=assets.slice(); assets=[];                    // old browser copy: moved to the server after login
+  route(); renderEverything(); updatePersistHint();          // browser-side areas first
   try{ const me=await api("me"); if(me.user) await startServerSession(me.user); else showLogin(); }
   catch(e){ showLogin(e.message); }
 }
@@ -1428,7 +1444,7 @@ document.getElementById("loginForm").onsubmit=async ev=>{
 };
 document.getElementById("srvLogout").onclick=async()=>{
   try{ await api("logout",{}); }catch(e){}
-  accounts=ACCOUNTS_SEED.map(a=>({...a})); bookings=[]; bookingSeq=0; editId=null; issuer=Object.assign({}, ISSUER_DEFAULT);
+  accounts=ACCOUNTS_SEED.map(a=>({...a})); bookings=[]; bookingSeq=0; editId=null; issuer=Object.assign({}, ISSUER_DEFAULT); assets=[];
   renderEverything(); showLogin("Abgemeldet.");
 };
 
@@ -1471,9 +1487,11 @@ function rebuildFromState(state){
   bookingSeq = maxNo;
   editId = null;
 }
+let stateLoaded=false;   // never save before the stored state was read – it would overwrite it with an empty one
 function saveState(){
-  if(!canPersist) return;
+  if(!canPersist || !stateLoaded) return;
   const st=serialize(); SERVER_OWNED.forEach(k=>delete st[k]);        // server data never goes to the browser storage
+  if(legacyAssets.length) st.assets=legacyAssets;                      // …except old assets not yet moved to the server
   try{ localStorage.setItem(STORE_KEY, JSON.stringify(st)); }catch(e){}
 }
 function loadState(){
@@ -1524,6 +1542,9 @@ async function restoreServerPart(st){
       }
       await reloadJournal();
     } else if(fileBookings.length && bookings.length) msg+=" The journal stays as stored on the server.";
+    await reloadAssets();
+    const am=await takeOverLegacyAssets(Array.isArray(st.assets)?st.assets:[], "the backup");
+    if(am) msg+=" "+am; else if(Array.isArray(st.assets)&&st.assets.length) msg+=" Assets stay as stored on the server.";
     const empty=!s.issuer || !Object.values(s.issuer).some(v=>v);
     if(fileIssuer && empty){
       issuer=Object.assign({}, ISSUER_DEFAULT, fileIssuer);
@@ -1531,8 +1552,9 @@ async function restoreServerPart(st){
       msg+=" Letterhead saved on the server.";
     }
   }catch(e){
+    try{ await reloadAssets(); }catch(_){ assets=[]; }                  // never show backup assets as if they were saved
     editId=null; renderEverything();
-    alert("Browser data restored, but the journal / letterhead could NOT be taken over to the server:\n\n"+e.message+"\n\nNothing of the journal was written (all or nothing).");
+    alert("Browser data restored, but the journal / assets / letterhead could NOT be taken over to the server:\n\n"+e.message+"\n\nNothing of the journal was written (all or nothing).");
     return;
   }
   editId=null; renderEverything(); toast(msg,true);
@@ -1546,11 +1568,11 @@ function renderEverything(){
   if(typeof renderKontenplan==="function") renderKontenplan();
 }
 function clearAllData(){
-  if(!confirm("Delete all data kept in this browser — singles, royalties, statements, invoice addresses, GEMA statements and label sales reports? This cannot be undone.\n\nJournal, chart of accounts and letterhead on the server are not affected.")) return;
+  if(!confirm("Delete all data kept in this browser — singles, royalties, statements, invoice addresses, GEMA statements and label sales reports? This cannot be undone.\n\nJournal, chart of accounts, assets and letterhead on the server are not affected.")) return;
   try{ localStorage.removeItem(STORE_KEY); localStorage.removeItem(GEMA_KEY); }catch(e){}
   gemaSets=[]; stSets=[]; IDB.del(ST_IDB_KEY).catch(()=>{});
   singles=[]; if(typeof visible==="object") for(const k in visible) delete visible[k];
-  royaltyTracks=[]; statements=[]; invFilter="all"; labelAddresses={}; assets=[];
+  royaltyTracks=[]; statements=[]; invFilter="all"; labelAddresses={};
   renderEverything(); saveState(); toast("Browser data cleared.",true);
 }
 function updatePersistHint(){
@@ -2303,7 +2325,7 @@ function generateTaxPDF(year){
 }
 
 /* ================= ASSETS (Anlagenbuchhaltung / AfA) ================= */
-let assets=[];   // {id, name, cost, years, date:"YYYY-MM-DD", afaKonto}
+let assets=[];   // {id, name, cost, years, date:"YYYY-MM-DD", afaKonto, assetKonto} – stored on the server
 
 function afaSchedule(a){
   const cost=Math.round((+a.cost||0)*100)/100, totMonths=(+a.years||0)*12;
@@ -2330,7 +2352,7 @@ function assetKontoOptions(sel){
   return accounts.filter(a=>a.art==="aktiv").sort((a,b)=>a.nr.localeCompare(b.nr))
     .map(a=>`<option value="${a.nr}" ${a.nr===sel?"selected":""}>${a.nr} · ${a.name}</option>`).join("");
 }
-function addAsset(){
+async function addAsset(){
   const name=document.getElementById("asName").value.trim();
   const cost=parseFloat(document.getElementById("asCost").value);
   const years=parseInt(document.getElementById("asYears").value);
@@ -2343,11 +2365,20 @@ function addAsset(){
   if(isNaN(years)||years<=0) return err("Enter the useful life in years.");
   if(!date) return err("Pick an activation date.");
   hint.classList.remove("err"); hint.textContent="";
-  assets.push({id:"a"+Date.now()+Math.floor(Math.random()*1000), name, cost:Math.round(cost*100)/100, years, date, afaKonto:afaKonto||"4830", assetKonto:assetKonto||"0420"});
-  document.getElementById("asName").value=""; document.getElementById("asCost").value=""; document.getElementById("asYears").value="";
-  renderAssets(); saveState(); toast("Asset added.",true);
+  const btn=document.getElementById("asAdd"); if(btn) btn.disabled=true;
+  try{
+    await api("asset_save",{name, cost:Math.round(cost*100)/100, years, date, afa_account:afaKonto||"4830", asset_account:assetKonto||"0420"});
+    document.getElementById("asName").value=""; document.getElementById("asCost").value=""; document.getElementById("asYears").value="";
+    await reloadAssets(); renderAssets(); toast("Asset added.",true);
+  }catch(e){ err(e.message); }
+  finally{ if(btn) btn.disabled=false; }
 }
-function deleteAsset(id){ const a=assets.find(x=>x.id===id); if(!a) return; if(!confirm("Delete asset “"+a.name+"”?")) return; assets=assets.filter(x=>x.id!==id); renderAssets(); saveState(); }
+async function deleteAsset(id){
+  const a=assets.find(x=>x.id===id); if(!a) return;
+  if(!confirm("Delete asset “"+a.name+"”? Bookings already posted for it stay in the journal.")) return;
+  try{ await api("asset_delete",{id:+id}); await reloadAssets(); renderAssets(); toast("Asset deleted.",true); }
+  catch(e){ toast(e.message); }
+}
 
 function renderAssets(){
   // depreciation-account select for the form
@@ -2364,7 +2395,7 @@ function renderAssets(){
         <td class="jact"><button class="link-btn" data-afa="${a.id}|${r.year}|${r.afa}">Book</button></td></tr>`).join("");
     return `<div class="panel asset-card">
       <div class="asset-head">
-        <div><div class="asset-name">${a.name}</div>
+        <div><div class="asset-name">${gEsc(a.name)}</div>
           <div class="asset-meta">${deMoney(a.cost)} · ${a.years} yr${a.years>1?"s":""} · from ${(a.date||"").split("-").reverse().join(".")} · AfA <span class="acct-tag">${a.afaKonto}</span> → <span class="acct-tag">${a.assetKonto||"0420"}</span></div></div>
         <button class="del-x" data-delas="${a.id}" title="Delete asset">&times;</button>
       </div>
@@ -4005,8 +4036,8 @@ function initFolding(){
 }
 initFolding();
 
-/* boot: browser data first, then log in and load journal, accounts and letterhead from the server */
-route();
+/* boot: browser data first (bootServer loads it before the first screen is drawn), then log in and load
+   journal, accounts, assets and letterhead from the server */
 bootServer();
 </script>
 </body>

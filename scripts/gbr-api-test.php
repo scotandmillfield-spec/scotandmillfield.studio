@@ -102,6 +102,30 @@ check('unbekanntes Feld verworfen', !isset($sv['value']['evil']) && $sv['value']
 check('Briefkopf gespeichert', (call('settings')['settings']['issuer']['name'] ?? '') === 'Test GbR');
 refused('unbekannte Einstellung', call('setting_save', ['key' => 'admin', 'value' => ['x' => 1]]), 'Unbekannte');
 
+echo "Anlagen\n";
+check('Anlagenliste leer', (ok('Anlagen lesen', call('assets'))['assets'] ?? null) === []);
+$legacyAssets = [
+    ['id' => 'a1', 'name' => 'Studiomonitore', 'cost' => 2200, 'years' => 7, 'date' => '2022-09-01', 'afaKonto' => '4830', 'assetKonto' => '0420'],
+    ['id' => 'a2', 'name' => 'Raum-in-Raum', 'cost' => 12124.11, 'years' => 7, 'date' => '2022-09-01', 'afaKonto' => '4830'],
+];
+refused('Übernahme mit unbekanntem Konto', call('assets_import', ['assets' => [['name' => 'x', 'cost' => 1, 'years' => 3, 'date' => '2024-01-01', 'afaKonto' => '9999']]]), 'nichts übernommen');
+check('danach weiter leer', call('assets')['assets'] === []);
+$ai = ok('Anlagen aus Browser übernehmen', call('assets_import', ['assets' => $legacyAssets]));
+check('2 übernommen', ($ai['assets'] ?? 0) === 2, $ai);
+$al = call('assets')['assets'];
+check('Werte korrekt (Kosten, Jahre, Datum, Konten, Standard 0420)', count($al) === 2 && abs($al[1]['cost'] - 12124.11) < 1e-9 && $al[1]['years'] === 7
+      && $al[1]['date'] === '2022-09-01' && $al[1]['afa_account'] === '4830' && $al[1]['asset_account'] === '0420', $al);
+refused('zweite Übernahme', call('assets_import', ['assets' => $legacyAssets]), 'bereits Anlagen');
+$na = ok('Anlage anlegen', call('asset_save', ['name' => 'Laptop', 'cost' => 1499.99, 'years' => 3, 'date' => '2026-02-10', 'afa_account' => '4830', 'asset_account' => '0420']));
+refused('Nutzungsdauer 0', call('asset_save', ['name' => 'x', 'cost' => 10, 'years' => 0, 'date' => '2026-01-01', 'afa_account' => '4830', 'asset_account' => '0420']), 'Nutzungsdauer');
+refused('Kosten 0', call('asset_save', ['name' => 'x', 'cost' => 0, 'years' => 3, 'date' => '2026-01-01', 'afa_account' => '4830', 'asset_account' => '0420']), 'größer 0');
+refused('unbekanntes Konto', call('asset_save', ['name' => 'x', 'cost' => 10, 'years' => 3, 'date' => '2026-01-01', 'afa_account' => '9999', 'asset_account' => '0420']), 'Verweis');
+$up = ok('Anlage ändern', call('asset_save', ['id' => $na['asset']['id'], 'name' => 'Laptop Pro', 'cost' => 1499.99, 'years' => 3, 'date' => '2026-02-10', 'afa_account' => '4830', 'asset_account' => '0420']));
+check('Name geändert', ($up['asset']['name'] ?? '') === 'Laptop Pro', $up);
+ok('Anlage löschen', call('asset_delete', ['id' => $na['asset']['id']]));
+check('2 Anlagen übrig', count(call('assets')['assets']) === 2);
+refused('gelöschte Anlage nochmal löschen', call('asset_delete', ['id' => $na['asset']['id']]), 'nicht gefunden');
+
 echo "Kontenplan\n";
 $acc = ok('Konten lesen', call('accounts'));
 check('Startkonten vorhanden (1200, 8000)', count(array_filter($acc['accounts'], fn($a) => in_array($a['nr'], ['1200', '8000'], true))) === 2);
