@@ -3,7 +3,7 @@ declare(strict_types=1);
 /*
  * GbR spike API: proves the chain browser -> PHP -> MySQL.
  *   GET  api.php?action=health              connection, versions, schema state
- *   POST api.php?action=migrate             apply pending db/*.sql (header X-Migrate-Token)
+ *   POST api.php?action=migrate             apply pending db/*.sql, JSON {token}
  *   GET  api.php?action=accounts
  *   GET  api.php?action=bookings
  *   POST api.php?action=booking_add         JSON {date,soll,haben,amount,text,beleg}
@@ -69,8 +69,13 @@ try {
 
     case 'migrate':
         if ($method !== 'POST') out(405, ['ok' => false, 'error' => 'POST erwartet']);
-        $token = $_SERVER['HTTP_X_MIGRATE_TOKEN'] ?? '';
-        if (!hash_equals((string)$cfg['migrate_token'], $token)) out(403, ['ok' => false, 'error' => 'Token falsch']);
+        // token comes in the JSON body (UTF-8 safe); the header is only a fallback for scripts
+        $expected = trim((string)($cfg['migrate_token'] ?? ''));
+        if ($expected === '' || $expected === 'replace-with-a-long-random-string')
+            out(500, ['ok' => false, 'error' => 'migrate_token in config.php ist nicht gesetzt']);
+        $token = trim((string)(body()['token'] ?? ($_SERVER['HTTP_X_MIGRATE_TOKEN'] ?? '')));
+        if ($token === '') out(403, ['ok' => false, 'error' => 'Kein Token übermittelt']);
+        if (!hash_equals($expected, $token)) out(403, ['ok' => false, 'error' => 'Token falsch']);
         ensureMigrationTable($pdo);
         $applied = $pdo->query("SELECT version FROM schema_migrations")->fetchAll(PDO::FETCH_COLUMN);
         $done = [];

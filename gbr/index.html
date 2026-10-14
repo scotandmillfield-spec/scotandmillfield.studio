@@ -37,7 +37,7 @@ td.num{text-align:right;font-family:ui-monospace,monospace}
     <h2>1 · Verbindung</h2>
     <dl class="kv" id="health"><dt>Status</dt><dd>prüfe …</dd></dl>
     <div class="row" style="margin-top:14px">
-      <label>Migrations-Token<input type="password" id="token" autocomplete="off"></label>
+      <label>Migrations-Token<input type="text" id="token" autocomplete="off" spellcheck="false"></label>
       <button class="amber" id="migrate" type="button">Migration ausführen</button>
       <button id="recheck" type="button">Neu prüfen</button>
     </div>
@@ -95,7 +95,7 @@ async function loadData(){
 }
 $("bDate").value=new Date().toISOString().slice(0,10);
 $("recheck").onclick=health;
-$("migrate").onclick=async()=>{ try{ const r=await api("migrate",{}, {"X-Migrate-Token":$("token").value}); msg(r.applied_now.length?"Migriert: "+r.applied_now.join(", "):"Nichts zu tun.",true); health(); }catch(e){ msg(e.message); } };
+$("migrate").onclick=async()=>{ try{ const r=await api("migrate",{token:$("token").value}); msg(r.applied_now.length?"Migriert: "+r.applied_now.join(", "):"Nichts zu tun.",true); health(); }catch(e){ msg(e.message); } };
 $("add").onclick=async()=>{ try{ const r=await api("booking_add",{date:$("bDate").value,soll:$("bSoll").value,haben:$("bHaben").value,amount:parseFloat($("bAmount").value),text:$("bText").value});
   msg("Gespeichert als Buchung Nr. "+r.no+".",true); loadData(); }catch(e){ msg(e.message); } };
 health();
