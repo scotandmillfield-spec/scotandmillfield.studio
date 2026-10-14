@@ -1,22 +1,29 @@
 <?php
 declare(strict_types=1);
 /*
- * Automated test of the GbR API (accounts + journal) against a running server and an EMPTY test database.
- * Never point this at the production database – it creates, locks and deletes bookings.
+ * Automated test of the GbR API (login, accounts, journal) against a running server and an EMPTY test database.
+ * Never point this at the production database – it creates users, locks and deletes bookings.
  *
- *   php -S 127.0.0.1:8090 -t gbr          (with a gbr/config.php for the test database)
+ *   php -S 127.0.0.1:8090 -t gbr          (gbr/config.php for the test database with
+ *                                          'allow_http' => true and 'session_idle' => 3)
  *   php scripts/gbr-api-test.php http://127.0.0.1:8090 <migrate-token>
  */
 $base = rtrim($argv[1] ?? 'http://127.0.0.1:8090', '/');
 $token = $argv[2] ?? '';
+if ($token === '') { echo "Aufruf: php scripts/gbr-api-test.php <url> <migrate-token>\n"; exit(2); }
 $fails = 0; $passes = 0;
+$cookie = '';                                   // session cookie of the simulated browser
 
-function call(string $action, ?array $body = null, string $query = '', string $method = ''): array {
-    global $base;
+/* $appHeader=false sends a POST without "X-GBR: 1" (like a foreign website would) */
+function call(string $action, ?array $body = null, string $query = '', string $method = '', bool $appHeader = true): array {
+    global $base, $cookie;
+    $h = "Content-Type: application/json\r\n" . ($appHeader ? "X-GBR: 1\r\n" : '') . ($cookie !== '' ? "Cookie: $cookie\r\n" : '');
     $opts = ['http' => ['ignore_errors' => true, 'method' => $method ?: ($body === null ? 'GET' : 'POST'),
-             'header' => "Content-Type: application/json\r\n", 'content' => $body === null ? '' : json_encode($body)]];
+             'header' => $h, 'content' => $body === null ? '' : json_encode($body)]];
     $raw = file_get_contents("$base/api.php?action=$action$query", false, stream_context_create($opts));
     preg_match('/\s(\d{3})\s/', $http_response_header[0] ?? '', $m);
+    foreach ($http_response_header ?? [] as $line)            // keep the session cookie like a browser
+        if (preg_match('/^Set-Cookie:\s*(GBRSESSID=[^;]*)/i', $line, $c)) $cookie = $c[1] === 'GBRSESSID=deleted' || $c[1] === 'GBRSESSID=' ? '' : $c[1];
     return ['status' => (int)($m[1] ?? 0)] + (json_decode((string)$raw, true) ?? ['raw' => $raw]);
 }
 function check(string $name, bool $cond, mixed $detail = null): void {
@@ -31,14 +38,37 @@ function refused(string $name, array $r, string $expect = ''): void {
 }
 
 echo "System\n";
-if ($token !== '') ok('Migration', call('migrate', ['token' => $token]));
+ok('Migration', call('migrate', ['token' => $token]));
 $h = ok('Health', call('health'));
 if (($h['ok'] ?? false) !== true) { echo "\nServer oder Datenbank nicht erreichbar – Test abgebrochen.\n"; exit(2); }
-check('Schema-Version ≥ 002', ($h['schema_version'] ?? '000') >= '002', $h);
+check('Schema-Version ≥ 003', ($h['schema_version'] ?? '000') >= '003', $h);
 check('keine ausstehenden Migrationen', ($h['pending'] ?? ['x']) === [], $h);
+check('ohne Anmeldung keine Softwareversionen', !isset($h['php']) && !isset($h['server']), $h);
+refused('Migration mit falschem Token', call('migrate', ['token' => 'falsch']), 'Token');
+refused('POST ohne X-GBR-Header', call('migrate', ['token' => $token], '', '', false), 'abgelehnt');
+
+echo "Anmeldung\n";
+$pw = 'Test-Passwort-123';
+refused('Benutzer anlegen ohne Token', call('user_set', ['username' => 'tester', 'password' => $pw]), 'Token');
+refused('Benutzer anlegen, Passwort zu kurz', call('user_set', ['token' => $token, 'username' => 'tester', 'password' => 'kurz']), 'zu kurz');
+refused('Benutzername mit Leerzeichen', call('user_set', ['token' => $token, 'username' => 'te ster', 'password' => $pw]), 'Benutzername');
+ok('Benutzer anlegen (mit Token)', call('user_set', ['token' => $token, 'username' => 'tester', 'display_name' => 'Test Ärger', 'password' => $pw]));
+$r = call('accounts');
+check('ohne Anmeldung: Konten → 401', $r['status'] === 401 && ($r['ok'] ?? true) === false, $r);
+$r = call('booking_save', ['date' => '2031-01-01', 'soll' => '4200', 'haben' => '1200', 'amount' => 1]);
+check('ohne Anmeldung: Buchen → 401', $r['status'] === 401, $r);
+check('me ohne Anmeldung → user null', array_key_exists('user', $me = call('me')) && $me['user'] === null, $me);
+refused('falsches Passwort', call('login', ['username' => 'tester', 'password' => 'falsch-falsch']), 'falsch');
+refused('unbekannter Benutzer', call('login', ['username' => 'niemand', 'password' => $pw]), 'falsch');
+$l = ok('Anmelden', call('login', ['username' => 'tester', 'password' => $pw]));
+check('Anzeigename mit Umlaut', ($l['user']['display_name'] ?? '') === 'Test Ärger', $l);
+check('Session-Cookie gesetzt', $cookie !== '');
+$me = call('me');
+check('me → tester', ($me['user']['username'] ?? '') === 'tester' && ($me['idle_seconds'] ?? 0) > 0, $me);
+check('angemeldet: Health mit Versionen', isset(call('health')['php']));
 refused('unbekannte Aktion', call('gibtsnicht'));
 refused('Schreibaktion per GET', call('booking_save'), 'POST');
-refused('Migration mit falschem Token', call('migrate', ['token' => 'falsch']), 'Token');
+refused('angemeldet, aber POST ohne X-GBR-Header', call('account_save', ['nr' => '4100', 'name' => 'x', 'art' => 'aufwand'], '', '', false), 'abgelehnt');
 
 echo "Kontenplan\n";
 $acc = ok('Konten lesen', call('accounts'));
@@ -108,6 +138,7 @@ echo "Löschen, Protokoll, Lesen\n";
 ok('offene Buchung löschen', call('booking_delete', ['id' => $open['booking']['id']]));
 $hist = ok('Protokoll der gelöschten Buchung', call('booking_history', null, '&id=' . $open['booking']['id']));
 check('Protokoll: create + delete', array_column($hist['history'], 'action') === ['create', 'delete'], $hist);
+check('Protokoll nennt den Benutzer', array_unique(array_column($hist['history'], 'user')) === ['tester'], $hist);
 $hist1 = call('booking_history', null, "&id=$id1");
 check('Protokoll Buchung 1: create, update, lock', array_column($hist1['history'], 'action') === ['create', 'update', 'lock'], $hist1);
 refused('benutztes Konto löschen', call('account_delete', ['nr' => '4200']), 'verwendet');
@@ -116,6 +147,33 @@ check("Jahr $y enthalten", in_array((int)$y, $yrs['years'], true), $yrs);
 $list = call('bookings', null, "&year=$y")['bookings'];
 $sum4920 = array_sum(array_map(fn($b) => $b['soll'] === '4920' ? $b['amount'] : 0, $list));
 check('Cent-genau: 0,10 + 0,20 = 0,30', abs($sum4920 - 0.30) < 1e-9, $sum4920);
+
+echo "Passwort, Sperre, Abmelden, Zeitablauf\n";
+refused('Passwort ändern mit falschem alten', call('password_change', ['old' => 'falsch', 'new' => 'Neues-Passwort-456']), 'falsch');
+refused('neues Passwort zu kurz', call('password_change', ['old' => $pw, 'new' => 'kurz']), 'zu kurz');
+ok('Passwort ändern', call('password_change', ['old' => $pw, 'new' => 'Neues-Passwort-456']));
+ok('nach Passwortwechsel weiter angemeldet', call('accounts'));
+ok('Abmelden', call('logout', []));
+$r = call('accounts');
+check('nach Abmelden → 401', $r['status'] === 401, $r);
+refused('altes Passwort gilt nicht mehr', call('login', ['username' => 'tester', 'password' => $pw]), 'falsch');
+ok('Anmelden mit neuem Passwort', call('login', ['username' => 'tester', 'password' => 'Neues-Passwort-456']));
+ok('Abmelden', call('logout', []));
+ok('zweiter Benutzer für Sperrtest', call('user_set', ['token' => $token, 'username' => 'sperre', 'password' => $pw]));
+for ($i = 1; $i < 5; $i++) call('login', ['username' => 'sperre', 'password' => "falsch-$i"]);
+$r = call('login', ['username' => 'sperre', 'password' => 'falsch-5']);
+check('5. Fehlversuch → gesperrt (429)', $r['status'] === 429, $r);
+$r = call('login', ['username' => 'sperre', 'password' => $pw]);
+check('gesperrt: auch richtiges Passwort → 429', $r['status'] === 429, $r);
+ok('anderer Benutzer nicht betroffen', call('login', ['username' => 'tester', 'password' => 'Neues-Passwort-456']));
+ok('Zurücksetzen mit Token hebt Sperre auf', call('user_set', ['token' => $token, 'username' => 'sperre', 'password' => $pw]));
+ok('Anmelden nach Zurücksetzen', call('login', ['username' => 'sperre', 'password' => $pw]));
+$idle = (int)(call('me')['idle_seconds'] ?? 7200);
+if ($idle <= 10) {
+    sleep($idle + 2);
+    $r = call('accounts');
+    check("nach {$idle}s Inaktivität → abgemeldet", $r['status'] === 401 && str_contains($r['error'] ?? '', 'abgelaufen'), $r);
+} else echo "  · Zeitablauf nicht geprüft (session_idle = $idle s; für den Test 'session_idle' => 3 setzen)\n";
 
 echo "\n" . ($fails ? "✗ $fails von " . ($fails + $passes) . " Prüfungen fehlgeschlagen\n" : "✓ alle $passes Prüfungen bestanden\n");
 exit($fails ? 1 : 0);

@@ -27,6 +27,10 @@ gbr/                    Interne App der Lyall & Drozdzynski GbR (PHP + MySQL), p
                         API: gbr/api.php (Aktionen im Dateikopf), Logik in gbr/lib/, Schema in gbr/db/
                         Test (nur gegen eine leere Testdatenbank!): php -S 127.0.0.1:8090 -t gbr, dann
                         php scripts/gbr-api-test.php http://127.0.0.1:8090 <migrate-token>
+                        (Test-config.php mit 'allow_http' => true und 'session_idle' => 3)
+                        Anmeldung: eigene Benutzer (Tabelle users, Passwort-Hash), Abmeldung nach 2 h
+                        Inaktivität, 5 Fehlversuche → 15 Min. Sperre. Benutzer anlegen / Passwort
+                        zurücksetzen: gbr/index.html → „Benutzer anlegen“ mit dem Migrations-Token.
 darktheatre/            Virage – Dark Theatre: digitales Booklet zum Konzeptalbum (eigene Gestaltung, /darktheatre/)
                         Bild für einen Akt einbauen: python3 scripts/darktheatre-scene.py <akt> <bild> [--right] [--pos "50% 50%"]
 ```

@@ -3,8 +3,16 @@ declare(strict_types=1);
 /*
  * GbR API – JSON in, JSON out. Writes are POST with a JSON body.
  *
- *  System     GET  health                     connection, versions, schema_version
+ * Every request except health, migrate, login, logout, me and user_set needs a logged-in user
+ * (session cookie, logout after 2 h without activity). Every POST must send the header "X-GBR: 1".
+ *
+ *  System     GET  health                     connection, schema_version (versions only when logged in)
  *             POST migrate        {token}     apply pending db/*.sql
+ *  Anmeldung  POST login          {username,password}
+ *             POST logout
+ *             GET  me                         {user} or {user:null}
+ *             POST password_change {old,new}
+ *             POST user_set       {token,username,password,display_name?}   create user / reset password
  *  Konten     GET  accounts                   chart of accounts (+ how often used)
  *             POST account_save   {nr,name,art}
  *             POST account_delete {nr}        refused while the account is used
@@ -21,6 +29,7 @@ declare(strict_types=1);
  */
 define('GBR_API', true);
 require __DIR__ . '/lib/bootstrap.php';
+require __DIR__ . '/lib/auth.php';
 require __DIR__ . '/lib/journal.php';
 
 header('Content-Type: application/json; charset=utf-8');
@@ -34,28 +43,29 @@ function ensureMigrationTable(): void {
 }
 
 $action = (string)($_GET['action'] ?? 'health');
+$public = ['health', 'migrate', 'login', 'logout', 'me', 'user_set'];
 try {
+    requireAppHeader();
+    if (!in_array($action, $public, true)) requireUser();
+
     switch ($action) {
     case 'health':
         ensureMigrationTable();
         $applied = db()->query("SELECT version FROM schema_migrations ORDER BY version")->fetchAll(PDO::FETCH_COLUMN);
         $latest = $applied ? end($applied) : null;    // schema version = number of the newest applied migration, e.g. "002"
-        out(200, ['ok' => true, 'db' => true,
+        $info = ['ok' => true, 'db' => true,
             'schema_version' => $latest ? preg_replace('/^(\d+).*/', '$1', $latest) : '000',
-            'php' => PHP_VERSION, 'server' => db()->getAttribute(PDO::ATTR_SERVER_VERSION),
-            'applied' => $applied,
-            'pending' => array_values(array_diff(array_map('basename', migrationFiles()), $applied)),
-            'time' => date('c')]);
+            'pending' => array_values(array_diff(array_map('basename', migrationFiles()), $applied))];
+        $loggedIn = false;
+        try { $loggedIn = in_array('003_users.sql', $applied, true) && currentUser() !== null; } catch (ApiError) {}
+        if ($loggedIn)                                 // software versions only for logged-in users
+            $info += ['php' => PHP_VERSION, 'server' => db()->getAttribute(PDO::ATTR_SERVER_VERSION), 'applied' => $applied, 'time' => date('c')];
+        out(200, $info);
 
     case 'migrate':
         requirePost();
         // token comes in the JSON body (UTF-8 safe); the header is only a fallback for scripts
-        $expected = trim((string)(config()['migrate_token'] ?? ''));
-        if ($expected === '' || $expected === 'replace-with-a-long-random-string')
-            throw new ApiError('migrate_token in config.php ist nicht gesetzt', 500);
-        $token = trim((string)(body()['token'] ?? ($_SERVER['HTTP_X_MIGRATE_TOKEN'] ?? '')));
-        if ($token === '') throw new ApiError('Kein Token übermittelt', 403);
-        if (!hash_equals($expected, $token)) throw new ApiError('Token falsch', 403);
+        requireToken(['token' => body()['token'] ?? ($_SERVER['HTTP_X_MIGRATE_TOKEN'] ?? '')]);
         ensureMigrationTable();
         $applied = db()->query("SELECT version FROM schema_migrations")->fetchAll(PDO::FETCH_COLUMN);
         $done = [];
@@ -71,6 +81,15 @@ try {
             $done[] = $v;
         }
         out(200, ['ok' => true, 'applied_now' => $done]);
+
+    /* ---- login ---- */
+    case 'login':           requirePost(); out(200, ['ok' => true, 'user' => login(body())]);
+    case 'logout':          requirePost(); logoutSession(); out(200, ['ok' => true]);
+    case 'me':
+        try { $u = currentUser(); } catch (ApiError) { $u = null; }
+        out(200, ['ok' => true, 'user' => $u, 'idle_seconds' => idleSeconds()]);
+    case 'password_change': requirePost(); passwordChange(body(), requireUser()); out(200, ['ok' => true]);
+    case 'user_set':        requirePost(); out(200, ['ok' => true, 'user' => userSet(body())]);
 
     /* ---- chart of accounts ---- */
     case 'accounts':        out(200, ['ok' => true, 'accounts' => accountsList()]);

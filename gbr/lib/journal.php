@@ -22,8 +22,8 @@ function bookingGet(int $id, bool $forUpdate = false): array {
 /* every change to the journal is written to booking_log with the full state of the booking */
 function bookingLog(int $id, string $action, ?array $snapshot = null): void {
     $snapshot ??= bookingGet($id);
-    db()->prepare("INSERT INTO booking_log (booking_id, action, snapshot) VALUES (?,?,?)")
-        ->execute([$id, $action, json_encode($snapshot, JSON_UNESCAPED_UNICODE)]);
+    db()->prepare("INSERT INTO booking_log (booking_id, action, user_id, snapshot) VALUES (?,?,?,?)")
+        ->execute([$id, $action, currentUserId(), json_encode($snapshot, JSON_UNESCAPED_UNICODE)]);
 }
 function nextBookingNo(): int {
     // the journal number is unique (UNIQUE KEY); reading the maximum inside the transaction is enough for this app
@@ -201,7 +201,9 @@ function bankImport(array $in): array {
     return ['added' => count($added), 'skipped_duplicates' => $skipped, 'numbers' => $added];
 }
 function bookingHistory(int $id): array {
-    $st = db()->prepare("SELECT action, snapshot, at FROM booking_log WHERE booking_id=? ORDER BY id");
+    $st = db()->prepare("SELECT l.action, l.snapshot, l.at, u.username FROM booking_log l LEFT JOIN users u ON u.id = l.user_id
+                         WHERE l.booking_id=? ORDER BY l.id");
     $st->execute([$id]);
-    return array_map(fn($r) => ['action' => $r['action'], 'at' => $r['at'], 'snapshot' => json_decode($r['snapshot'], true)], $st->fetchAll());
+    return array_map(fn($r) => ['action' => $r['action'], 'at' => $r['at'], 'user' => $r['username'],
+                                'snapshot' => json_decode($r['snapshot'], true)], $st->fetchAll());
 }
