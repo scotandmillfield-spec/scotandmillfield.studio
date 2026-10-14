@@ -597,17 +597,9 @@ body.in-area .eyebrow{color:var(--area-accent)} body.in-area .eyebrow::before{ba
 
   <div class="tab-panel" id="tab-royalties" hidden>
     <div class="uploader">
-      <div class="dropzone" id="pdfDrop">
-        <div class="dz-icon"><svg viewBox="0 0 24 24"><path d="M14 3v5h5"/><path d="M7 3h8l5 5v11a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M9.5 13.5h1.2a1.3 1.3 0 010 2.6H9.5V12m4 0v4.1m0-4.1h1.6m-1.6 2h1.2"/></svg></div>
-        <div class="dz-text">
-          <div class="t">Drop a Melino royalty statement PDF, or click to browse</div>
-          <div class="s">Melino (English &amp; German) and LabelWorx statements are recognised automatically · multiple tracks per statement are detected · you confirm the figures before they're saved · re-importing the same half-year updates it</div>
-        </div>
-        <div class="dz-actions">
-          <button class="btn amber" id="royManualBtn" type="button">Enter manually</button>
-          <button class="btn" id="royClearBtn" type="button">Clear royalties</button>
-        </div>
-        <input type="file" id="pdfInput" accept="application/pdf,.pdf" multiple hidden>
+      <div class="dz-actions">
+        <button class="btn amber" id="royManualBtn" type="button">Enter manually</button>
+        <button class="btn" id="royClearBtn" type="button">Clear royalties</button>
       </div>
       <div class="persist-hint" id="royHint"></div>
     </div>
@@ -640,7 +632,17 @@ body.in-area .eyebrow{color:var(--area-accent)} body.in-area .eyebrow::before{ba
     <section class="section">
       <div class="sec-head">
         <h2><span class="sec-no">&sect;</span> Invoices from statements</h2>
-        <p>Every imported royalty statement appears here — labels without an importable statement can be added manually. Open carryovers of a label are offered as extra lines on its next invoice. Edit your own letterhead details under the <b>gear</b> tab.</p>
+        <p>Drop a label's royalty statement PDF — it appears below as a statement you can invoice. Labels without an importable statement can be added manually. Open carryovers of a label are offered as extra lines on its next invoice. Edit your own letterhead details under the <b>gear</b> tab.</p>
+      </div>
+      <div class="uploader">
+        <div class="dropzone" id="pdfDrop">
+          <div class="dz-icon"><svg viewBox="0 0 24 24"><path d="M14 3v5h5"/><path d="M7 3h8l5 5v11a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M9.5 13.5h1.2a1.3 1.3 0 010 2.6H9.5V12m4 0v4.1m0-4.1h1.6m-1.6 2h1.2"/></svg></div>
+          <div class="dz-text">
+            <div class="t">Drop a royalty statement PDF, or click to browse</div>
+            <div class="s">Melino (English &amp; German) and LabelWorx statements are recognised automatically · multiple tracks per statement are detected · you confirm the figures before they're saved · re-importing the same statement updates it</div>
+          </div>
+          <input type="file" id="pdfInput" accept="application/pdf,.pdf" multiple hidden>
+        </div>
       </div>
       <div class="inv-tools"><button class="btn amber" id="invManualBtn" type="button">+ Add statement manually</button></div>
       <div class="inv-filter" id="invFilter"></div>
@@ -1754,6 +1756,7 @@ function confirmReview(){
     ? { stmtNo, payable:Math.round(sum*100)/100, currency:pendingCurrency, periodStart:"", periodEnd:"", carryover:0 }
     : Object.assign({}, pendingParsed, { stmtNo:stmtNo||(pendingParsed&&pendingParsed.stmtNo), currency:pendingCurrency });
   captureStatement(cap, label, year, pendingHalf);
+  renderInvoices();
   toast(n?`${manualMode?"Saved":"Imported"} ${n} track${n>1?'s':''} for ${period}.`:"Nothing saved.", n>0);
   afterReview();
 }
@@ -2640,7 +2643,7 @@ function saveManualStatement(){
 function renderInvoices(){
   const total=statements.length;
   const bar=document.getElementById("invFilter"), list=document.getElementById("invList");
-  if(total===0){ bar.innerHTML=""; list.innerHTML='<div class="panel empty-state">No statements yet — import a royalty PDF in the <b>Royalties</b> tab, or use <b>Add statement manually</b> for labels without an importable statement.</div>'; saveState(); return; }
+  if(total===0){ bar.innerHTML=""; list.innerHTML='<div class="panel empty-state">No statements yet — drop a royalty statement PDF above, or use <b>Add statement manually</b> for labels without an importable statement.</div>'; saveState(); return; }
   // status counts for the filter bar
   const counts={all:total, open:0, paid:0, carry:0};
   statements.forEach(s=>{ const st=s.status||"open"; counts[st]=(counts[st]||0)+1; });
