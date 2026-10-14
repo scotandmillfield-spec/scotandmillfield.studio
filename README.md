@@ -24,6 +24,9 @@ content/                Texte im Original (z. B. Dark-Theatre-Geschichte DE/EN) 
 gbr/                    Interne App der Lyall & Drozdzynski GbR (PHP + MySQL), passwortgeschützt.
                         config.php (Datenbank-Zugang) und Verzeichnisschutz nur auf dem Server anlegen –
                         beides ist vom Deploy ausgenommen. Vorlage: gbr/config.sample.php
+                        API: gbr/api.php (Aktionen im Dateikopf), Logik in gbr/lib/, Schema in gbr/db/
+                        Test (nur gegen eine leere Testdatenbank!): php -S 127.0.0.1:8090 -t gbr, dann
+                        php scripts/gbr-api-test.php http://127.0.0.1:8090 <migrate-token>
 darktheatre/            Virage – Dark Theatre: digitales Booklet zum Konzeptalbum (eigene Gestaltung, /darktheatre/)
                         Bild für einen Akt einbauen: python3 scripts/darktheatre-scene.py <akt> <bild> [--right] [--pos "50% 50%"]
 ```
