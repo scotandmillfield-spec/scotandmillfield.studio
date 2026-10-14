@@ -217,7 +217,7 @@ function journalImport(array $in): array {
         catch (ApiError $e) { throw new ApiError('Konto ' . ($i + 1) . ': ' . $e->getMessage() . ' – nichts übernommen'); }
     }
     usort($rows, fn($a, $b) => ((int)($a['no'] ?? 0)) <=> ((int)($b['no'] ?? 0)));   // originals before their Storno
-    $idByNo = []; $nLocked = 0; $seen = [];
+    $idByNo = []; $nLocked = 0; $seen = []; $skipped = [];
     $ins = $pdo->prepare("INSERT INTO bookings (no, booking_date, soll, haben, amount, text, beleg, source, locked, locked_at,
                                                 clarify, irrelevant, storno_of, bank_key)
                           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
@@ -229,7 +229,12 @@ function journalImport(array $in): array {
             if (isset($seen[$no])) throw new ApiError("Journalnummer $no doppelt");
             $seen[$no] = true;
             $soll = vText($r['soll'] ?? '', 10); $haben = vText($r['haben'] ?? '', 10);
-            if ($soll === '' || $haben === '' || $soll === $haben) throw new ApiError('Konten ungültig');
+            if ($soll === '' || $haben === '') throw new ApiError('Konten ungültig');
+            if ($soll === $haben) {          // e.g. a bank line booked 1200 an 1200: no effect on any balance – not taken over, reported
+                $skipped[] = ['no' => $no, 'date' => (string)($r['date'] ?? ''), 'amount' => (float)($r['amount'] ?? 0),
+                              'text' => vText($r['text'] ?? '', 255), 'reason' => "Soll = Haben ($soll) – ohne Wirkung auf Salden und BWA"];
+                continue;
+            }
             $source = match ((string)($r['source'] ?? '')) { 'fyrst', 'bank' => 'bank', 'storno' => 'storno', 'afa' => 'afa', default => 'manual' };
             $locked = !empty($r['locked']);
             $stornoOf = isset($r['stornoOf']) ? ($idByNo[(int)$r['stornoOf']] ?? null) : null;
@@ -248,7 +253,7 @@ function journalImport(array $in): array {
         }
     }
     $pdo->commit();
-    return ['accounts' => $nAcc, 'bookings' => count($idByNo), 'locked' => $nLocked];
+    return ['accounts' => $nAcc, 'bookings' => count($idByNo), 'locked' => $nLocked, 'skipped' => $skipped];
 }
 function bookingHistory(int $id): array {
     $st = db()->prepare("SELECT l.action, l.snapshot, l.at, u.username FROM booking_log l LEFT JOIN users u ON u.id = l.user_id

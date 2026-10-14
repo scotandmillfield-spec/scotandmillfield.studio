@@ -76,12 +76,14 @@ $legacy = [
     ['id' => 'b2', 'no' => 2, 'date' => '2030-01-15', 'soll' => '1200', 'haben' => '8000', 'amount' => 12.5, 'text' => 'Royalties', 'source' => 'fyrst', 'fkey' => '2030-01-15|+|12.50|Label', 'locked' => true, 'clarify' => true],
     ['id' => 'b3', 'no' => 4, 'date' => '2030-02-01', 'soll' => '1200', 'haben' => '4200', 'amount' => 300, 'text' => 'Storno #1 · Miete Jan', 'source' => 'storno', 'locked' => true, 'stornoOf' => 1],
     ['id' => 'b4', 'no' => 3, 'date' => '2030-01-20', 'soll' => '4920', 'haben' => '1210', 'amount' => 9.99, 'text' => 'Telefon privat', 'irrelevant' => true, 'clarify' => true],
+    ['id' => 'b5', 'no' => 5, 'date' => '2030-02-03', 'soll' => '1200', 'haben' => '1200', 'amount' => 0.68, 'text' => 'Rücklastschrift', 'source' => 'fyrst', 'locked' => true],
 ];
 $legacyAcc = [['nr' => '1200', 'name' => 'Bank', 'art' => 'aktiv'], ['nr' => '4925', 'name' => 'Porto', 'art' => 'aufwand']];
 refused('Übernahme mit fehlerhafter Buchung', call('journal_import', ['accounts' => [], 'bookings' => [['no' => 1, 'date' => '2030-13-01', 'soll' => '4200', 'haben' => '1200', 'amount' => 1]]]), 'nichts übernommen');
 check('danach Journal noch leer', call('bookings')['bookings'] === []);
 $ji = ok('Journal aus Backup übernehmen', call('journal_import', ['accounts' => $legacyAcc, 'bookings' => $legacy]));
 check('4 Buchungen, 3 festgeschrieben', ($ji['bookings'] ?? 0) === 4 && ($ji['locked'] ?? 0) === 3, $ji);
+check('Soll = Haben übersprungen und gemeldet (#5)', array_column($ji['skipped'] ?? [], 'no') === [5], $ji);
 $bk = []; foreach (call('bookings', null, '&year=2030')['bookings'] as $b) $bk[$b['no']] = $b;
 check('Nummern bleiben erhalten (1–4)', count($bk) === 4 && isset($bk[1], $bk[2], $bk[3], $bk[4]), array_keys($bk));
 check('Storno verknüpft mit Buchung #1', ($bk[4]['storno_of'] ?? 0) === $bk[1]['id'] && $bk[4]['source'] === 'storno', $bk[4] ?? null);
