@@ -21,6 +21,9 @@ templates/              Noch nicht genutzte Abschnitte – nicht hochgeladen
 morkant/                Morkant: Rätsel-Seite mit versiegelter Belohnung (/morkant/). Neu versiegeln:
                         MORKANT_PASS='…' MORKANT_TEXT=$'Titel\nZeile' node scripts/morkant-seal.mjs
 content/                Texte im Original (z. B. Dark-Theatre-Geschichte DE/EN) – nicht hochgeladen
+gbr/                    Interne App der Lyall & Drozdzynski GbR (PHP + MySQL), passwortgeschützt.
+                        config.php (Datenbank-Zugang) und Verzeichnisschutz nur auf dem Server anlegen –
+                        beides ist vom Deploy ausgenommen. Vorlage: gbr/config.sample.php
 darktheatre/            Virage – Dark Theatre: digitales Booklet zum Konzeptalbum (eigene Gestaltung, /darktheatre/)
                         Bild für einen Akt einbauen: python3 scripts/darktheatre-scene.py <akt> <bild> [--right] [--pos "50% 50%"]
 ```

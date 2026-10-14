@@ -26,6 +26,8 @@ jobs:
           LFTP_PASSWORD: ${{ secrets.STRATO_PASS }}
         # Erst CSS/JS/Bilder, die HTML-Seiten zuletzt: Wer während des Uploads lädt,
         # bekommt nie neues HTML mit alten Dateien (sonst landet Altes unter neuer ?v= im Cache).
+        # gbr/: Zugangsdaten (config.php) und den Verzeichnisschutz (.htaccess/.htpasswd) legt man
+        # direkt auf dem Server an – vom Abgleich ausgenommen, damit --delete sie nicht entfernt.
         run: |
           lftp -c "set sftp:auto-confirm yes;
             open --user $SFTP_USER --env-password sftp://$SFTP_HOST;
@@ -34,8 +36,10 @@ jobs:
               --exclude-glob .git/ --exclude-glob .github/ --exclude-glob epk/ --exclude-glob scripts/ --exclude-glob templates/ --exclude-glob content/ \
               --exclude-glob .gitkeep --exclude-glob .gitignore --exclude-glob .nojekyll --exclude-glob README.md \
               --exclude-glob *.html \
+              --exclude-glob gbr/config.php --exclude-glob gbr/.htaccess --exclude-glob gbr/.htpasswd \
               ./ scotandmillfield;
             mput -O scotandmillfield *.html;
             mput -O scotandmillfield/darktheatre darktheatre/*.html;
             mput -O scotandmillfield/morkant morkant/*.html;
+            mput -O scotandmillfield/gbr gbr/*.html;
             chmod -R 755 scotandmillfield"
