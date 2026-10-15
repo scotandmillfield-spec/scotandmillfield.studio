@@ -31,7 +31,8 @@ gbr/                    Interne App der Lyall & Drozdzynski GbR (PHP + MySQL), p
                         Anmeldung: eigene Benutzer (Tabelle users, Passwort-Hash), Abmeldung nach 2 h
                         Inaktivität, 5 Fehlversuche → 15 Min. Sperre. Benutzer anlegen / Passwort
                         zurücksetzen: gbr/admin.html → „Benutzer anlegen“ mit dem Migrations-Token.
-                        App: gbr/index.html (Journal, Kontenplan, Anlagen, Briefkopf auf dem Server; übrige
+                        App: gbr/index.html (Journal, Kontenplan, Anlagen, Abrechnungen/Rechnungen mit PDF-Archiv,
+                        Briefkopf auf dem Server; übrige
                         Bereiche noch im Browser, bis sie umziehen).
 darktheatre/            Virage – Dark Theatre: digitales Booklet zum Konzeptalbum (eigene Gestaltung, /darktheatre/)
                         Bild für einen Akt einbauen: python3 scripts/darktheatre-scene.py <akt> <bild> [--right] [--pos "50% 50%"]

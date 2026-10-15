@@ -126,6 +126,64 @@ ok('Anlage löschen', call('asset_delete', ['id' => $na['asset']['id']]));
 check('2 Anlagen übrig', count(call('assets')['assets']) === 2);
 refused('gelöschte Anlage nochmal löschen', call('asset_delete', ['id' => $na['asset']['id']]), 'nicht gefunden');
 
+echo "Abrechnungen, Rechnungen, PDF-Archiv\n";
+check('Abrechnungen leer', (ok('Abrechnungen lesen', call('statements'))['statements'] ?? null) === []);
+$legacyStmts = [
+    ['id' => 'label a|100', 'label' => 'Label A B.V.', 'stmtNo' => '100', 'year' => 2024, 'half' => 'H2', 'periodStart' => '01.07.2024', 'periodEnd' => '31.12.2024', 'payable' => 25.01, 'currency' => '€', 'status' => 'paid', 'carriedInto' => 'label a|101', 'linkedOnly' => true],
+    ['id' => 'label a|101', 'label' => 'Label A B.V.', 'stmtNo' => '101', 'year' => 2025, 'half' => 'H1', 'payable' => 48.93, 'currency' => '€', 'status' => 'paid', 'carryover' => 25.01,
+     'invoice' => ['no' => 'SM-2025-001', 'date' => '15.08.2025', 'recipient' => 'Label A B.V.', 'greeting' => 'Team', 'total' => 73.94,
+                   'lines' => [['kind' => 'main', 'stmtId' => 'label a|101', 'desc' => 'Royalties 101', 'amount' => 48.93], ['kind' => 'extra', 'desc' => 'Carryover', 'amount' => 25.01]]]],
+    ['id' => 'manual|label b|x', 'label' => 'Label B', 'stmtNo' => '', 'periodText' => 'Q3 2025', 'year' => 2025, 'half' => '', 'sort' => 202509, 'payable' => 12, 'currency' => '£', 'status' => 'carry', 'source' => 'manual'],
+];
+refused('Übernahme mit ungültigem Rechnungsdatum', call('invoices_import', ['statements' => [array_merge($legacyStmts[1], ['invoice' => array_merge($legacyStmts[1]['invoice'], ['date' => '2025-08-15'])])]]), 'nichts übernommen');
+$ii = ok('Abrechnungen aus Browser übernehmen', call('invoices_import', ['statements' => $legacyStmts, 'labelAddresses' => ['label a b v' => "Street 1\n1234 Town", 'label c' => 'Somewhere']]));
+check('3 Abrechnungen, 1 Rechnung, 2 Anschriften', ($ii['statements'] ?? 0) === 3 && ($ii['invoices'] ?? 0) === 1 && ($ii['addresses'] ?? 0) === 2, $ii);
+refused('zweite Übernahme', call('invoices_import', ['statements' => $legacyStmts]), 'bereits Abrechnungen');
+$L = call('statements'); $S = []; foreach ($L['statements'] as $x) $S[$x['stmtNo'] ?: $x['periodText']] = $x;
+check('Carryover-Verknüpfung erhalten (100 → 101, nur zugeordnet)', ($S['100']['carriedInto'] ?? '') === $S['101']['id'] && $S['100']['linkedOnly'] === true, $S['100'] ?? null);
+check('Rechnung erhalten (Nummer, Datum, 2 Positionen, Summe)', ($S['101']['invoice']['no'] ?? '') === 'SM-2025-001' && $S['101']['invoice']['date'] === '15.08.2025'
+      && count($S['101']['invoice']['lines']) === 2 && abs($S['101']['invoice']['total'] - 73.94) < 1e-9, $S['101'] ?? null);
+check('manuelle Abrechnung: Zeitraum, Währung, Quelle', ($S['Q3 2025']['currency'] ?? '') === '£' && $S['Q3 2025']['source'] === 'manual' && $S['Q3 2025']['sort'] === 202509, $S['Q3 2025'] ?? null);
+check('Anschrift zum Label', str_contains((string)($L['labelAddresses']['label a b v'] ?? ''), '1234 Town'), $L['labelAddresses']);
+$im = ok('PDF-Abrechnung importieren', call('statement_import', ['label' => 'Label A B.V.', 'stmtNo' => '102', 'year' => 2025, 'half' => 'H2', 'payable' => 30.5, 'currency' => '€', 'periodStart' => '01.07.2025', 'periodEnd' => '31.12.2025']));
+$im2 = ok('dieselbe Abrechnung erneut importieren', call('statement_import', ['label' => 'Label A B.V.', 'stmtNo' => '102', 'year' => 2025, 'half' => 'H2', 'payable' => 31.5, 'currency' => '€']));
+check('aktualisiert statt doppelt', $im2['id'] === $im['id'] && $im2['updated'] === true, $im2);
+$sid = $im['id']; $carryId = $S['Q3 2025']['id'];
+$pdf = base64_encode("%PDF-1.4\n% Test-Rechnung\n%%EOF");
+refused('Rechnungsnummer schon vergeben', call('invoice_save', ['statement_id' => $sid, 'no' => 'SM-2025-001', 'date' => '01.02.2026', 'lines' => [['kind' => 'main', 'desc' => 'x', 'amount' => 1]]]), 'bereits vergeben');
+refused('Rechnungsdatum ungültig', call('invoice_save', ['statement_id' => $sid, 'no' => 'SM-2026-001', 'date' => '31.02.2026', 'lines' => [['kind' => 'main', 'desc' => 'x', 'amount' => 1]]]), 'Rechnungsdatum');
+refused('Rechnung ohne Positionen', call('invoice_save', ['statement_id' => $sid, 'no' => 'SM-2026-001', 'date' => '01.02.2026', 'lines' => []]), 'ohne Positionen');
+refused('kein gültiges PDF', call('invoice_save', ['statement_id' => $sid, 'no' => 'SM-2026-001', 'date' => '01.02.2026', 'lines' => [['kind' => 'main', 'desc' => 'x', 'amount' => 1]], 'pdf' => base64_encode('kein pdf')]), 'PDF ungültig');
+$iv = ok('Rechnung mit Carryover und PDF speichern', call('invoice_save', ['statement_id' => $sid, 'no' => 'SM-2026-001', 'date' => '01.02.2026', 'recipient' => 'Label A B.V.',
+      'address' => "Street 2\n9999 City", 'greeting' => 'Hello', 'lines' => [['kind' => 'main', 'stmtId' => $sid, 'desc' => 'Royalties 102', 'amount' => 31.5],
+      ['kind' => 'carry', 'stmtId' => $carryId, 'desc' => 'Carryover Q3', 'amount' => 12]], 'pdf' => $pdf]));
+check('Summe 43,50, PDF archiviert', abs(($iv['total'] ?? 0) - 43.5) < 1e-9 && ($iv['pdf_id'] ?? 0) > 0, $iv);
+$L = call('statements'); $S = []; foreach ($L['statements'] as $x) $S[$x['stmtNo'] ?: $x['periodText']] = $x;
+check('Carryover hängt an der Rechnung', ($S['Q3 2025']['carriedInto'] ?? '') === $sid && $S['Q3 2025']['linkedOnly'] === false, $S['Q3 2025']);
+check('neue Anschrift gespeichert', str_contains((string)($L['labelAddresses']['label a b v'] ?? ''), '9999 City'));
+check('PDF in der Liste', count($S['102']['pdfs'] ?? []) === 1, $S['102']);
+$raw = file_get_contents("$base/api.php?action=invoice_pdf&statement=$sid", false, stream_context_create(['http' => ['header' => "Cookie: $cookie\r\n", 'ignore_errors' => true]]));
+check('archiviertes PDF abrufbar und unverändert', $raw === base64_decode($pdf) && preg_grep('/^X-Content-SHA256: ' . hash('sha256', $raw) . '$/i', $http_response_header), $http_response_header);
+ok('bezahlt', call('statement_status', ['id' => $sid, 'status' => 'paid']));
+$S2 = array_column(call('statements')['statements'], null, 'id');
+check('Carryover wird mit bezahlt', $S2[$carryId]['status'] === 'paid', $S2[$carryId]);
+ok('wieder offen', call('statement_status', ['id' => $sid, 'status' => 'open']));
+check('Carryover zurück auf carry', array_column(call('statements')['statements'], null, 'id')[$carryId]['status'] === 'carry');
+ok('Carryover wieder öffnen (nimmt ihn von der Rechnung)', call('statement_status', ['id' => $carryId, 'status' => 'open']));
+$S3 = array_column(call('statements')['statements'], null, 'id');
+check('Carryover-Position entfernt, Verknüpfung gelöst', $S3[$carryId]['carriedInto'] === null && count($S3[$sid]['invoice']['lines']) === 1, $S3[$sid]);
+ok('manuell zuordnen', call('carry_assign', ['id' => $carryId, 'host_id' => $S['101']['id']]));
+check('zugeordnet (linkedOnly)', array_column(call('statements')['statements'], null, 'id')[$carryId]['linkedOnly'] === true);
+ok('Zuordnung aufheben', call('carry_unassign', ['id' => $carryId]));
+$ms = ok('manuelle Abrechnung anlegen', call('statement_manual_save', ['label' => 'Label B', 'periodText' => '01.2026', 'year' => 2026, 'sort' => 202601, 'payable' => 9.5, 'currency' => '€', 'status' => 'open']));
+ok('manuelle Abrechnung ändern', call('statement_manual_save', ['id' => $ms['id'], 'label' => 'Label B', 'periodText' => '02.2026', 'year' => 2026, 'sort' => 202602, 'payable' => 10, 'currency' => '€', 'status' => 'open']));
+refused('ohne Betrag', call('statement_manual_save', ['label' => 'Label B', 'periodText' => '03.2026', 'year' => 2026, 'currency' => '€']), 'Betrag');
+ok('Abrechnung mit Rechnung löschen', call('statement_delete', ['id' => $sid]));
+$cnt = (int)(call('statements')['statements'] ? count(call('statements')['statements']) : 0);
+check('gelöscht (4 übrig)', $cnt === 4, $cnt);
+$raw2 = file_get_contents("$base/api.php?action=invoice_pdf&id=" . $iv['pdf_id'], false, stream_context_create(['http' => ['header' => "Cookie: $cookie\r\n", 'ignore_errors' => true]]));
+check('PDF bleibt im Archiv', $raw2 === base64_decode($pdf));
+
 echo "Kontenplan\n";
 $acc = ok('Konten lesen', call('accounts'));
 check('Startkonten vorhanden (1200, 8000)', count(array_filter($acc['accounts'], fn($a) => in_array($a['nr'], ['1200', '8000'], true))) === 2);

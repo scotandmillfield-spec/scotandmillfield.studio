@@ -196,6 +196,8 @@ footer{margin-top:38px; padding-top:22px; border-top:1px solid var(--line); colo
 .login-box input{background:var(--ink); border:1px solid var(--line); border-radius:8px; color:var(--text); font:14px Inter,system-ui,sans-serif; padding:10px 12px}
 .login-msg{min-height:18px; font-size:13px; color:var(--bad, #FF6B8A)}
 .btn[disabled]{opacity:.5; cursor:wait}
+.pdf-link{color:var(--amber); text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:11.5px; border:1px solid rgba(93,177,230,.4); border-radius:5px; padding:0 6px}
+.pdf-link:hover{background:rgba(93,177,230,.12)}
 /* ---- entry page: one big tile per area ---- */
 .area-back{display:none; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.06em; color:var(--muted); text-decoration:none; margin-bottom:14px}
 .area-back:hover{color:var(--amber)}
@@ -888,7 +890,7 @@ body.in-area .eyebrow{color:var(--area-accent)} body.in-area .eyebrow::before{ba
 
     <section class="section">
       <div class="sec-head"><h2><span class="sec-no">&sect;</span> Data</h2>
-        <p><b>Journal, chart of accounts, assets and letterhead are stored on the server.</b> Singles, royalties, statements, invoices, GEMA statements and label sales reports still live only in this browser until they move to the server as well — keep a backup. The backup contains everything. Restoring a backup restores the browser data; the journal from a backup is taken over only into an empty server journal.</p></div>
+        <p><b>Journal, chart of accounts, assets, statements, invoices (with their PDFs) and letterhead are stored on the server.</b> Singles, royalties, GEMA statements and label sales reports still live only in this browser until they move to the server as well — keep a backup. The backup contains everything. Restoring a backup restores the browser data; the journal from a backup is taken over only into an empty server journal.</p></div>
       <div class="panel issuer-panel">
         <div class="data-actions">
           <button class="btn amber" id="sBackup" type="button">Backup (download JSON)</button>
@@ -896,7 +898,7 @@ body.in-area .eyebrow{color:var(--area-accent)} body.in-area .eyebrow::before{ba
           <input type="file" id="jsonInput" hidden>
           <button class="btn danger" id="sClearAll" type="button">Clear browser data</button>
         </div>
-        <div class="data-note">“Clear browser data” permanently deletes the singles, royalties, statements, invoice addresses, GEMA statements and label sales reports kept in this browser. Journal, chart of accounts, assets and letterhead on the server are not touched.</div>
+        <div class="data-note">“Clear browser data” permanently deletes the singles, royalties, GEMA statements and label sales reports kept in this browser. Journal, chart of accounts, assets, statements, invoices and letterhead on the server are not touched.</div>
       </div>
     </section>
   </div>
@@ -1355,8 +1357,9 @@ function loadDemo(){
    Journal, chart of accounts and letterhead live in the database and are only changed through the API,
    which enforces the bookkeeping rules (locks, Storno, „Klären“, duplicate bank lines) and logs every change.
    The other areas are still kept in this browser until they move to the server as well. */
-const SERVER_OWNED=["accounts","bookings","bookingSeq","issuer","assets"];   // never written to localStorage
+const SERVER_OWNED=["accounts","bookings","bookingSeq","issuer","assets","statements","labelAddresses"];   // never written to localStorage
 let legacyAssets=[];   // assets found in this browser's storage from before they moved to the server
+let legacyInvoices=null;   // statements + label addresses from before they moved to the server ({statements, labelAddresses})
 let srvUser=null;
 async function api(action, data){
   let r;
@@ -1394,6 +1397,22 @@ async function takeOverLegacyAssets(list, source){
   await reloadAssets();
   return r.assets+" asset(s) from "+source+" moved to the server.";
 }
+async function reloadInvoices(){
+  const r=await api("statements");
+  statements=r.statements; labelAddresses=r.labelAddresses||{};
+}
+/* one-time move: statements, invoices and label addresses kept in this browser go to the server if it has none yet */
+async function takeOverLegacyInvoices(data, source){
+  if(!data || !Array.isArray(data.statements) || !data.statements.length || statements.length) return "";
+  const r=await api("invoices_import",{statements:data.statements, labelAddresses:data.labelAddresses||{}});
+  await reloadInvoices();
+  return r.statements+" statement(s) with "+r.invoices+" invoice(s) from "+source+" moved to the server.";
+}
+/* after a change: reload the statement list from the server and redraw it */
+async function syncInvoices(){
+  try{ await reloadInvoices(); }catch(e){ toast(e.message); }
+  renderInvoices();
+}
 async function reloadSettings(){
   const s=(await api("settings")).settings;
   issuer=Object.assign({}, ISSUER_DEFAULT, s.issuer||{});
@@ -1419,15 +1438,19 @@ async function startServerSession(user){
   srvUser=user;
   document.getElementById("loginOverlay").classList.add("hidden");
   document.getElementById("srvUser").textContent=user.display_name||user.username;
-  try{ await Promise.all([reloadJournal(), reloadSettings(), reloadAssets()]); }
+  try{ await Promise.all([reloadJournal(), reloadSettings(), reloadAssets(), reloadInvoices()]); }
   catch(e){ toast("Could not load data from the server: "+e.message); }
   try{ const m=await takeOverLegacyAssets(legacyAssets, "this browser"); legacyAssets=[]; if(m) toast(m,true); }
   catch(e){ alert("Assets of this browser could not be moved to the server:\n\n"+e.message+"\n\nThey stay in this browser and are tried again at the next login; nothing was written."); }
+  try{ const m=await takeOverLegacyInvoices(legacyInvoices, "this browser"); legacyInvoices=null; if(m) toast(m,true); }
+  catch(e){ alert("Statements and invoices of this browser could not be moved to the server:\n\n"+e.message+"\n\nThey stay in this browser and are tried again at the next login; nothing was written."); }
   editId=null; renderEverything(); saveState();      // saveState drops the moved assets from the browser storage
 }
 async function bootServer(){
   loadState(); stateLoaded=true;                             // before anything is drawn – drawing saves the state
   legacyAssets=assets.slice(); assets=[];                    // old browser copy: moved to the server after login
+  if(statements.length) legacyInvoices={statements:statements.slice(), labelAddresses:Object.assign({},labelAddresses)};
+  statements=[]; labelAddresses={};
   route(); renderEverything(); updatePersistHint();          // browser-side areas first
   try{ const me=await api("me"); if(me.user) await startServerSession(me.user); else showLogin(); }
   catch(e){ showLogin(e.message); }
@@ -1445,6 +1468,7 @@ document.getElementById("loginForm").onsubmit=async ev=>{
 document.getElementById("srvLogout").onclick=async()=>{
   try{ await api("logout",{}); }catch(e){}
   accounts=ACCOUNTS_SEED.map(a=>({...a})); bookings=[]; bookingSeq=0; editId=null; issuer=Object.assign({}, ISSUER_DEFAULT); assets=[];
+  statements=[]; labelAddresses={};
   renderEverything(); showLogin("Abgemeldet.");
 };
 
@@ -1491,7 +1515,8 @@ let stateLoaded=false;   // never save before the stored state was read – it w
 function saveState(){
   if(!canPersist || !stateLoaded) return;
   const st=serialize(); SERVER_OWNED.forEach(k=>delete st[k]);        // server data never goes to the browser storage
-  if(legacyAssets.length) st.assets=legacyAssets;                      // …except old assets not yet moved to the server
+  if(legacyAssets.length) st.assets=legacyAssets;                      // …except old data not yet moved to the server
+  if(legacyInvoices){ st.statements=legacyInvoices.statements; st.labelAddresses=legacyInvoices.labelAddresses; }
   try{ localStorage.setItem(STORE_KEY, JSON.stringify(st)); }catch(e){}
 }
 function loadState(){
@@ -1542,6 +1567,9 @@ async function restoreServerPart(st){
       }
       await reloadJournal();
     } else if(fileBookings.length && bookings.length) msg+=" The journal stays as stored on the server.";
+    await reloadInvoices();
+    const im=await takeOverLegacyInvoices({statements:st.statements, labelAddresses:st.labelAddresses}, "the backup");
+    if(im) msg+=" "+im; else if(Array.isArray(st.statements)&&st.statements.length) msg+=" Statements and invoices stay as stored on the server.";
     await reloadAssets();
     const am=await takeOverLegacyAssets(Array.isArray(st.assets)?st.assets:[], "the backup");
     if(am) msg+=" "+am; else if(Array.isArray(st.assets)&&st.assets.length) msg+=" Assets stay as stored on the server.";
@@ -1552,9 +1580,10 @@ async function restoreServerPart(st){
       msg+=" Letterhead saved on the server.";
     }
   }catch(e){
-    try{ await reloadAssets(); }catch(_){ assets=[]; }                  // never show backup assets as if they were saved
+    try{ await reloadAssets(); }catch(_){ assets=[]; }                  // never show backup data as if it were saved
+    try{ await reloadInvoices(); }catch(_){ statements=[]; labelAddresses={}; }
     editId=null; renderEverything();
-    alert("Browser data restored, but the journal / assets / letterhead could NOT be taken over to the server:\n\n"+e.message+"\n\nNothing of the journal was written (all or nothing).");
+    alert("Browser data restored, but the journal / statements / assets / letterhead could NOT be taken over to the server:\n\n"+e.message+"\n\nNothing of the journal was written (all or nothing).");
     return;
   }
   editId=null; renderEverything(); toast(msg,true);
@@ -1568,11 +1597,11 @@ function renderEverything(){
   if(typeof renderKontenplan==="function") renderKontenplan();
 }
 function clearAllData(){
-  if(!confirm("Delete all data kept in this browser — singles, royalties, statements, invoice addresses, GEMA statements and label sales reports? This cannot be undone.\n\nJournal, chart of accounts, assets and letterhead on the server are not affected.")) return;
+  if(!confirm("Delete all data kept in this browser — singles, royalties, GEMA statements and label sales reports? This cannot be undone.\n\nJournal, chart of accounts, assets, statements, invoices and letterhead on the server are not affected.")) return;
   try{ localStorage.removeItem(STORE_KEY); localStorage.removeItem(GEMA_KEY); }catch(e){}
   gemaSets=[]; stSets=[]; IDB.del(ST_IDB_KEY).catch(()=>{});
   singles=[]; if(typeof visible==="object") for(const k in visible) delete visible[k];
-  royaltyTracks=[]; statements=[]; invFilter="all"; labelAddresses={};
+  royaltyTracks=[];
   renderEverything(); saveState(); toast("Browser data cleared.",true);
 }
 function updatePersistHint(){
@@ -1787,8 +1816,7 @@ function confirmReview(){
   const cap = manualMode
     ? { stmtNo, payable:Math.round(sum*100)/100, currency:pendingCurrency, periodStart:"", periodEnd:"", carryover:0 }
     : Object.assign({}, pendingParsed, { stmtNo:stmtNo||(pendingParsed&&pendingParsed.stmtNo), currency:pendingCurrency });
-  captureStatement(cap, label, year, pendingHalf);
-  renderInvoices();
+  saveImportedStatement(cap, label, year, pendingHalf);
   toast(n?`${manualMode?"Saved":"Imported"} ${n} track${n>1?'s':''} for ${period}.`:"Nothing saved.", n>0);
   afterReview();
 }
@@ -2539,7 +2567,16 @@ let labelAddresses={};        // normKey(label) -> multiline address string
 function invMoney(a,cur){ const n=(+a||0); return cur==="€" ? n.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+"€" : (cur||"€")+n.toFixed(2); }
 function todayDE(){ const d=new Date(); return String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0")+"."+d.getFullYear(); }
 
-function captureStatement(p, label, year, half){
+/* royalty PDF (or manual royalty entry) → statement on the server; re-importing the same statement updates it */
+async function saveImportedStatement(p, label, year, half){
+  if(!label) return;
+  try{
+    await api("statement_import",{label, stmtNo:p.stmtNo||"", year, half, periodStart:p.periodStart||"", periodEnd:p.periodEnd||"",
+      payable:(p.payable!=null?p.payable:null), currency:p.currency||"€", carryover:(p.carryover!=null?p.carryover:0)});
+  }catch(e){ alert("Statement could not be saved on the server:\n\n"+e.message); }
+  await syncInvoices();
+}
+function captureStatement(p, label, year, half){   // browser-only version (kept for the hidden Royalties tab's data model)
   if(!label) return;
   const stmtNo=p.stmtNo||"";
   const id=normKey(label)+"|"+(stmtNo||(year+"-"+half));
@@ -2569,15 +2606,9 @@ function renderSettings(){
 
 /* ---- statements list (invoices tab) ---- */
 const CHECK_SVG='<svg class="ic" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>';
-function setStatementStatus(id, status){
-  const s=statements.find(x=>x.id===id); if(!s) return;
-  s.status=status;
-  // carryovers included in this statement's invoice follow its payment state
-  statements.forEach(c=>{ if(c.carriedInto!==id) return;
-    if(status==="paid") c.status="paid"; else if(c.status==="paid") c.status="carry"; });
-  // reopening a carryover takes it out of the invoice it was added to
-  if(status==="open" && s.carriedInto){ unlinkCarry(s); }
-  renderInvoices();
+async function setStatementStatus(id, status){   // the server cascades to carryovers on the invoice and unlinks on reopen
+  try{ await api("statement_status",{id:+id, status}); }catch(e){ toast(e.message); return; }
+  await syncInvoices();
 }
 /* ---- assign a carryover to an invoice after the fact: records the link only, no new PDF ---- */
 let asgCarryId=null;
@@ -2599,34 +2630,34 @@ function renderAssignList(){
   document.getElementById("asgSave").disabled=!hosts.length;
 }
 function closeAssignCarry(){ document.getElementById("asgModal").classList.add("hidden"); asgCarryId=null; }
-function saveAssignCarry(){
+async function saveAssignCarry(){
   const c=statements.find(x=>x.id===asgCarryId), sel=document.querySelector('input[name="asgHost"]:checked');
   if(!c||!sel) return; const h=statements.find(x=>x.id===sel.value); if(!h) return;
-  c.carriedInto=h.id; c.linkedOnly=true; if(h.status==="paid") c.status="paid";
-  closeAssignCarry(); renderInvoices();
+  try{ await api("carry_assign",{id:+c.id, host_id:+h.id}); }catch(e){ toast(e.message); return; }
+  closeAssignCarry(); await syncInvoices();
   toast("Carryover "+stmtPeriod(c)+" assigned to "+(h.invoice?"invoice "+h.invoice.no:h.label+" · "+stmtPeriod(h))+" — no new PDF created.",true);
 }
-function unassignCarry(id){
+async function unassignCarry(id){
   const c=statements.find(x=>x.id===id); if(!c||!c.carriedInto) return;
   const h=statements.find(x=>x.id===c.carriedInto);
   if(!confirm("Remove the assignment of carryover "+stmtPeriod(c)+" from "+(h?(h.invoice?"invoice "+h.invoice.no:stmtPeriod(h)):"its invoice")+"? It becomes an open carryover again.")) return;
-  unlinkCarry(c); c.status="carry"; renderInvoices(); toast("Assignment removed.",true);
+  try{ await api("carry_unassign",{id:+id}); }catch(e){ toast(e.message); return; }
+  await syncInvoices(); toast("Assignment removed.",true);
 }
 function unlinkCarry(c){
   const host=statements.find(x=>x.id===c.carriedInto);
   if(host&&host.invoice) host.invoice.lines=host.invoice.lines.filter(l=>!(l.kind==="carry"&&l.stmtId===c.id));
   c.carriedInto=null; c.linkedOnly=false;
 }
-function removeStatement(id){
+async function removeStatement(id){
   const s=statements.find(x=>x.id===id); if(!s) return;
   const linked=statements.filter(c=>c.carriedInto===id);
   const msg="Delete “"+s.label+" · "+stmtPeriod(s)+"”"+(s.invoice?" and its invoice record "+s.invoice.no:"")+"?"+
     (linked.length?"\n\n"+linked.length+" carryover(s) included in it become open carryovers again.":"")+
     (s.carriedInto?"\n\nIt is also removed from the invoice it was carried into.":"");
-  if(!confirm(msg)) return;
-  linked.forEach(c=>{ c.carriedInto=null; c.linkedOnly=false; if(c.status==="paid") c.status="carry"; });
-  if(s.carriedInto) unlinkCarry(s);
-  statements=statements.filter(x=>x.id!==id); renderInvoices(); toast("Statement deleted.",true);
+  if(!confirm(msg+(s.pdfs&&s.pdfs.length?"\n\nArchived invoice PDFs are kept on the server.":""))) return;
+  try{ await api("statement_delete",{id:+id}); }catch(e){ toast(e.message); return; }
+  await syncInvoices(); toast("Statement deleted.",true);
 }
 function stmtPeriod(s){ return s.periodText || ((s.half||"")+" "+(s.year||"")).trim(); }
 function stmtSort(s){ return s.sort || ((+s.year||0)*100 + (s.half==="H1"?6:s.half==="H2"?12:0)); }
@@ -2662,7 +2693,7 @@ function openManualStatement(id){
   setTimeout(()=>document.getElementById("manLabel").focus(),30);
 }
 function closeManualStatement(){ document.getElementById("manModal").classList.add("hidden"); manEditId=null; }
-function saveManualStatement(){
+async function saveManualStatement(){
   const label=document.getElementById("manLabel").value.trim(), stmtNo=document.getElementById("manStmt").value.trim();
   const periodText=document.getElementById("manPeriod").value.trim(), amt=document.getElementById("manAmount").value;
   if(!label){ toast("Enter the label."); return; }
@@ -2670,14 +2701,9 @@ function saveManualStatement(){
   if(amt===""||!isFinite(parseFloat(amt))){ toast("Enter the amount."); return; }
   const p=parsePeriodText(periodText);
   const fields={label, stmtNo, periodText, year:p.year, half:p.half, sort:p.sort, payable:Math.round(parseFloat(amt)*100)/100, currency:manCur};
-  const s=manEditId?statements.find(x=>x.id===manEditId):null;
-  if(s){
-    Object.assign(s, fields);
-    if(s.status!=="paid" && !s.carriedInto) s.status=manStatus;
-  } else {
-    statements.push(Object.assign({id:"manual|"+normKey(label)+"|"+Date.now().toString(36), status:manStatus, carryover:0, source:"manual"}, fields));
-  }
-  closeManualStatement(); renderInvoices();
+  try{ await api("statement_manual_save", Object.assign({id:manEditId?+manEditId:undefined, status:manStatus}, fields)); }
+  catch(e){ toast(e.message); return; }
+  closeManualStatement(); await syncInvoices();
   toast(manStatus==="carry"?"Saved as open carryover — it will be offered on the next invoice for "+label+".":"Statement saved.",true);
 }
 
@@ -2697,7 +2723,8 @@ function renderInvoices(){
     const st=s.status||"open", host=s.carriedInto?statements.find(x=>x.id===s.carriedInto):null;
     const carries=st==="open"?openCarries(s).filter(c=>!c.carriedInto):[];
     const extra=[];
-    if(s.invoice) extra.push(`Invoice ${gEsc(s.invoice.no)} · ${gEsc(s.invoice.date)} · ${invMoney(s.invoice.total,s.currency)}`);
+    if(s.invoice) extra.push(`Invoice ${gEsc(s.invoice.no)} · ${gEsc(s.invoice.date)} · ${invMoney(s.invoice.total,s.currency)}`+
+      (s.pdfs&&s.pdfs.length?` · <a class="pdf-link" href="api.php?action=invoice_pdf&statement=${encodeURIComponent(s.id)}" target="_blank" rel="noopener" title="Archived PDF on the server${s.pdfs.length>1?" (newest of "+s.pdfs.length+" versions)":""}">PDF</a>`:""));
     if(host) extra.push(`${s.linkedOnly?"Assigned to":"Included in"} ${host.invoice?"invoice "+gEsc(host.invoice.no):"the invoice"} for ${gEsc(stmtPeriod(host))}`);
     const inc=statements.filter(c=>c.carriedInto===s.id);
     if(inc.length) extra.push("Contains carryover "+inc.map(c=>gEsc(stmtPeriod(c))+" ("+invMoney(c.payable||0,c.currency)+")").join(", "));
@@ -2797,7 +2824,7 @@ function updateInvTotal(){
     : `Invoice total: <b>${invMoney(total,cur)}</b>`;
 }
 function closeInvoiceEditor(){ document.getElementById("invModal").classList.add("hidden"); editingStmt=null; ivLines=[]; }
-function downloadInvoice(){
+async function downloadInvoice(){
   if(!editingStmt) return;
   const s=editingStmt, v=id=>{ const e=document.getElementById(id); return e?e.value.trim():""; };
   const used=ivLines.filter(l=>l.on && (l.desc.trim()||+l.amount));
@@ -2809,14 +2836,21 @@ function downloadInvoice(){
     recipientName:v("ivRecipient"), recipientAddr:v("ivAddr"), greetingName:v("ivGreet")||v("ivRecipient"),
     intro:v("ivIntro")||buildIntro(), lines, total, currency:s.currency||"€"
   };
-  try{ generateInvoicePDF(d); }
+  d.fileName="Invoice_"+(d.invoiceNo||"SM").replace(/[^\w\-]/g,"_")+".pdf";
+  let doc; try{ doc=generateInvoicePDF(d); }
   catch(e){ toast("PDF failed: "+e.message); return; }
-  labelAddresses[normKey(s.label)]=d.recipientAddr;   // remember address for next time
-  s.invoice={no:d.invoiceNo, date:d.date, intro:ivIntroDirty?d.intro:"", recipient:d.recipientName, greeting:d.greetingName, lines, total};
-  // link the carryovers that are on this invoice, release the ones that were taken off again
-  openCarries(s).forEach(c=>{ const on=lines.some(l=>l.kind==="carry"&&l.stmtId===c.id); if(on) c.carriedInto=s.id; else if(c.carriedInto===s.id) c.carriedInto=null; });
-  saveState(); toast("Invoice PDF downloaded.",true);
-  closeInvoiceEditor(); renderInvoices();
+  // save invoice + PDF on the server first: the download only happens when the invoice is on record
+  // (the server refuses a number that is already used for another statement)
+  const btn=document.getElementById("ivDownload"); if(btn) btn.disabled=true;
+  try{
+    await api("invoice_save",{statement_id:+s.id, no:d.invoiceNo, date:d.date, recipient:d.recipientName, address:d.recipientAddr,
+      greeting:d.greetingName, intro:ivIntroDirty?d.intro:"", lines:lines.map(l=>({kind:l.kind, stmtId:l.stmtId, desc:l.desc, amount:l.amount})),
+      pdf:doc.output("datauristring").split(",")[1]});
+  }catch(e){ toast("Invoice not saved: "+e.message); if(btn) btn.disabled=false; return; }
+  if(btn) btn.disabled=false;
+  doc.save(d.fileName);
+  toast("Invoice "+d.invoiceNo+" saved on the server and downloaded.",true);
+  closeInvoiceEditor(); await syncInvoices();
 }
 
 /* ---- jsPDF generation ---- */
@@ -2874,7 +2908,7 @@ function generateInvoicePDF(d){
   doc.text(issuer.signoff||"Daniel & Maik", M, y);
   doc.setFontSize(8); doc.setTextColor(125);
   doc.text("This document was generated automatically and is valid without signature.", M, 285);
-  doc.save("Invoice_"+(d.invoiceNo||"SM").replace(/[^\w\-]/g,"_")+".pdf");
+  return doc;     // the caller archives it on the server and then saves the file
 }
 
 /* ---------- wiring ---------- */
