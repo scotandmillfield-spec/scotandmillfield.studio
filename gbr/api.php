@@ -26,6 +26,13 @@ declare(strict_types=1);
  *             POST booking_storno {id,date?}  locked bookings only
  *             POST bank_import    {rows:[{date,soll,haben,amount,text,beleg?,bank_key}]}
  *             POST journal_import {accounts,bookings}   takeover from a browser-app backup, empty journal only
+ *  Belege     GET  documents      [&kind=bank|beleg]   archive list with the booking numbers
+ *             GET  document       &id= [&download=1]   the file itself
+ *             POST document_upload  multipart: file + payload {booking_id?, kind}
+ *             POST document_link    {booking_id, document_id}
+ *             POST document_unlink  {booking_id, document_id}   open bookings only
+ *             POST document_delete  {id}                        only while not linked
+ *             (bank_import as multipart also archives the statement PDFs: file0…, row.file = index)
  *  Anlagen    GET  assets                     fixed assets (AfA schedule is computed in the app)
  *             POST asset_save     {id?,name,cost,years,date,afa_account,asset_account}
  *             POST asset_delete   {id}
@@ -51,6 +58,7 @@ require __DIR__ . '/lib/journal.php';
 require __DIR__ . '/lib/settings.php';
 require __DIR__ . '/lib/assets.php';
 require __DIR__ . '/lib/invoices.php';
+require __DIR__ . '/lib/documents.php';
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
@@ -134,6 +142,14 @@ try {
     case 'booking_storno':  requirePost(); out(201, ['ok' => true, 'booking' => bookingStorno(body())]);
     case 'bank_import':     requirePost(); out(200, ['ok' => true] + bankImport(body()));
     case 'journal_import':  requirePost(); out(200, ['ok' => true] + journalImport(body()));
+
+    /* ---- document archive (bank statements, receipts) ---- */
+    case 'documents':       out(200, ['ok' => true, 'documents' => docList($_GET)]);
+    case 'document':        docSend($_GET);
+    case 'document_upload': requirePost(); out(201, ['ok' => true] + docUpload(body()));
+    case 'document_link':   requirePost(); out(200, ['ok' => true] + docLinkApi(body()));
+    case 'document_unlink': requirePost(); docUnlink(body()); out(200, ['ok' => true]);
+    case 'document_delete': requirePost(); docDelete(body()); out(200, ['ok' => true]);
 
     /* ---- fixed assets ---- */
     case 'assets':          out(200, ['ok' => true, 'assets' => assetsList()]);
