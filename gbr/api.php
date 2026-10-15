@@ -30,6 +30,16 @@ declare(strict_types=1);
  *             POST asset_save     {id?,name,cost,years,date,afa_account,asset_account}
  *             POST asset_delete   {id}
  *             POST assets_import  {assets:[…]}  takeover from the browser app, empty list only
+ *  Rechnungen GET  statements                 royalty statements with their invoices + label addresses
+ *             POST statement_import  {label,stmtNo,year,half,periodStart,periodEnd,payable,currency,carryover}
+ *             POST statement_manual_save {id?,label,stmtNo,periodText,year,half,sort,payable,currency,status}
+ *             POST statement_status  {id,status}      open | paid | carry
+ *             POST statement_delete  {id}
+ *             POST carry_assign      {id,host_id}     carryover belongs to an already issued invoice
+ *             POST carry_unassign    {id}
+ *             POST invoice_save      {statement_id,no,date,recipient,address,greeting,intro,lines,pdf?}
+ *             GET  invoice_pdf       &statement= | &id=  [&download=1]   archived PDF
+ *             POST invoices_import   {statements,labelAddresses}   takeover from the browser app, empty list only
  *  Settings   GET  settings                   {issuer:{…}|null}
  *             POST setting_save   {key,value}
  *  (booking_add is kept for the admin page: booking_save without id)
@@ -40,6 +50,7 @@ require __DIR__ . '/lib/auth.php';
 require __DIR__ . '/lib/journal.php';
 require __DIR__ . '/lib/settings.php';
 require __DIR__ . '/lib/assets.php';
+require __DIR__ . '/lib/invoices.php';
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
@@ -129,6 +140,18 @@ try {
     case 'asset_save':      requirePost(); $isNew = empty(body()['id']); out($isNew ? 201 : 200, ['ok' => true, 'asset' => assetSave(body())]);
     case 'asset_delete':    requirePost(); assetDelete(body()); out(200, ['ok' => true]);
     case 'assets_import':   requirePost(); out(200, ['ok' => true] + assetsImport(body()));
+
+    /* ---- statements, invoices, PDF archive ---- */
+    case 'statements':            out(200, ['ok' => true] + statementsAll());
+    case 'statement_import':      requirePost(); out(200, ['ok' => true] + statementImport(body()));
+    case 'statement_manual_save': requirePost(); out(200, ['ok' => true] + statementManualSave(body()));
+    case 'statement_status':      requirePost(); statementStatus(body()); out(200, ['ok' => true]);
+    case 'statement_delete':      requirePost(); statementDelete(body()); out(200, ['ok' => true]);
+    case 'carry_assign':          requirePost(); carryAssign(body()); out(200, ['ok' => true]);
+    case 'carry_unassign':        requirePost(); carryUnassign(body()); out(200, ['ok' => true]);
+    case 'invoice_save':          requirePost(); out(200, ['ok' => true] + invoiceSave(body()));
+    case 'invoice_pdf':           pdfSend($_GET);
+    case 'invoices_import':       requirePost(); out(200, ['ok' => true] + invoicesImport(body()));
 
     /* ---- settings ---- */
     case 'settings':        out(200, ['ok' => true, 'settings' => settingsAll()]);
