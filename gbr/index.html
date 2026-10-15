@@ -284,6 +284,8 @@ body.in-area .eyebrow{color:var(--area-accent)} body.in-area .eyebrow::before{ba
 .clarify-hint{font-size:12.5px; color:#FF6B8A; cursor:pointer}
 .clarify-hint:hover{text-decoration:underline}
 .nodoc-hint{font-size:12.5px; color:#FFB454; cursor:pointer}
+tr.fy-booked td{opacity:.6}
+.fy-done{font:12px 'JetBrains Mono',monospace; color:#52E0A0}
 .nodoc-hint:hover{text-decoration:underline}
 /* attached documents in the journal */
 td.jdocs{white-space:nowrap}
@@ -2646,16 +2648,20 @@ async function handleFyrstFiles(files){
   openFyrstReview(all, arr.length===1?oldS:null, arr.length===1?newS:null);
 }
 function sidePreview(r){ return r.sign==="+" ? `Soll 1200 · Haben ${r.konto||"?"}` : `Soll ${r.konto||"?"} · Haben 1200`; }
+function fyrstKey(r){ return `${r.date}|${r.sign}|${r.amount.toFixed(2)}|${(r.name||"").slice(0,24)}`; }   // same key as the server's bank_key
 function openFyrstReview(rows, oldS, newS){
-  fyrstQueue=rows.map(r=>({...r, konto:suggestKonto(r)}));
+  // lines already in the journal are recognised by their bank key: shown as booked, not booked again
+  fyrstQueue=rows.map(r=>{ const have=bookings.find(b=>b.fkey===fyrstKey(r)); return {...r, konto:have?"":suggestKonto(r), booked:have?have.no:null}; });
+  const nBooked=fyrstQueue.filter(r=>r.booked).length;
   const t=document.getElementById("fyTable");
   t.innerHTML="<thead><tr><th>Date</th><th>Payee / purpose</th><th class='num'>Amount</th><th>Contra-account</th></tr></thead><tbody>"+
-    fyrstQueue.map((r,i)=>`<tr>
+    fyrstQueue.map((r,i)=>`<tr${r.booked?' class="fy-booked"':""}>
       <td>${(r.date||"").split("-").reverse().join(".")}</td>
       <td class="fy-desc"><div class="p">${r.name||r.vorgang||""}</div>${r.zweck?`<div class="z">${r.zweck}</div>`:""}</td>
       <td class="fy-amt ${r.sign==="+"?"pos":"neg"}">${r.sign} ${deMoney(r.amount)}</td>
-      <td><select data-fyi="${i}" class="${r.konto?"":"miss"}"><option value="">— choose —</option>${accountOptions(r.konto)}</select>
-        <div class="fy-side" data-side="${i}">${sidePreview(r)}</div></td></tr>`).join("")+"</tbody>";
+      <td>${r.booked ? `<span class="fy-done">✓ already booked as #${r.booked}</span><div class="fy-side">not booked again${fyrstFiles.length?" · statement PDF gets attached":""}</div>`
+        : `<select data-fyi="${i}" class="${r.konto?"":"miss"}"><option value="">— choose —</option>${accountOptions(r.konto)}</select>
+        <div class="fy-side" data-side="${i}">${sidePreview(r)}</div>`}</td></tr>`).join("")+"</tbody>";
   t.querySelectorAll("[data-fyi]").forEach(sel=>sel.onchange=()=>{ const i=+sel.dataset.fyi; fyrstQueue[i].konto=sel.value; sel.classList.toggle("miss",!sel.value);
     const sp=t.querySelector('[data-side="'+i+'"]'); if(sp) sp.textContent=sidePreview(fyrstQueue[i]); });
   const net=fyrstQueue.reduce((s,r)=>s+(r.sign==="+"?1:-1)*r.amount,0);
@@ -2663,16 +2669,17 @@ function openFyrstReview(rows, oldS, newS){
   if(oldS!=null&&newS!=null){ const diff=Math.abs((oldS+net)-newS), ok=diff<0.005;
     rec.innerHTML=`<span><b>${fyrstQueue.length}</b> bookings</span><span>Net <b>${deMoney(net)}</b></span><span>Old ${deMoney(oldS)} → New ${deMoney(newS)}</span><span class="${ok?"ok":"bad"}">${ok?"✓ reconciles with statement":"⚠ differs by "+deMoney(diff)}</span>`;
   } else rec.innerHTML=`<span><b>${fyrstQueue.length}</b> bookings</span><span>Net <b>${deMoney(net)}</b></span>`;
+  if(nBooked) rec.insertAdjacentHTML("beforeend", `<span class="ok">${nBooked===fyrstQueue.length?"all ":""}${nBooked} already booked — not booked again</span>`);
   document.getElementById("fyrstModal").classList.remove("hidden");
 }
 function closeFyrst(){ document.getElementById("fyrstModal").classList.add("hidden"); fyrstQueue=[]; fyrstFiles=[]; }
 async function confirmFyrstImport(){
-  const missing=fyrstQueue.filter(r=>!r.konto).length;
+  const missing=fyrstQueue.filter(r=>!r.konto && !r.booked).length;
   if(missing){ toast(missing+" booking(s) still need a contra-account."); return; }
   // the bank key identifies a statement line; the server skips lines that were imported before
   const rows=fyrstQueue.map(r=>({date:r.date, soll:r.sign==="+"?"1200":r.konto, haben:r.sign==="+"?r.konto:"1200",
     amount:Math.round(r.amount*100)/100, text:(r.name||"")+(r.zweck?(" · "+r.zweck):""), beleg:"",
-    bank_key:`${r.date}|${r.sign}|${r.amount.toFixed(2)}|${(r.name||"").slice(0,24)}`, file:r.file}));
+    bank_key:fyrstKey(r), file:r.file}));
   const files={}; fyrstFiles.forEach((f,i)=>{ files["file"+i]=f; });
   const btn=document.getElementById("fyConfirm"); if(btn) btn.disabled=true;
   try{
