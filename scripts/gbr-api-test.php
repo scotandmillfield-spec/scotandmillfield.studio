@@ -26,6 +26,25 @@ function call(string $action, ?array $body = null, string $query = '', string $m
         if (preg_match('/^Set-Cookie:\s*(GBRSESSID=[^;]*)/i', $line, $c)) $cookie = $c[1] === 'GBRSESSID=deleted' || $c[1] === 'GBRSESSID=' ? '' : $c[1];
     return ['status' => (int)($m[1] ?? 0)] + (json_decode((string)$raw, true) ?? ['raw' => $raw]);
 }
+/* multipart POST (file uploads): $files = [field => [filename, content]], $payload goes as JSON in "payload" */
+function callFiles(string $action, array $payload, array $files): array {
+    global $base, $cookie;
+    $bd = '----gbrtest' . bin2hex(random_bytes(6));
+    $body = "--$bd\r\nContent-Disposition: form-data; name=\"payload\"\r\n\r\n" . json_encode($payload) . "\r\n";
+    foreach ($files as $field => [$name, $content])
+        $body .= "--$bd\r\nContent-Disposition: form-data; name=\"$field\"; filename=\"$name\"\r\nContent-Type: application/octet-stream\r\n\r\n$content\r\n";
+    $body .= "--$bd--\r\n";
+    $opts = ['http' => ['ignore_errors' => true, 'method' => 'POST', 'content' => $body,
+             'header' => "Content-Type: multipart/form-data; boundary=$bd\r\nX-GBR: 1\r\nCookie: $cookie\r\n"]];
+    $raw = file_get_contents("$base/api.php?action=$action", false, stream_context_create($opts));
+    preg_match('/\s(\d{3})\s/', $http_response_header[0] ?? '', $m);
+    return ['status' => (int)($m[1] ?? 0)] + (json_decode((string)$raw, true) ?? ['raw' => $raw]);
+}
+function fetchRaw(string $query): array {
+    global $base, $cookie;
+    $raw = file_get_contents("$base/api.php?$query", false, stream_context_create(['http' => ['header' => "Cookie: $cookie\r\n", 'ignore_errors' => true]]));
+    return [$raw, $http_response_header];
+}
 function check(string $name, bool $cond, mixed $detail = null): void {
     global $fails, $passes;
     if ($cond) { $passes++; echo "  ✓ $name\n"; }
@@ -248,13 +267,44 @@ refused('Auszug mit fehlerhafter Zeile', call('bank_import', ['rows' => [
     ['date' => "$y-05-11", 'soll' => '1200', 'haben' => '8000', 'amount' => 0, 'bank_key' => 'neu-2']]]), 'nichts importiert');
 check('nichts halb importiert', count(call('bookings', null, "&year=$y")['bookings']) === $before);
 
+echo "Belege & Kontoauszüge\n";
+$auszug = "%PDF-1.4\n% Kontoauszug Mai\n%%EOF";
+$bi3 = ok('Kontoauszug erneut importieren, diesmal mit PDF', callFiles('bank_import', ['rows' => array_map(fn($r) => $r + ['file' => 0], $rows)], ['file0' => ['Auszug_05.pdf', $auszug]]));
+check('0 neu, 2 doppelt – aber beide mit dem Auszug verbunden', ($bi3['added'] ?? 1) === 0 && ($bi3['linked'] ?? 0) === 2 && ($bi3['documents'] ?? 0) === 1, $bi3);
+$bk = array_column(call('bookings', null, "&year=$y")['bookings'], null, 'text');
+check('Buchung „Royalties“ zeigt den Auszug', ($bk['Royalties']['docs'][0]['kind'] ?? '') === 'bank' && $bk['Royalties']['docs'][0]['name'] === 'Auszug_05.pdf', $bk['Royalties']['docs'] ?? null);
+$bi4 = ok('noch einmal mit demselben PDF', callFiles('bank_import', ['rows' => array_map(fn($r) => $r + ['file' => 0], $rows)], ['file0' => ['Auszug_05.pdf', $auszug]]));
+check('nichts doppelt verbunden', ($bi4['linked'] ?? 1) === 0, $bi4);
+$beleg = "%PDF-1.7\n% Rechnung Bankgebühr\n%%EOF";
+$kf = $bk['Kontoführung']['id'];
+$up = ok('Beleg zu offener Buchung hochladen', callFiles('document_upload', ['booking_id' => $kf, 'kind' => 'beleg'], ['file' => ['Rechnung Bank.pdf', $beleg]]));
+check('verbunden', ($up['linked'] ?? false) === true && $up['document']['mime'] === 'application/pdf', $up);
+$up2 = ok('dieselbe Datei nochmal', callFiles('document_upload', ['kind' => 'beleg'], ['file' => ['kopie.pdf', $beleg]]));
+check('wird nicht doppelt gespeichert', $up2['document']['id'] === $up['document']['id'], $up2);
+refused('Textdatei als Beleg', callFiles('document_upload', ['booking_id' => $kf], ['file' => ['x.html', '<script>alert(1)</script>']]), 'Nur PDF');
+$png = ok('Foto (PNG) als Beleg', callFiles('document_upload', ['booking_id' => $kf], ['file' => ['quittung.png', "\x89PNG\r\n\x1A\n" . str_repeat("\0", 20)]]));
+[$raw, $hdr] = fetchRaw('action=document&id=' . $up['document']['id']);
+check('Beleg abrufbar, unverändert, als PDF', $raw === $beleg && preg_grep('/^Content-Type: application\/pdf/i', $hdr) && preg_grep('/^X-Content-SHA256: ' . hash('sha256', $beleg) . '/i', $hdr), $hdr);
+[$raw, $hdr] = fetchRaw('action=document&id=' . $png['document']['id']);
+check('Foto als image/png', (bool)preg_grep('/^Content-Type: image\/png/i', $hdr), $hdr);
+ok('Beleg von offener Buchung lösen', call('document_unlink', ['booking_id' => $kf, 'document_id' => $png['document']['id']]));
+ok('ungenutztes Dokument löschen', call('document_delete', ['id' => $png['document']['id']]));
+refused('verbundenes Dokument löschen', call('document_delete', ['id' => $up['document']['id']]), 'noch mit Buchungen');
+ok('Beleg zusätzlich an festgeschriebene Buchung hängen', call('document_link', ['booking_id' => $id1, 'document_id' => $up['document']['id']]));
+refused('Beleg von festgeschriebener Buchung lösen', call('document_unlink', ['booking_id' => $id1, 'document_id' => $up['document']['id']]), 'festgeschrieben');
+$hk = array_column(call('booking_history', null, "&id=$kf")['history'], 'action');
+check('Protokoll: attach … detach', in_array('attach', $hk, true) && in_array('detach', $hk, true), $hk);
+$dl = ok('Archivliste', call('documents'));
+check('Archiv: Auszug + Beleg, mit Buchungsnummern', count($dl['documents']) === 2 && count($dl['documents'][0]['bookings']) >= 1, $dl);
+refused('Dokument ohne Anmeldung', (function () { global $cookie; $c = $cookie; $cookie = ''; $r = call('documents'); $cookie = $c; return $r; })(), 'anmelden');
+
 echo "Löschen, Protokoll, Lesen\n";
 ok('offene Buchung löschen', call('booking_delete', ['id' => $open['booking']['id']]));
 $hist = ok('Protokoll der gelöschten Buchung', call('booking_history', null, '&id=' . $open['booking']['id']));
 check('Protokoll: create + delete', array_column($hist['history'], 'action') === ['create', 'delete'], $hist);
 check('Protokoll nennt den Benutzer', array_unique(array_column($hist['history'], 'user')) === ['tester'], $hist);
 $hist1 = call('booking_history', null, "&id=$id1");
-check('Protokoll Buchung 1: create, update, lock', array_column($hist1['history'], 'action') === ['create', 'update', 'lock'], $hist1);
+check('Protokoll Buchung 1: create, update, lock, attach', array_column($hist1['history'], 'action') === ['create', 'update', 'lock', 'attach'], $hist1);
 refused('benutztes Konto löschen', call('account_delete', ['nr' => '4200']), 'verwendet');
 $yrs = ok('Buchungsjahre', call('booking_years'));
 check("Jahr $y enthalten", in_array((int)$y, $yrs['years'], true), $yrs);

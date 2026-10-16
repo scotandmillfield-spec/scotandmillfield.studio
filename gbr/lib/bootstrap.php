@@ -16,7 +16,10 @@ function out(int $code, array $data): never {
 function body(): array {
     static $b = null;
     if ($b === null) {
-        $d = json_decode(file_get_contents('php://input') ?: '{}', true);
+        // file uploads come as multipart/form-data with the JSON in the field "payload"
+        $raw = str_starts_with((string)($_SERVER['CONTENT_TYPE'] ?? ''), 'multipart/form-data')
+             ? (string)($_POST['payload'] ?? '{}') : (file_get_contents('php://input') ?: '{}');
+        $d = json_decode($raw, true);
         $b = is_array($d) ? $d : [];
     }
     return $b;
@@ -82,6 +85,7 @@ function dbErrorMessage(PDOException $e): string {
         1451 => 'Wird noch verwendet und kann nicht gelöscht werden',
         1452 => 'Verweis ungültig (z. B. Konto existiert nicht)',
         3819, 4025 => 'Unzulässige Daten (Prüfregel der Datenbank)',
+        1153, 1301 => 'Datei zu groß für die Datenbank (max_allowed_packet)',
         default => 'Datenbankfehler',
     };
 }

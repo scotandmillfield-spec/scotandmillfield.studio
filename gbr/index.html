@@ -283,6 +283,29 @@ body.in-area .eyebrow{color:var(--area-accent)} body.in-area .eyebrow::before{ba
 .link-btn.clarify-btn:hover{color:#FF6B8A}
 .clarify-hint{font-size:12.5px; color:#FF6B8A; cursor:pointer}
 .clarify-hint:hover{text-decoration:underline}
+.nodoc-hint{font-size:12.5px; color:#FFB454; cursor:pointer}
+tr.fy-booked td{opacity:.6}
+.fy-done{font:12px 'JetBrains Mono',monospace; color:#52E0A0}
+.nodoc-hint:hover{text-decoration:underline}
+/* attached documents in the journal */
+td.jdocs{white-space:nowrap}
+.doc-chip{display:inline-flex; align-items:center; gap:3px; font:11px 'JetBrains Mono',monospace; color:var(--muted); background:none;
+  border:1px solid var(--line); border-radius:6px; padding:2px 6px; margin-right:4px; cursor:pointer; text-decoration:none}
+.doc-chip svg{width:13px; height:13px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
+.doc-chip:hover{color:var(--text); border-color:var(--faint)}
+.doc-chip.bank{color:#5DB1E6; border-color:rgba(93,177,230,.35)}
+.doc-chip.has{color:#52E0A0; border-color:rgba(82,224,160,.35)}
+.doc-chip.miss{color:#FFB454; border-color:rgba(255,180,84,.35); border-style:dashed}
+.doc-list{display:flex; flex-direction:column; gap:8px; margin:6px 0 16px}
+.doc-row{display:flex; align-items:center; gap:10px; background:var(--ink); border:1px solid var(--line); border-radius:10px; padding:9px 12px}
+.doc-row a{color:var(--text); text-decoration:none; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.doc-row a:hover{color:var(--amber)}
+.doc-kind{font:10.5px 'JetBrains Mono',monospace; letter-spacing:.06em; text-transform:uppercase; border-radius:999px; padding:2px 8px; border:1px solid var(--line); color:var(--muted)}
+.doc-kind.bank{color:#5DB1E6; border-color:rgba(93,177,230,.35)} .doc-kind.beleg{color:#52E0A0; border-color:rgba(82,224,160,.35)}
+.doc-actions{display:flex; flex-wrap:wrap; gap:10px; align-items:center}
+.doc-actions select{background:var(--ink); border:1px solid var(--line); border-radius:8px; color:var(--text); padding:7px 9px; max-width:100%}
+.doc-sum{font-size:13.5px; color:var(--muted); margin-bottom:10px}
+.doc-sum b{color:var(--text)}
 .inv-status .ic{width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round}
 .btn.mini{padding:8px 12px; font-size:12.5px; background:none}
 .btn.mini .ic{width:14px; height:14px; fill:none; stroke:#52E0A0; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; vertical-align:-2px; margin-right:5px}
@@ -720,6 +743,7 @@ body.in-area .eyebrow{color:var(--area-accent)} body.in-area .eyebrow::before{ba
           <label class="mini-field">Year <select id="bkYear"></select></label>
           <label class="mini-field">Month <select id="bkPeriod"></select></label>
           <span class="clarify-hint" id="bkClarifyHint" role="button" tabindex="0"></span>
+          <span class="nodoc-hint" id="bkNoDocHint" role="button" tabindex="0"></span>
           <button class="btn mini" id="bkLock" type="button" title="Lock all open bookings of the selected year (except those marked „Klären“)">Festschreiben</button>
         </div>
       </div>
@@ -925,6 +949,26 @@ body.in-area .eyebrow{color:var(--area-accent)} body.in-area .eyebrow::before{ba
       <div class="modal-foot">
         <button class="btn" id="ivCancel" type="button">Cancel</button>
         <button class="btn amber" id="ivDownload" type="button">Download PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay hidden" id="docModal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="docTitle">Documents</h3>
+        <button class="modal-x" id="docClose" type="button">&times;</button>
+      </div>
+      <div class="modal-body inv-form">
+        <div class="doc-sum" id="docSum"></div>
+        <div class="doc-list" id="docList"></div>
+        <div class="doc-actions">
+          <button class="btn amber" id="docUploadBtn" type="button">Upload receipt…</button>
+          <input type="file" id="docInput" accept="application/pdf,image/*" multiple hidden>
+          <select id="docExisting"><option value="">…or link a file from the archive</option></select>
+          <button class="btn mini" id="docLinkBtn" type="button">Link</button>
+        </div>
+        <p class="man-note" id="docNote" style="margin-top:14px">PDF or photo (JPG, PNG, HEIC), max. 12 MB. Files are stored on the server unchanged, each one only once.</p>
       </div>
     </div>
   </div>
@@ -1372,11 +1416,25 @@ async function api(action, data){
   if(!r.ok||!j.ok) throw new Error(j.error||("HTTP "+r.status));
   return j;
 }
+/* multipart POST for file uploads: payload as JSON + files {field: File|Blob} */
+async function apiForm(action, payload, files){
+  const fd=new FormData(); fd.append("payload", JSON.stringify(payload||{}));
+  Object.entries(files||{}).forEach(([k,f])=>fd.append(k, f, f.name||k));
+  let r;
+  try{ r=await fetch("api.php?action="+encodeURIComponent(action), {method:"POST", headers:{"X-GBR":"1"}, body:fd, credentials:"same-origin"}); }
+  catch(e){ throw new Error("Server not reachable — check your connection."); }
+  let j; try{ j=await r.json(); }catch(e){ j={ok:false, error: r.status===413?"File too large for the server":"Invalid server response (HTTP "+r.status+")"}; }
+  if(r.status===401) showLogin(j.error);
+  if(!r.ok||!j.ok) throw new Error(j.error||("HTTP "+r.status));
+  return j;
+}
+const docUrl=id=>"api.php?action=document&id="+encodeURIComponent(id);
 function fromServerBooking(b, noById){
   const x={id:String(b.id), no:b.no, date:b.date, soll:b.soll, haben:b.haben, amount:+b.amount, text:b.text||"", beleg:b.beleg||"",
            source:b.source==="bank"?"fyrst":b.source, locked:!!b.locked, clarify:!!b.clarify, irrelevant:!!b.irrelevant};
   if(b.storno_of!=null) x.stornoOf=noById[b.storno_of]??null;
   if(b.bank_key) x.fkey=b.bank_key;
+  x.docs=b.docs||[];
   return x;
 }
 async function reloadJournal(){
@@ -2130,6 +2188,9 @@ function showBookYear(date){   // switch the journal to the year of a (new/edite
 
 /* ---- the Books tab ---- */
 let bkOnlyClarify=false;   // journal filter: only bookings marked „Klären“
+let bkOnlyNoDoc=false;     // journal filter: expenses without a receipt
+/* an expense booking (debit on an expense account) should have a receipt; private and Storno entries don't count */
+function needsBeleg(b){ const a=acc(b.soll); return !!a && a.art==="aufwand" && !b.irrelevant && b.source!=="storno" && !(b.docs||[]).some(d=>d.kind==="beleg"); }
 function renderBooks(){
   // account selects for the entry form
   const soll=document.getElementById("bkSoll"), haben=document.getElementById("bkHaben");
@@ -2157,7 +2218,12 @@ function renderBooks(){
   const prevY    = String(+year-1);
   const nClar=inYear.filter(b=>b.clarify&&!b.locked).length, ch=document.getElementById("bkClarifyHint");
   if(!nClar) bkOnlyClarify=false;
-  renderJournal(bkOnlyClarify ? inYear.filter(b=>b.clarify&&!b.locked) : inPeriod);   // journal shows everything (incl. private)
+  const noDoc=inYear.filter(needsBeleg), nh=document.getElementById("bkNoDocHint");
+  if(!noDoc.length) bkOnlyNoDoc=false;
+  if(bkOnlyNoDoc) bkOnlyClarify=false;
+  renderJournal(bkOnlyClarify ? inYear.filter(b=>b.clarify&&!b.locked) : bkOnlyNoDoc ? noDoc : inPeriod);   // journal shows everything (incl. private)
+  if(nh){ nh.textContent = !noDoc.length ? "" : bkOnlyNoDoc ? "Alle Buchungen anzeigen" : noDoc.length+" × ohne Beleg";
+    nh.title = noDoc.length ? (bkOnlyNoDoc ? "Show all bookings again" : "Expenses of "+year+" without an attached receipt") : ""; }
   if(ch){ ch.textContent = !nClar ? "" : bkOnlyClarify ? "Alle Buchungen anzeigen" : nClar+" × Klären — wird nicht festgeschrieben";
     ch.title = nClar ? (bkOnlyClarify ? "Show all bookings again" : "Show only the bookings marked „Klären“") : ""; }
   renderBWA(year, inYear.filter(b=>!b.irrelevant),           // BWA ignores private/irrelevant bookings
@@ -2173,7 +2239,12 @@ function renderJournal(list){
   let sumS=0; list.forEach(b=>sumS+=+b.amount);
   const reversedNos=new Set(bookings.filter(b=>b.stornoOf!=null).map(b=>b.stornoOf));   // only one Storno per booking
   const LOCK='<svg class="lock-ic" viewBox="0 0 24 24"><path d="M7 10V7a5 5 0 0110 0v3"/><rect x="5" y="10" width="14" height="10" rx="2"/></svg>';
-  t.innerHTML="<thead><tr><th class='jno'>No.</th><th>Date</th><th>Doc</th><th>Text</th><th>Debit · Soll</th><th>Credit · Haben</th><th class='num'>Amount</th><th></th></tr></thead><tbody>"+
+  const IC_BANK='<svg viewBox="0 0 24 24"><path d="M3 10l9-6 9 6M5 10v8m4-8v8m6-8v8m4-8v8M3 20h18"/></svg>';
+  const IC_CLIP='<svg viewBox="0 0 24 24"><path d="M21 12l-8.5 8.5a5 5 0 01-7-7L14 5a3.5 3.5 0 015 5l-8.5 8.5a2 2 0 01-3-3L15 8"/></svg>';
+  const docsCell=b=>{ const ds=b.docs||[], bank=ds.filter(d=>d.kind==="bank"), bel=ds.filter(d=>d.kind==="beleg");
+    return bank.map(d=>`<a class="doc-chip bank" href="${docUrl(d.id)}" target="_blank" rel="noopener" title="Bank statement: ${gEsc(d.name)}">${IC_BANK}</a>`).join("")+
+      `<button class="doc-chip ${bel.length?"has":needsBeleg(b)?"miss":""}" data-docs="${b.id}" type="button" title="${bel.length?bel.length+" receipt(s) — open / add":"Attach a receipt"}">${IC_CLIP}${bel.length||"+"}</button>`; };
+  t.innerHTML="<thead><tr><th class='jno'>No.</th><th>Date</th><th>Doc</th><th>Text</th><th>Debit · Soll</th><th>Credit · Haben</th><th class='num'>Amount</th><th>Files</th><th></th></tr></thead><tbody>"+
     (rows.length? rows.map(b=>`<tr class="${b.locked?"locked":""}${b.source==="storno"?" storno":""}${b.irrelevant?" irrelevant":""}${b.clarify&&!b.locked?" clarify":""}">
         <td class="jno">${b.no!=null?b.no:""}</td>
         <td>${(b.date||"").split("-").reverse().join(".")}</td>
@@ -2182,19 +2253,75 @@ function renderJournal(list){
         <td class="jkonto"><span class="acct-tag">${b.soll}</span> ${acc(b.soll)?acc(b.soll).name:""}</td>
         <td class="jkonto"><span class="acct-tag">${b.haben}</span> ${acc(b.haben)?acc(b.haben).name:""}</td>
         <td class="num">${deMoney(b.amount)}</td>
+        <td class="jdocs">${docsCell(b)}</td>
         <td class="jact">${ b.locked
             ? `${LOCK}${b.source==="storno" ? "" : reversedNos.has(b.no) ? '<span class="priv-tag" title="Already reversed by a Storno">reversed</span>'
                                                  : `<button class="link-btn" data-storno="${b.id}" title="Reverse with Storno">Storno</button>`}`
             : `<button class="link-btn${b.clarify?"":" clarify-btn"}" data-clar="${b.id}" title="${b.clarify?"Mark as clarified — can be locked again":"Mark „Klären“: document still in circulation, amount/accounts to be clarified — cannot be locked"}">${b.clarify?"Geklärt":"Klären"}</button><button class="link-btn" data-irr="${b.id}" title="${b.irrelevant?"Count in BWA & balances again":"Exclude from BWA & balances (private)"}">${b.irrelevant?"Mark business":"Mark private"}</button><button class="link-btn" data-editbk="${b.id}">Edit</button><button class="del-x" data-delbk="${b.id}" title="Delete">&times;</button>` }</td></tr>`).join("")
-      : `<tr><td colspan="8" style="color:var(--faint); padding:18px 12px">No bookings in this period.</td></tr>`)+
-    (rows.length?`<tr class="row-sum"><td colspan="6">Total (Soll = Haben)</td><td class="num">${deMoney(sumS)}</td><td></td></tr>`:"")+
+      : `<tr><td colspan="9" style="color:var(--faint); padding:18px 12px">No bookings in this period.</td></tr>`)+
+    (rows.length?`<tr class="row-sum"><td colspan="6">Total (Soll = Haben)</td><td class="num">${deMoney(sumS)}</td><td colspan="2"></td></tr>`:"")+
     "</tbody>";
   t.querySelectorAll("[data-delbk]").forEach(b=>b.onclick=()=>deleteBooking(b.dataset.delbk));
+  t.querySelectorAll("[data-docs]").forEach(b=>b.onclick=()=>openDocs(b.dataset.docs));
   t.querySelectorAll("[data-editbk]").forEach(b=>b.onclick=()=>editBooking(b.dataset.editbk));
   t.querySelectorAll("[data-storno]").forEach(b=>b.onclick=()=>stornoBooking(b.dataset.storno));
   t.querySelectorAll("[data-irr]").forEach(b=>b.onclick=()=>toggleIrrelevant(b.dataset.irr));
   t.querySelectorAll("[data-clar]").forEach(b=>b.onclick=()=>toggleClarify(b.dataset.clar));
 }
+/* ---- documents of one booking: bank statement + receipts ---- */
+let docBookingId=null;
+async function openDocs(id){
+  docBookingId=id; renderDocModal();
+  document.getElementById("docModal").classList.remove("hidden");
+  try{   // archive list for "link existing" (e.g. one invoice for several bookings)
+    const r=await api("documents",undefined);
+    const b=bookings.find(x=>x.id===docBookingId), have=new Set((b&&b.docs||[]).map(d=>d.id));
+    document.getElementById("docExisting").innerHTML='<option value="">…or link a file from the archive</option>'+
+      r.documents.filter(d=>!have.has(d.id)).map(d=>`<option value="${d.id}">${d.kind==="bank"?"Statement":"Receipt"} · ${gEsc(d.name)}${d.bookings.length?" · #"+d.bookings.slice(0,4).join(", #")+(d.bookings.length>4?" …":""):" · not linked"}</option>`).join("");
+  }catch(e){}
+}
+function renderDocModal(){
+  const b=bookings.find(x=>x.id===docBookingId); if(!b) return;
+  document.getElementById("docTitle").textContent="Documents · booking #"+b.no;
+  document.getElementById("docSum").innerHTML=`<b>${(b.date||"").split("-").reverse().join(".")}</b> · ${gEsc(b.text||"")} · <span class="acct-tag">${gEsc(b.soll)}</span> an <span class="acct-tag">${gEsc(b.haben)}</span> · <b>${deMoney(b.amount)}</b>${b.locked?" · locked":""}`;
+  const ds=b.docs||[];
+  document.getElementById("docList").innerHTML = ds.length ? ds.map(d=>`<div class="doc-row">
+      <span class="doc-kind ${d.kind}">${d.kind==="bank"?"Statement":"Receipt"}</span>
+      <a href="${docUrl(d.id)}" target="_blank" rel="noopener" title="Open">${gEsc(d.name)}</a>
+      ${b.locked?"":`<button class="del-x" data-undoc="${d.id}" type="button" title="Remove from this booking">&times;</button>`}</div>`).join("")
+    : '<div class="empty-state" style="padding:14px">No documents attached yet.</div>';
+  document.querySelectorAll("#docList [data-undoc]").forEach(x=>x.onclick=()=>unlinkDoc(+x.dataset.undoc));
+  document.getElementById("docNote").textContent = b.locked
+    ? "This booking is locked: documents can be added, but not removed."
+    : "PDF or photo (JPG, PNG, HEIC), max. 12 MB. Files are stored on the server unchanged, each one only once.";
+}
+async function afterDocChange(){ await syncJournal(); renderDocModal(); }
+async function uploadDocs(files){
+  const b=bookings.find(x=>x.id===docBookingId); if(!b||!files.length) return;
+  const btn=document.getElementById("docUploadBtn"); btn.disabled=true;
+  let n=0;
+  for(const f of files){
+    try{ await apiForm("document_upload",{booking_id:+b.id, kind:"beleg"},{file:f}); n++; }
+    catch(e){ toast(f.name+": "+e.message); }
+  }
+  btn.disabled=false;
+  if(n) toast(n+" receipt(s) attached to booking #"+b.no+".",true);
+  await afterDocChange();
+}
+async function linkExistingDoc(){
+  const sel=document.getElementById("docExisting"); if(!sel.value) return;
+  try{ await api("document_link",{booking_id:+docBookingId, document_id:+sel.value}); }catch(e){ toast(e.message); return; }
+  sel.remove(sel.selectedIndex); sel.value="";
+  await afterDocChange(); toast("File linked.",true);
+}
+async function unlinkDoc(docId){
+  const b=bookings.find(x=>x.id===docBookingId); if(!b) return;
+  if(!confirm("Remove this file from booking #"+b.no+"? It stays in the archive.")) return;
+  try{ await api("document_unlink",{booking_id:+b.id, document_id:docId}); }catch(e){ toast(e.message); return; }
+  await afterDocChange();
+}
+function closeDocs(){ document.getElementById("docModal").classList.add("hidden"); docBookingId=null; }
+
 async function toggleClarify(id){
   const b=bookings.find(x=>x.id===id); if(!b||b.locked) return;
   try{ await api("booking_flag",{id:+id, clarify:!b.clarify}); }catch(e){ toast(e.message); return; }
@@ -2460,7 +2587,7 @@ function bookAfA(assetId, year, amount){
   expandSectionOf(document.getElementById("bkDate"));
   document.getElementById("tab-books").scrollIntoView({behavior:"smooth",block:"start"});
 }
-let fyrstQueue=[];
+let fyrstQueue=[], fyrstFiles=[];
 function parseFyrst(lines){
   const num=s=>parseFloat(s.replace(/\s/g,"").replace(/\./g,"").replace(",","."));
   const ds=s=>s.replace(/\s+/g,"");                                                   // strip ALL spaces (pdf.js sprinkles them, even inside numbers)
@@ -2510,26 +2637,31 @@ async function handleFyrstFiles(files){
   const arr=[...files].filter(f=>/\.pdf$/i.test(f.name)||f.type==="application/pdf");
   if(!arr.length){ toast("No PDF detected."); return; }
   if(!window.pdfjsLib){ toast("PDF engine not loaded — check your connection."); return; }
-  let all=[], oldS=null, newS=null;
+  let all=[], oldS=null, newS=null; fyrstFiles=[];
   for(const f of arr){
     try{ const buf=await f.arrayBuffer(); const lines=await extractPdfLines(buf); const p=parseFyrst(lines);
-      all=all.concat(p.rows); if(oldS==null) oldS=p.oldS; if(p.newS!=null) newS=p.newS; }
+      const idx=fyrstFiles.push(f)-1;                 // the PDF is archived with the import and linked to its rows
+      all=all.concat(p.rows.map(r=>({...r, file:idx}))); if(oldS==null) oldS=p.oldS; if(p.newS!=null) newS=p.newS; }
     catch(e){ toast(`${f.name}: ${e.message}`); }
   }
   if(!all.length){ toast("No bookings found in this PDF."); return; }
   openFyrstReview(all, arr.length===1?oldS:null, arr.length===1?newS:null);
 }
 function sidePreview(r){ return r.sign==="+" ? `Soll 1200 · Haben ${r.konto||"?"}` : `Soll ${r.konto||"?"} · Haben 1200`; }
+function fyrstKey(r){ return `${r.date}|${r.sign}|${r.amount.toFixed(2)}|${(r.name||"").slice(0,24)}`; }   // same key as the server's bank_key
 function openFyrstReview(rows, oldS, newS){
-  fyrstQueue=rows.map(r=>({...r, konto:suggestKonto(r)}));
+  // lines already in the journal are recognised by their bank key: shown as booked, not booked again
+  fyrstQueue=rows.map(r=>{ const have=bookings.find(b=>b.fkey===fyrstKey(r)); return {...r, konto:have?"":suggestKonto(r), booked:have?have.no:null}; });
+  const nBooked=fyrstQueue.filter(r=>r.booked).length;
   const t=document.getElementById("fyTable");
   t.innerHTML="<thead><tr><th>Date</th><th>Payee / purpose</th><th class='num'>Amount</th><th>Contra-account</th></tr></thead><tbody>"+
-    fyrstQueue.map((r,i)=>`<tr>
+    fyrstQueue.map((r,i)=>`<tr${r.booked?' class="fy-booked"':""}>
       <td>${(r.date||"").split("-").reverse().join(".")}</td>
       <td class="fy-desc"><div class="p">${r.name||r.vorgang||""}</div>${r.zweck?`<div class="z">${r.zweck}</div>`:""}</td>
       <td class="fy-amt ${r.sign==="+"?"pos":"neg"}">${r.sign} ${deMoney(r.amount)}</td>
-      <td><select data-fyi="${i}" class="${r.konto?"":"miss"}"><option value="">— choose —</option>${accountOptions(r.konto)}</select>
-        <div class="fy-side" data-side="${i}">${sidePreview(r)}</div></td></tr>`).join("")+"</tbody>";
+      <td>${r.booked ? `<span class="fy-done">✓ already booked as #${r.booked}</span><div class="fy-side">not booked again${fyrstFiles.length?" · statement PDF gets attached":""}</div>`
+        : `<select data-fyi="${i}" class="${r.konto?"":"miss"}"><option value="">— choose —</option>${accountOptions(r.konto)}</select>
+        <div class="fy-side" data-side="${i}">${sidePreview(r)}</div>`}</td></tr>`).join("")+"</tbody>";
   t.querySelectorAll("[data-fyi]").forEach(sel=>sel.onchange=()=>{ const i=+sel.dataset.fyi; fyrstQueue[i].konto=sel.value; sel.classList.toggle("miss",!sel.value);
     const sp=t.querySelector('[data-side="'+i+'"]'); if(sp) sp.textContent=sidePreview(fyrstQueue[i]); });
   const net=fyrstQueue.reduce((s,r)=>s+(r.sign==="+"?1:-1)*r.amount,0);
@@ -2537,21 +2669,24 @@ function openFyrstReview(rows, oldS, newS){
   if(oldS!=null&&newS!=null){ const diff=Math.abs((oldS+net)-newS), ok=diff<0.005;
     rec.innerHTML=`<span><b>${fyrstQueue.length}</b> bookings</span><span>Net <b>${deMoney(net)}</b></span><span>Old ${deMoney(oldS)} → New ${deMoney(newS)}</span><span class="${ok?"ok":"bad"}">${ok?"✓ reconciles with statement":"⚠ differs by "+deMoney(diff)}</span>`;
   } else rec.innerHTML=`<span><b>${fyrstQueue.length}</b> bookings</span><span>Net <b>${deMoney(net)}</b></span>`;
+  if(nBooked) rec.insertAdjacentHTML("beforeend", `<span class="ok">${nBooked===fyrstQueue.length?"all ":""}${nBooked} already booked — not booked again</span>`);
   document.getElementById("fyrstModal").classList.remove("hidden");
 }
-function closeFyrst(){ document.getElementById("fyrstModal").classList.add("hidden"); fyrstQueue=[]; }
+function closeFyrst(){ document.getElementById("fyrstModal").classList.add("hidden"); fyrstQueue=[]; fyrstFiles=[]; }
 async function confirmFyrstImport(){
-  const missing=fyrstQueue.filter(r=>!r.konto).length;
+  const missing=fyrstQueue.filter(r=>!r.konto && !r.booked).length;
   if(missing){ toast(missing+" booking(s) still need a contra-account."); return; }
   // the bank key identifies a statement line; the server skips lines that were imported before
   const rows=fyrstQueue.map(r=>({date:r.date, soll:r.sign==="+"?"1200":r.konto, haben:r.sign==="+"?r.konto:"1200",
     amount:Math.round(r.amount*100)/100, text:(r.name||"")+(r.zweck?(" · "+r.zweck):""), beleg:"",
-    bank_key:`${r.date}|${r.sign}|${r.amount.toFixed(2)}|${(r.name||"").slice(0,24)}`}));
+    bank_key:fyrstKey(r), file:r.file}));
+  const files={}; fyrstFiles.forEach((f,i)=>{ files["file"+i]=f; });
   const btn=document.getElementById("fyConfirm"); if(btn) btn.disabled=true;
   try{
-    const r=await api("bank_import",{rows});
+    const r=await apiForm("bank_import",{rows}, files);
     closeFyrst(); await syncJournal();
-    toast(`Imported ${r.added} booking(s)`+(r.skipped_duplicates?`, skipped ${r.skipped_duplicates} duplicate(s)`:"")+".", true);
+    toast(`Imported ${r.added} booking(s)`+(r.skipped_duplicates?`, skipped ${r.skipped_duplicates} duplicate(s)`:"")+
+          (r.documents?` · statement PDF archived, linked to ${r.linked} booking(s)`:"")+".", true);
   }catch(e){ toast(e.message); }
   finally{ if(btn) btn.disabled=false; }
 }
@@ -2971,8 +3106,15 @@ document.getElementById("invModal").addEventListener("click",e=>{ if(e.target.id
 document.getElementById("bkAdd").onclick=saveBooking;
 document.getElementById("bkCancel").onclick=cancelEdit;
 document.getElementById("bkLock").onclick=festschreiben;
-(()=>{ const ch=document.getElementById("bkClarifyHint"); const go=()=>{ bkOnlyClarify=!bkOnlyClarify; renderBooks(); };
+(()=>{ const ch=document.getElementById("bkClarifyHint"); const go=()=>{ bkOnlyClarify=!bkOnlyClarify; if(bkOnlyClarify) bkOnlyNoDoc=false; renderBooks(); };
   ch.onclick=go; ch.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); go(); } }; })();
+(()=>{ const nh=document.getElementById("bkNoDocHint"); const go=()=>{ bkOnlyNoDoc=!bkOnlyNoDoc; if(bkOnlyNoDoc) bkOnlyClarify=false; renderBooks(); };
+  nh.onclick=go; nh.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); go(); } }; })();
+document.getElementById("docClose").onclick=closeDocs;
+document.getElementById("docModal").addEventListener("click",e=>{ if(e.target.id==="docModal") closeDocs(); });
+document.getElementById("docUploadBtn").onclick=()=>document.getElementById("docInput").click();
+document.getElementById("docInput").onchange=e=>{ const f=[...e.target.files]; e.target.value=""; uploadDocs(f); };
+document.getElementById("docLinkBtn").onclick=linkExistingDoc;
 document.getElementById("bkPeriod").onchange=renderBooks;
 document.getElementById("bkYear").onchange=()=>{ document.getElementById("bkPeriod").value="all"; renderBooks(); };
 document.getElementById("kaAdd").onclick=addAccount;

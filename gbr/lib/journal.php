@@ -66,7 +66,8 @@ function bookingsList(?string $year): array {
            " ORDER BY booking_date DESC, no DESC";
     $st = db()->prepare($sql);
     $st->execute($year ? ["$year-01-01", "$year-12-31"] : []);
-    return array_map('bookingRow', $st->fetchAll());
+    $docs = docsByBooking($year);                                   // attached bank statements and receipts
+    return array_map(fn($r) => bookingRow($r) + ['docs' => $docs[(int)$r['id']] ?? []], $st->fetchAll());
 }
 function bookingYears(): array {
     return array_map('intval', db()->query("SELECT DISTINCT YEAR(booking_date) y FROM bookings ORDER BY y DESC")->fetchAll(PDO::FETCH_COLUMN));
@@ -166,21 +167,34 @@ function bookingStorno(array $in): array {
     $pdo->commit();
     return bookingGet($id);
 }
-/* bank statement import: rows carry a bank_key; rows already imported are skipped, not duplicated */
+/* bank statement import: rows carry a bank_key; rows already imported are skipped, not duplicated.
+   Sent as multipart, the statement PDFs (fields file0, file1, …) are archived and every row – new or
+   already imported – is linked to the PDF it came from (row field "file" = index). */
 function bankImport(array $in): array {
     $rows = $in['rows'] ?? null;
     if (!is_array($rows) || !$rows) throw new ApiError('Keine Buchungen übergeben');
     if (count($rows) > 2000) throw new ApiError('Zu viele Zeilen in einem Import (max. 2000)');
     $pdo = db();
     $pdo->beginTransaction();
-    $added = []; $skipped = 0;
-    $exists = $pdo->prepare("SELECT 1 FROM bookings WHERE bank_key=?");
+    $docIds = [];
+    foreach (array_keys($_FILES) as $field) {
+        if (!preg_match('/^file(\d{1,3})$/', $field, $m)) continue;
+        [$bin, $name] = uploadedFile($field);
+        $docIds[(int)$m[1]] = docStore($bin, $name, 'bank');
+    }
+    $added = []; $skipped = 0; $linked = 0;
+    $exists = $pdo->prepare("SELECT id FROM bookings WHERE bank_key=?");
     foreach (array_values($rows) as $i => $r) {
         try {
             $key = vText($r['bank_key'] ?? '', 190);
             if ($key === '') throw new ApiError('bank_key fehlt');
+            $doc = isset($r['file']) ? ($docIds[(int)$r['file']] ?? null) : null;
             $exists->execute([$key]);
-            if ($exists->fetchColumn()) { $skipped++; continue; }
+            if ($old = $exists->fetchColumn()) {               // already booked: only attach the statement PDF
+                $skipped++;
+                if ($doc && docLink((int)$old, $doc)) $linked++;
+                continue;
+            }
             $date = vDate($r['date'] ?? '');
             $soll = vText($r['soll'] ?? '', 10); $haben = vText($r['haben'] ?? '', 10);
             if ($soll === '' || $haben === '' || $soll === $haben) throw new ApiError('Konten ungültig');
@@ -190,6 +204,7 @@ function bankImport(array $in): array {
                 ->execute([$no, $date, $soll, $haben, vAmount($r['amount'] ?? null), vText($r['text'] ?? '', 255), vText($r['beleg'] ?? '', 60), $key]);
             $id = (int)$pdo->lastInsertId();
             bookingLog($id, 'create');
+            if ($doc && docLink($id, $doc)) $linked++;
             $added[] = $no;
         } catch (ApiError | PDOException $e) {
             $pdo->rollBack();                                    // all or nothing: the statement is imported completely or not at all
@@ -198,7 +213,8 @@ function bankImport(array $in): array {
         }
     }
     $pdo->commit();
-    return ['added' => count($added), 'skipped_duplicates' => $skipped, 'numbers' => $added];
+    return ['added' => count($added), 'skipped_duplicates' => $skipped, 'numbers' => $added,
+            'documents' => count($docIds), 'linked' => $linked];
 }
 /* one-time takeover of the journal from a JSON backup of the browser app: chart of accounts + all bookings
    with their original numbers, locks and markers. Only into an empty journal; all or nothing. */
