@@ -21,6 +21,9 @@ templates/              Noch nicht genutzte Abschnitte – nicht hochgeladen
 morkant/                Morkant: Rätsel-Seite mit versiegelter Belohnung (/morkant/). Neu versiegeln:
                         MORKANT_PASS='…' MORKANT_TEXT=$'Titel\nZeile' node scripts/morkant-seal.mjs
 content/                Texte im Original (z. B. Dark-Theatre-Geschichte DE/EN) – nicht hochgeladen
+forgevst/               Dokumentation zum VST3-Plugin „Scot & Millfield | Forge“ (Baustein Furnace), /forgevst/,
+                        noindex. Gestaltung wie site.css, Schriften lokal. Quelle und Screenshots kommen aus dem
+                        Plugin-Projekt (sm-workbench: docs/forgevst, scripts/doc-screenshots.ps1)
 gbr/                    Interne App der Lyall & Drozdzynski GbR (PHP + MySQL), passwortgeschützt.
                         config.php (Datenbank-Zugang) und Verzeichnisschutz nur auf dem Server anlegen –
                         beides ist vom Deploy ausgenommen. Vorlage: gbr/config.sample.php

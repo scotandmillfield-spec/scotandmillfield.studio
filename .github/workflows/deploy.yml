@@ -41,5 +41,6 @@ jobs:
             mput -O scotandmillfield *.html;
             mput -O scotandmillfield/darktheatre darktheatre/*.html;
             mput -O scotandmillfield/morkant morkant/*.html;
+            mput -O scotandmillfield/forgevst forgevst/*.html;
             mput -O scotandmillfield/gbr gbr/*.html;
             chmod -R 755 scotandmillfield"
