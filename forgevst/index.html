@@ -10,7 +10,9 @@
 <meta name="theme-color" content="#0C0D0E">
 <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/archivo-latin-wdth-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/forgevst.css?v=20261019d">
+<link rel="preload" as="image" href="assets/img/hero-a40.webp" type="image/webp" media="(min-width: 901px)">
+<link rel="preload" as="image" href="assets/img/hero-a40-1200.webp" type="image/webp" media="(max-width: 900px)">
+<link rel="stylesheet" href="assets/css/forgevst.css?v=20261019e">
 <script src="assets/js/forgevst.js?v=20261019d" defer></script>
 </head>
 <body>
@@ -38,8 +40,10 @@
 <!-- Hero -->
 <section class="hero" aria-labelledby="title">
   <picture>
-    <source srcset="assets/img/hero-steel-800.webp" media="(max-width: 700px)">
-    <img class="hero__img" src="assets/img/hero-steel.webp" alt="" width="1600" height="1000">
+    <source media="(max-width: 900px)" srcset="assets/img/hero-a40-1200.webp" type="image/webp">
+    <source srcset="assets/img/hero-a40.webp" type="image/webp">
+    <source media="(max-width: 900px)" srcset="assets/img/hero-a40-1200.jpg">
+    <img class="hero__img" src="assets/img/hero-a40.jpg" alt="" width="2400" height="1350" fetchpriority="high">
   </picture>
   <div class="hero__shade"></div>
   <div class="hero__grid" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
