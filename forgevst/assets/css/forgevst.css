@@ -160,6 +160,8 @@ code, kbd {
   font-size: 13px; letter-spacing: 0.14em; color: var(--accent);
 }
 .hero__bottom { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 28px; }
+.hero__claim { margin: 0 0 14px; font-weight: 800; font-stretch: 125%; text-transform: uppercase;
+  font-size: clamp(26px, 3vw, 40px); line-height: 1.02; color: var(--text); text-shadow: 0 2px 24px rgba(12, 13, 14, 0.55); }
 .hero__lead { margin: 0; max-width: 560px; font-size: 20px; line-height: 1.5; color: var(--text-2); }
 .hero__shot { border: 1px solid var(--line); box-shadow: 0 40px 80px rgba(0, 0, 0, 0.55); }
 
