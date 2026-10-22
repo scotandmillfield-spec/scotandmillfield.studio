@@ -9,7 +9,7 @@
   "use strict";
 
   var ACCOUNT = "";      // e.g. "https://scotandmillfield.moonbase.sh"
-  var PRODUCT_ID = "";   // Moonbase product id of Forge : Furnace
+  var PRODUCT_ID = "scot-millfield-forge-furnace";   // Moonbase product id of Forge : Furnace
 
   var add = document.querySelector("[data-shop-add]");
   var view = document.querySelector("[data-shop-view]");
