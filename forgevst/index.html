@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Forge : Furnace – Documentation · Scot &amp; Millfield</title>
-<meta name="description" content="Scot & Millfield | Forge – sound modules for Cubase. Documentation for Forge : Furnace, the riser generator. Crafted deep in the Ruhr, from coal and steel.">
+<meta name="description" content="Scot & Millfield | Forge – VST3 sound modules for Windows. Documentation for Forge : Furnace, the riser generator. Crafted deep in the Ruhr, from coal and steel.">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#0C0D0E">
@@ -12,7 +12,7 @@
 <link rel="preload" href="assets/fonts/archivo-latin-wdth-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="assets/img/hero-a40.webp" type="image/webp" media="(min-width: 901px)">
 <link rel="preload" as="image" href="assets/img/hero-a40-1200.webp" type="image/webp" media="(max-width: 900px)">
-<link rel="stylesheet" href="assets/css/forgevst.css?v=20261022b">
+<link rel="stylesheet" href="assets/css/forgevst.css?v=20261022c">
 <script src="assets/js/forgevst.js?v=20261022a" defer></script>
 <script src="assets/js/shop.js?v=20261022c" defer></script>
 </head>
@@ -46,8 +46,8 @@
   <div class="hero__grid" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
   <div class="hero__inner">
     <div class="hero__meta">
-      <span>VST3 instrument · Cubase 14 · Windows</span>
-      <span>Forge 0.5.4 · Documentation</span>
+      <span>VST3 instrument · Windows</span>
+      <span>Forge 0.5.6 · Documentation</span>
     </div>
     <h1 id="title"><span class="kicker">Scot &amp; Millfield | Forge</span>Forge <span class="amp">:</span><br>Furnace</h1>
     <div class="hero__bottom">
@@ -105,10 +105,11 @@
     <div class="buy__card">
       <p class="buy__price"><span data-shop-price>Coming soon</span></p>
       <ul class="buy__list">
-        <li>VST3 instrument and standalone</li>
-        <li>Windows · made for Cubase 14</li>
+        <li>VST3 instrument</li>
+        <li>Windows 10/11 (64-bit) · any VST3 host</li>
         <li>Five factory presets included</li>
       </ul>
+      <p class="buy__platform"><b>Windows only for now.</b> A macOS version (VST3 and Audio Unit) is in the works.</p>
       <div class="btn-group">
         <button type="button" class="btn btn--primary" data-shop-add disabled>Add to cart</button>
         <button type="button" class="btn" data-shop-view disabled>View cart</button>
@@ -138,17 +139,17 @@
     <div class="section-head">
       <div>
         <p class="eyebrow">01 / Installation</p>
-        <h2 class="h2" id="h-installation">Set up<br>in Cubase</h2>
+        <h2 class="h2" id="h-installation">Set up<br>on Windows</h2>
       </div>
-      <p class="note">Forge comes as a ZIP: <code>ScotMillfieldForge_&lt;version&gt;.zip</code>. A <code>.vst3</code> is a folder. Load new versions in a test project only.</p>
+      <p class="note">Forge comes as a ZIP: <code>ScotMillfieldForge_&lt;version&gt;.zip</code>. A <code>.vst3</code> is a folder. It runs in every DAW on Windows 10 or 11 (64-bit) that loads VST3 instruments – the steps are the same everywhere. Windows only for now; a macOS version is in the works. Load new versions in a test project only.</p>
     </div>
     <div class="steps">
-      <div class="step"><span class="step__no">01</span><span class="step__text">Close Cubase. Otherwise an existing plugin file is locked.</span><span class="step__hint">Applies to every update</span></div>
+      <div class="step"><span class="step__no">01</span><span class="step__text">Close your DAW. Otherwise an existing plugin file is locked.</span><span class="step__hint">Applies to every update</span></div>
       <div class="step"><span class="step__no">02</span><span class="step__text">Unzip and copy the folder <code>ScotMillfieldForge.vst3</code> to <code>C:\Program Files\Common Files\VST3\</code>.</span><span class="step__hint">Needs administrator approval · delete an old <code>ScotMillfieldWorkbench.vst3</code> if present</span></div>
-      <div class="step"><span class="step__no">03</span><span class="step__text">Start Cubase and wait for the plugin scan. Forge shows up as the instrument “Scot &amp; Millfield Forge” by “Scot &amp; Millfield”.</span><span class="step__hint">Blocklisted? Re-enable it in the Plug-in Manager</span></div>
+      <div class="step"><span class="step__no">03</span><span class="step__text">Start your DAW and let it scan for new plugins. Forge shows up as the VST3 instrument “Scot &amp; Millfield Forge” by “Scot &amp; Millfield”.</span><span class="step__hint">Not listed? Rescan in the DAW’s plugin settings, make sure it uses the VST3 system folder, and check its blocklist</span></div>
       <div class="step"><span class="step__no">04</span><span class="step__text">Create an instrument track with Forge and open “Furnace” on the start page.</span><span class="step__hint">The project stores module, view, preset and window size</span></div>
     </div>
-    <div class="hint" style="margin-top:32px"><b>Cubase setting</b>To keep dragged files safe inside the project, set Cubase to copy imported audio files into the project folder. Furnace writes its files to <code>%TEMP%\SM-Forge\</code> and clears them after seven days.</div>
+    <div class="hint" style="margin-top:32px"><b>Imported audio</b>To keep dragged files safe inside the project, let your DAW copy imported audio files into the project folder – most DAWs offer this in their preferences or when importing. Furnace writes its files to <code>%TEMP%\SM-Forge\</code> and clears them after seven days.</div>
   </div>
 </section>
 
@@ -200,7 +201,7 @@
       <ul>
         <li>Every section gets new values within musical ranges – noise colour, volume, filter sweep, LFO, ducking, auto-pan, phaser or comb, a second noise layer, space, delay and the end. Some sections are switched off at random, so the rolls really differ.</li>
         <li><strong>Never a tone:</strong> Magic risers are noise-based, so they fit any key.</li>
-        <li><strong>Levelled:</strong> each roll is rendered once and its gain set so the peak sits at about −2 dBFS – loud enough to work with, never clipping.</li>
+        <li><strong>Levelled:</strong> each roll is rendered once and its sources and volume curve adjusted so the peak sits at about −8 dBFS. The output gain always stays at its protective −6 dB.</li>
         <li><strong>Length and direction stay</strong> as you set them, before or after the roll.</li>
         <li>Every roll has a number. The same number always gives the same riser; the name “Magic 48213” also shows in the preset bar.</li>
       </ul>
@@ -210,7 +211,7 @@
         <li><strong>History:</strong> ‹ › go back to the last ten rolls of the session.</li>
         <li><strong>Save …</strong> in the preset bar keeps a roll as your own preset.</li>
         <li><strong>Advanced</strong> (top right) shows all sections with the rolled values – change anything, then switch back to Magic if you like. Your changes stay.</li>
-        <li>In Cubase every roll is one undoable step (<kbd>Ctrl</kbd>+<kbd>Z</kbd>), and the project remembers mode, roll and sound.</li>
+        <li>Every roll reaches your DAW as one parameter change – undoable with <kbd>Ctrl</kbd>+<kbd>Z</kbd> where the DAW supports plugin undo – and the project remembers mode, roll and sound.</li>
       </ul>
     </div>
   </div>
@@ -235,13 +236,13 @@
     <button type="button" class="spot" style="left:7.45%;top:20.69%" data-spot="interface-4" aria-describedby="tip-interface-4"><span class="spot__n">4</span><span class="spot__tip" role="tooltip" id="tip-interface-4"><b>Length</b>Riser length in bars. It always ends exactly on the target bar.<span class="meta">2 · 4 · 8 · 16 · 32 bars, default 8</span></span></button>
     <button type="button" class="spot" style="left:34.91%;top:20.69%" data-spot="interface-5" aria-describedby="tip-interface-5"><span class="spot__n">5</span><span class="spot__tip" role="tooltip" id="tip-interface-5"><b>Direction</b>Up rises; Down turns it into a downlifter by running every curve backwards. Switching also swaps the default length (8 ↔ 2 bars).</span></button>
     <button type="button" class="spot" style="left:48.73%;top:20.69%" data-spot="interface-6" aria-describedby="tip-interface-6"><span class="spot__n">6</span><span class="spot__tip" role="tooltip" id="tip-interface-6"><b>Root</b>Key of the tone layer for preview and export. A MIDI note overrides it. Not stored in presets – it belongs to the song.<span class="meta">C0 – C6, default C3</span></span></button>
-    <button type="button" class="spot" style="left:55.82%;top:20.69%" data-spot="interface-7" aria-describedby="tip-interface-7"><span class="spot__n">7</span><span class="spot__tip" role="tooltip" id="tip-interface-7"><b>Tempo</b>Host tempo and time signature. In the standalone version, drag to change the tempo; double-click resets to 124 BPM.</span></button>
+    <button type="button" class="spot" style="left:55.82%;top:20.69%" data-spot="interface-7" aria-describedby="tip-interface-7"><span class="spot__n">7</span><span class="spot__tip" role="tooltip" id="tip-interface-7"><b>Tempo</b>Tempo and time signature, taken from your DAW.</span></button>
     <button type="button" class="spot spot--left" style="left:86.91%;top:20.69%" data-spot="interface-8" aria-describedby="tip-interface-8"><span class="spot__n">8</span><span class="spot__tip" role="tooltip" id="tip-interface-8"><b>Preview</b>Plays the riser without a MIDI note, on the root note. Turns into Stop while playing.</span></button>
     <button type="button" class="spot" style="left:50.00%;top:26.81%" data-spot="interface-9" aria-describedby="tip-interface-9"><span class="spot__n">9</span><span class="spot__tip" role="tooltip" id="tip-interface-9"><b>Curve view</b>Every moving target over the bars. The curves of the open tab are in colour with handles, Volume always as a reference; the others lie faintly behind. The pre-rendered riser shows in grey in the background.</span></button>
     <button type="button" class="spot" style="left:3.45%;top:50.28%" data-spot="interface-10" aria-describedby="tip-interface-10"><span class="spot__n">10</span><span class="spot__tip" role="tooltip" id="tip-interface-10"><b>Tabs</b>Twelve sections in four tabs: Sound, Modulation, Texture, Space &amp; End. The tab also decides which curves are in colour.</span></button>
     <button type="button" class="spot spot--left" style="left:95.18%;top:58.75%" data-spot="interface-11" aria-describedby="tip-interface-11"><span class="spot__n">11</span><span class="spot__tip" role="tooltip" id="tip-interface-11"><b>Bypass</b>Every section except Noise and Volume has a power switch. Off means bypassed: the section is dimmed, stays editable, and its curves disappear from the curve view.</span></button>
     <button type="button" class="spot spot--up" style="left:3.45%;top:89.17%" data-spot="interface-12" aria-describedby="tip-interface-12"><span class="spot__n">12</span><span class="spot__tip" role="tooltip" id="tip-interface-12"><b>Waveform</b>The pre-rendered riser on a dB scale, with length, root note and peak level. Turns red above 0 dBFS.</span></button>
-    <button type="button" class="spot spot--up" style="left:55.09%;top:87.22%" data-spot="interface-13" aria-describedby="tip-interface-13"><span class="spot__n">13</span><span class="spot__tip" role="tooltip" id="tip-interface-13"><b>Drag to audio track</b>Drag the finished WAV straight onto an audio track in Cubase. A green dot means ready.</span></button>
+    <button type="button" class="spot spot--up" style="left:55.09%;top:87.22%" data-spot="interface-13" aria-describedby="tip-interface-13"><span class="spot__n">13</span><span class="spot__tip" role="tooltip" id="tip-interface-13"><b>Drag to audio track</b>Drag the finished WAV straight onto an audio track in your DAW. A green dot means ready.</span></button>
     <button type="button" class="spot spot--left spot--up" style="left:82.55%;top:89.86%" data-spot="interface-14" aria-describedby="tip-interface-14"><span class="spot__n">14</span><span class="spot__tip" role="tooltip" id="tip-interface-14"><b>Save as …</b>Saves a copy of the WAV anywhere on disk.</span></button>
   </div>
   <figcaption><span><b>The Furnace page</b></span><span>Factory preset Classic Noise Up</span><span>8 bars at 124 BPM</span></figcaption>
@@ -252,13 +253,13 @@
     <li data-spot="interface-4"><span class="n">4</span><span class="t"><b>Length</b> Riser length in bars. It always ends exactly on the target bar.<span class="meta">2 · 4 · 8 · 16 · 32 bars, default 8</span></span></li>
     <li data-spot="interface-5"><span class="n">5</span><span class="t"><b>Direction</b> Up rises; Down turns it into a downlifter by running every curve backwards. Switching also swaps the default length (8 ↔ 2 bars).</span></li>
     <li data-spot="interface-6"><span class="n">6</span><span class="t"><b>Root</b> Key of the tone layer for preview and export. A MIDI note overrides it. Not stored in presets – it belongs to the song.<span class="meta">C0 – C6, default C3</span></span></li>
-    <li data-spot="interface-7"><span class="n">7</span><span class="t"><b>Tempo</b> Host tempo and time signature. In the standalone version, drag to change the tempo; double-click resets to 124 BPM.</span></li>
+    <li data-spot="interface-7"><span class="n">7</span><span class="t"><b>Tempo</b> Tempo and time signature, taken from your DAW.</span></li>
     <li data-spot="interface-8"><span class="n">8</span><span class="t"><b>Preview</b> Plays the riser without a MIDI note, on the root note. Turns into Stop while playing.</span></li>
     <li data-spot="interface-9"><span class="n">9</span><span class="t"><b>Curve view</b> Every moving target over the bars. The curves of the open tab are in colour with handles, Volume always as a reference; the others lie faintly behind. The pre-rendered riser shows in grey in the background.</span></li>
     <li data-spot="interface-10"><span class="n">10</span><span class="t"><b>Tabs</b> Twelve sections in four tabs: Sound, Modulation, Texture, Space &amp; End. The tab also decides which curves are in colour.</span></li>
     <li data-spot="interface-11"><span class="n">11</span><span class="t"><b>Bypass</b> Every section except Noise and Volume has a power switch. Off means bypassed: the section is dimmed, stays editable, and its curves disappear from the curve view.</span></li>
     <li data-spot="interface-12"><span class="n">12</span><span class="t"><b>Waveform</b> The pre-rendered riser on a dB scale, with length, root note and peak level. Turns red above 0 dBFS.</span></li>
-    <li data-spot="interface-13"><span class="n">13</span><span class="t"><b>Drag to audio track</b> Drag the finished WAV straight onto an audio track in Cubase. A green dot means ready.</span></li>
+    <li data-spot="interface-13"><span class="n">13</span><span class="t"><b>Drag to audio track</b> Drag the finished WAV straight onto an audio track in your DAW. A green dot means ready.</span></li>
     <li data-spot="interface-14"><span class="n">14</span><span class="t"><b>Save as …</b> Saves a copy of the WAV anywhere on disk.</span></li>
   </ol>
 </figure>
@@ -274,7 +275,7 @@
       <h3>Locked to the project</h3>
       <ul>
         <li>While the transport runs, Furnace follows the song position (PPQ) – tempo automation included. The riser ends exactly on the target bar; the start is sample-accurate.</li>
-        <li>Without transport (stopped, or standalone) Furnace counts time at the host tempo. In the standalone version you set the tempo by dragging.</li>
+        <li>Without transport (stopped) Furnace counts time at the host tempo.</li>
         <li>If playback jumps back (cycle) or by more than one bar, the riser stops with a short fade.</li>
       </ul>
 
@@ -331,7 +332,7 @@
       <ul>
         <li><strong>Knobs:</strong> drag vertically, <kbd>Ctrl</kbd> + drag for fine steps, double-click resets to the default, the mouse wheel steps.</li>
         <li><strong>Segment controls</strong> (length, filter type …): click a segment.</li>
-        <li>Every change is a gesture in Cubase: undoable and automatable. All sound parameters appear in the automation as “Furnace …”, e.g. “Furnace Cutoff End” – the curve shapes too (“… Curve”).</li>
+        <li>Every change reaches your DAW as a parameter change: automatable, and undoable where the DAW supports it. All sound parameters appear in the automation as “Furnace …”, e.g. “Furnace Cutoff End” – the curve shapes too (“… Curve”).</li>
         <li><strong>Bypass:</strong> the power switch in the head of a section switches it off. Bypassed sections are dimmed but stay editable.</li>
       </ul>
     </div>
@@ -485,9 +486,9 @@
     <button type="button" class="spot spot--up" style="left:57.73%;top:73.06%" data-spot="space-7" aria-describedby="tip-space-7"><span class="spot__n">7</span><span class="spot__tip" role="tooltip" id="tip-space-7"><b>Amount</b>Level of the echoes added on top.<span class="meta">0 – 100 %, default 25 %</span></span></button>
     <button type="button" class="spot spot--left spot--up" style="left:70.73%;top:65.00%" data-spot="space-8" aria-describedby="tip-space-8"><span class="spot__n">8</span><span class="spot__tip" role="tooltip" id="tip-space-8"><b>End</b>Hard: cut exactly on the target bar with a 10 ms fade. Ring Out: the riser ends on the bar, reverb and delay keep sounding.<span class="meta">Hard · Ring Out</span></span></button>
     <button type="button" class="spot spot--left spot--up" style="left:70.73%;top:73.06%" data-spot="space-9" aria-describedby="tip-space-9"><span class="spot__n">9</span><span class="spot__tip" role="tooltip" id="tip-space-9"><b>Tail</b>How long it rings out with Ring Out. The export gets longer by the same amount.<span class="meta">0 – 4 bars, default 2</span></span></button>
-    <button type="button" class="spot spot--left spot--up" style="left:77.09%;top:73.06%" data-spot="space-10" aria-describedby="tip-space-10"><span class="spot__n">10</span><span class="spot__tip" role="tooltip" id="tip-space-10"><b>Gain</b>The fixed output level of the whole riser, reverb and delay included – the master out.<span class="meta">−24 – +12 dB</span></span></button>
+    <button type="button" class="spot spot--left spot--up" style="left:77.09%;top:73.06%" data-spot="space-10" aria-describedby="tip-space-10"><span class="spot__n">10</span><span class="spot__tip" role="tooltip" id="tip-space-10"><b>Gain</b>The fixed output level of the whole riser, reverb and delay included – the master out. Set to −6 dB by default for protection, also for every roll.<span class="meta">−24 – +12 dB, default −6 dB</span></span></button>
     <button type="button" class="spot spot--left spot--up" style="left:84.00%;top:76.39%" data-spot="space-11" aria-describedby="tip-space-11"><span class="spot__n">11</span><span class="spot__tip" role="tooltip" id="tip-space-11"><b>Soft Clip</b>Gentle saturation that keeps peaks below 0 dBFS. Off by default, so nothing is coloured by accident.</span></button>
-    <button type="button" class="spot spot--left" style="left:95.18%;top:58.75%" data-spot="space-12" aria-describedby="tip-space-12"><span class="spot__n">12</span><span class="spot__tip" role="tooltip" id="tip-space-12"><b>End &amp; Output on/off</b>Bypassed: gain 0 dB, no soft clip and a hard end without tail – also in the export.</span></button>
+    <button type="button" class="spot spot--left" style="left:95.18%;top:58.75%" data-spot="space-12" aria-describedby="tip-space-12"><span class="spot__n">12</span><span class="spot__tip" role="tooltip" id="tip-space-12"><b>End &amp; Output on/off</b>Bypassed: gain stays at −6 dB, no soft clip and a hard end without tail – also in the export.</span></button>
   </div>
   <figcaption><span><b>Tab Space &amp; End</b></span><span>Factory preset Downlifter, delay on</span><span>Direction Down, ring out 1 bar</span></figcaption>
   <ol class="legend">
@@ -500,9 +501,9 @@
     <li data-spot="space-7"><span class="n">7</span><span class="t"><b>Amount</b> Level of the echoes added on top.<span class="meta">0 – 100 %, default 25 %</span></span></li>
     <li data-spot="space-8"><span class="n">8</span><span class="t"><b>End</b> Hard: cut exactly on the target bar with a 10 ms fade. Ring Out: the riser ends on the bar, reverb and delay keep sounding.<span class="meta">Hard · Ring Out</span></span></li>
     <li data-spot="space-9"><span class="n">9</span><span class="t"><b>Tail</b> How long it rings out with Ring Out. The export gets longer by the same amount.<span class="meta">0 – 4 bars, default 2</span></span></li>
-    <li data-spot="space-10"><span class="n">10</span><span class="t"><b>Gain</b> The fixed output level of the whole riser, reverb and delay included – the master out.<span class="meta">−24 – +12 dB</span></span></li>
+    <li data-spot="space-10"><span class="n">10</span><span class="t"><b>Gain</b> The fixed output level of the whole riser, reverb and delay included – the master out. Set to −6 dB by default for protection, also for every roll.<span class="meta">−24 – +12 dB, default −6 dB</span></span></li>
     <li data-spot="space-11"><span class="n">11</span><span class="t"><b>Soft Clip</b> Gentle saturation that keeps peaks below 0 dBFS. Off by default, so nothing is coloured by accident.</span></li>
-    <li data-spot="space-12"><span class="n">12</span><span class="t"><b>End &amp; Output on/off</b> Bypassed: gain 0 dB, no soft clip and a hard end without tail – also in the export.</span></li>
+    <li data-spot="space-12"><span class="n">12</span><span class="t"><b>End &amp; Output on/off</b> Bypassed: gain stays at −6 dB, no soft clip and a hard end without tail – also in the export.</span></li>
   </ol>
 </figure>
 
@@ -547,20 +548,20 @@
       <h3>How it works</h3>
       <ol>
         <li>Shape the sound. Furnace re-renders in the background 0.3 s after the last change (“Rendering …”, then “Ready”).</li>
-        <li>Drag the tile <strong>Drag to audio track</strong> onto an audio track in Cubase – ideally to the start of a bar.</li>
+        <li>Drag the tile <strong>Drag to audio track</strong> onto an audio track in your DAW – ideally to the start of a bar.</li>
         <li>Or use <strong>Save as …</strong> for a copy anywhere you like.</li>
       </ol>
 
       <h3>The file</h3>
       <ul>
         <li>WAV, 24 bit, stereo, no normalisation. If the peak is above 0 dBFS, it is shown in red.</li>
-        <li>Project tempo and sample rate (standalone: 48 kHz). Sample-accurate length: bars × beats per bar × 60 / BPM × sample rate, plus the tail with Ring Out.</li>
+        <li>Project tempo and sample rate. Sample-accurate length: bars × beats per bar × 60 / BPM × sample rate, plus the tail with Ring Out.</li>
         <li>Name: <code>Riser_8Bars_124BPM_A2_Tonal-Supersaw_1.wav</code> – bars, tempo, root note, preset, seed.</li>
         <li>Always free of sub rumble: the fixed low cut at 40 Hz (24 dB/octave) acts on the file too.</li>
       </ul>
 
       <h3>Tempo automation</h3>
-      <p>The export uses a fixed tempo. If the project tempo changes during playback, the waveform says so: for the exact length, render the instrument track with <strong>Render in Place</strong> in Cubase – during playback the riser follows tempo automation precisely anyway.</p>
+      <p>The export uses a fixed tempo. If the project tempo changes during playback, the waveform says so: for the exact length, render (bounce) the instrument track to audio in your DAW – during playback the riser follows tempo automation precisely anyway.</p>
     </div>
   </div>
 </section>
@@ -627,7 +628,7 @@
       </div>
       <div>
         <h3>No sound on preview</h3>
-        <p>In the standalone version, choose an output device under “Options” (Windows Audio is fine). In Cubase: track selected, monitoring on.</p>
+        <p>Select the instrument track with Forge and switch on monitoring or record-arm, so your DAW plays the instrument.</p>
       </div>
       <div>
         <h3>Riser stops in cycle</h3>
@@ -650,7 +651,7 @@
       <p class="footer__small">Forge · Crafted deep in the Ruhr, from coal and steel<br>Mülheim an der Ruhr · © 2026 Lyall &amp; Drozdzynski Musikproduktion GbR</p>
     </div>
     <div>
-      <span class="muted">Forge</span><br>Version 0.5.4<br>VST3 · Standalone · Windows
+      <span class="muted">Forge</span><br>Version 0.5.6<br>VST3 · Windows<br>macOS in the works
     </div>
     <div>
       <span class="muted">Website</span><br><a href="../">scotandmillfield.studio</a><br><a href="../impressum.html">Imprint</a> · <a href="../datenschutz.html">Privacy</a>

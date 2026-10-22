@@ -349,6 +349,9 @@ code, kbd {
 .buy__card .btn-group { display: inline-flex; }
 button.btn { cursor: pointer; border: 0; }
 .btn:disabled { opacity: 0.45; cursor: default; filter: none; }
+.buy__platform { margin: -12px 0 24px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; line-height: 1.6;
+  color: var(--text-2); }
+.buy__platform b { color: var(--accent); font-weight: 500; }
 .buy__note { margin: 18px 0 0; font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; color: var(--muted-2); }
 .nav__cart span { margin-left: 6px; color: var(--accent); }
 
