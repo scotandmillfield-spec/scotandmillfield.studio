@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Moonbase-Links aus E-Mails (Konto bestätigen, Passwort, Bestellung) zeigen auf die Startseite;
+     der Shop läuft auf /forgevst/ und wertet die mb_-Parameter dort aus -->
+<script>if (/[?&]mb_/.test(location.search)) location.replace("/forgevst/" + location.search + "#buy");</script>
 <title>Scot &amp; Millfield – Balearic Deep House from the Ruhr</title>
 <meta name="description" content="Scot & Millfield – Daniel Lyall and Maik Drozdzynski from Mülheim an der Ruhr. Balearic deep house, forged in the Ruhr. Releases on The Night Drive, Armada, Black Hole, Harthouse and Enhanced.">
 <meta name="theme-color" content="#0C0D0E">
