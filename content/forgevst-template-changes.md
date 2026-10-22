@@ -14,7 +14,9 @@ was sich seit der letzten erzeugten Fassung (0.5.4, Commit 6a96b94) in `forgevst
 4. **Drei neue Abschnitte** direkt vor „01 Installation“, in dieser Reihenfolge:
    `#film` (Video-Platzhalter, Nutzerversprechen, Markenbotschaft), `#buy` (Moonbase-Kaufbereich),
    `#docs` (Überschrift „How it works“ und die leere Reiterleiste `<div class="tabs" role="tablist" … data-tabs hidden>`).
-5. **Skripte im `<head>`:** zusätzlich `assets/js/shop.js` (defer). Cache-Versionen hochzählen.
+5. **Claim im Hero** über „Crafted deep in the Ruhr …“:
+   `<div class="hero__copy"><p class="hero__claim">Hit the cube.<br>Get a riser.</p><p class="hero__lead">Crafted deep in the Ruhr, from coal and steel.</p></div>`
+6. **Skripte im `<head>`:** zusätzlich `assets/js/shop.js` (defer). Cache-Versionen hochzählen.
 
 Nicht in die Vorlage, sondern als eigene Dateien (werden von build-doc.py nicht erzeugt, nur nicht löschen):
 `assets/js/shop.js` (Moonbase), die Reiter-Logik am Ende von `assets/js/forgevst.js` und die
