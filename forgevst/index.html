@@ -105,7 +105,7 @@
     <div class="buy__card">
       <p class="buy__price"><span data-shop-price>Coming soon</span></p>
       <ul class="buy__list">
-        <li>VST3 instrument and standalone</li>
+        <li>VST3 instrument</li>
         <li>Windows 10/11 (64-bit) · any VST3 host</li>
         <li>Five factory presets included</li>
       </ul>
@@ -236,7 +236,7 @@
     <button type="button" class="spot" style="left:7.45%;top:20.69%" data-spot="interface-4" aria-describedby="tip-interface-4"><span class="spot__n">4</span><span class="spot__tip" role="tooltip" id="tip-interface-4"><b>Length</b>Riser length in bars. It always ends exactly on the target bar.<span class="meta">2 · 4 · 8 · 16 · 32 bars, default 8</span></span></button>
     <button type="button" class="spot" style="left:34.91%;top:20.69%" data-spot="interface-5" aria-describedby="tip-interface-5"><span class="spot__n">5</span><span class="spot__tip" role="tooltip" id="tip-interface-5"><b>Direction</b>Up rises; Down turns it into a downlifter by running every curve backwards. Switching also swaps the default length (8 ↔ 2 bars).</span></button>
     <button type="button" class="spot" style="left:48.73%;top:20.69%" data-spot="interface-6" aria-describedby="tip-interface-6"><span class="spot__n">6</span><span class="spot__tip" role="tooltip" id="tip-interface-6"><b>Root</b>Key of the tone layer for preview and export. A MIDI note overrides it. Not stored in presets – it belongs to the song.<span class="meta">C0 – C6, default C3</span></span></button>
-    <button type="button" class="spot" style="left:55.82%;top:20.69%" data-spot="interface-7" aria-describedby="tip-interface-7"><span class="spot__n">7</span><span class="spot__tip" role="tooltip" id="tip-interface-7"><b>Tempo</b>Host tempo and time signature. In the standalone version, drag to change the tempo; double-click resets to 124 BPM.</span></button>
+    <button type="button" class="spot" style="left:55.82%;top:20.69%" data-spot="interface-7" aria-describedby="tip-interface-7"><span class="spot__n">7</span><span class="spot__tip" role="tooltip" id="tip-interface-7"><b>Tempo</b>Tempo and time signature, taken from your DAW.</span></button>
     <button type="button" class="spot spot--left" style="left:86.91%;top:20.69%" data-spot="interface-8" aria-describedby="tip-interface-8"><span class="spot__n">8</span><span class="spot__tip" role="tooltip" id="tip-interface-8"><b>Preview</b>Plays the riser without a MIDI note, on the root note. Turns into Stop while playing.</span></button>
     <button type="button" class="spot" style="left:50.00%;top:26.81%" data-spot="interface-9" aria-describedby="tip-interface-9"><span class="spot__n">9</span><span class="spot__tip" role="tooltip" id="tip-interface-9"><b>Curve view</b>Every moving target over the bars. The curves of the open tab are in colour with handles, Volume always as a reference; the others lie faintly behind. The pre-rendered riser shows in grey in the background.</span></button>
     <button type="button" class="spot" style="left:3.45%;top:50.28%" data-spot="interface-10" aria-describedby="tip-interface-10"><span class="spot__n">10</span><span class="spot__tip" role="tooltip" id="tip-interface-10"><b>Tabs</b>Twelve sections in four tabs: Sound, Modulation, Texture, Space &amp; End. The tab also decides which curves are in colour.</span></button>
@@ -253,7 +253,7 @@
     <li data-spot="interface-4"><span class="n">4</span><span class="t"><b>Length</b> Riser length in bars. It always ends exactly on the target bar.<span class="meta">2 · 4 · 8 · 16 · 32 bars, default 8</span></span></li>
     <li data-spot="interface-5"><span class="n">5</span><span class="t"><b>Direction</b> Up rises; Down turns it into a downlifter by running every curve backwards. Switching also swaps the default length (8 ↔ 2 bars).</span></li>
     <li data-spot="interface-6"><span class="n">6</span><span class="t"><b>Root</b> Key of the tone layer for preview and export. A MIDI note overrides it. Not stored in presets – it belongs to the song.<span class="meta">C0 – C6, default C3</span></span></li>
-    <li data-spot="interface-7"><span class="n">7</span><span class="t"><b>Tempo</b> Host tempo and time signature. In the standalone version, drag to change the tempo; double-click resets to 124 BPM.</span></li>
+    <li data-spot="interface-7"><span class="n">7</span><span class="t"><b>Tempo</b> Tempo and time signature, taken from your DAW.</span></li>
     <li data-spot="interface-8"><span class="n">8</span><span class="t"><b>Preview</b> Plays the riser without a MIDI note, on the root note. Turns into Stop while playing.</span></li>
     <li data-spot="interface-9"><span class="n">9</span><span class="t"><b>Curve view</b> Every moving target over the bars. The curves of the open tab are in colour with handles, Volume always as a reference; the others lie faintly behind. The pre-rendered riser shows in grey in the background.</span></li>
     <li data-spot="interface-10"><span class="n">10</span><span class="t"><b>Tabs</b> Twelve sections in four tabs: Sound, Modulation, Texture, Space &amp; End. The tab also decides which curves are in colour.</span></li>
@@ -275,7 +275,7 @@
       <h3>Locked to the project</h3>
       <ul>
         <li>While the transport runs, Furnace follows the song position (PPQ) – tempo automation included. The riser ends exactly on the target bar; the start is sample-accurate.</li>
-        <li>Without transport (stopped, or standalone) Furnace counts time at the host tempo. In the standalone version you set the tempo by dragging.</li>
+        <li>Without transport (stopped) Furnace counts time at the host tempo.</li>
         <li>If playback jumps back (cycle) or by more than one bar, the riser stops with a short fade.</li>
       </ul>
 
@@ -555,7 +555,7 @@
       <h3>The file</h3>
       <ul>
         <li>WAV, 24 bit, stereo, no normalisation. If the peak is above 0 dBFS, it is shown in red.</li>
-        <li>Project tempo and sample rate (standalone: 48 kHz). Sample-accurate length: bars × beats per bar × 60 / BPM × sample rate, plus the tail with Ring Out.</li>
+        <li>Project tempo and sample rate. Sample-accurate length: bars × beats per bar × 60 / BPM × sample rate, plus the tail with Ring Out.</li>
         <li>Name: <code>Riser_8Bars_124BPM_A2_Tonal-Supersaw_1.wav</code> – bars, tempo, root note, preset, seed.</li>
         <li>Always free of sub rumble: the fixed low cut at 40 Hz (24 dB/octave) acts on the file too.</li>
       </ul>
@@ -628,7 +628,7 @@
       </div>
       <div>
         <h3>No sound on preview</h3>
-        <p>In the standalone version, choose an output device under “Options” (Windows Audio is fine). In your DAW: instrument track selected, with monitoring or record-arm on.</p>
+        <p>Select the instrument track with Forge and switch on monitoring or record-arm, so your DAW plays the instrument.</p>
       </div>
       <div>
         <h3>Riser stops in cycle</h3>
@@ -651,7 +651,7 @@
       <p class="footer__small">Forge · Crafted deep in the Ruhr, from coal and steel<br>Mülheim an der Ruhr · © 2026 Lyall &amp; Drozdzynski Musikproduktion GbR</p>
     </div>
     <div>
-      <span class="muted">Forge</span><br>Version 0.5.6<br>VST3 · Standalone · Windows<br>macOS in the works
+      <span class="muted">Forge</span><br>Version 0.5.6<br>VST3 · Windows<br>macOS in the works
     </div>
     <div>
       <span class="muted">Website</span><br><a href="../">scotandmillfield.studio</a><br><a href="../impressum.html">Imprint</a> · <a href="../datenschutz.html">Privacy</a>
