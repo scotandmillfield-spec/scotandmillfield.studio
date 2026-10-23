@@ -394,16 +394,12 @@ button.btn { cursor: pointer; border: 0; }
   border-bottom: 1px solid var(--line); border-right: 1px solid var(--line-soft);
 }
 .product:nth-child(2n) { border-right: 0; }
-.product__head { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 18px; align-items: center; }
+.product__head { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 18px; align-items: center; }
 .product__head .eyebrow { margin-bottom: 6px; }
 .product__icon { width: 64px; height: 64px; }
 .product__name {
   margin: 0; font-weight: 900; font-stretch: 125%; font-size: clamp(28px, 3.2vw, 46px);
   line-height: 0.95; letter-spacing: -0.01em; text-transform: uppercase;
-}
-.product__version {
-  align-self: start; font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; color: var(--muted-2);
-  border: 1px solid var(--line); padding: 4px 8px;
 }
 .product__claim {
   margin: 0; font-weight: 800; font-stretch: 125%; text-transform: uppercase;
@@ -449,6 +445,5 @@ button.btn { cursor: pointer; border: 0; }
 @media (max-width: 520px) {
   .product__head { grid-template-columns: 48px minmax(0, 1fr); }
   .product__icon { width: 48px; height: 48px; }
-  .product__version { display: none; }
   .facts li { grid-template-columns: minmax(0, 1fr); gap: 4px; }
 }
