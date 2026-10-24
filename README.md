@@ -20,6 +20,8 @@ scripts/                Build (Releases ins HTML), tägliche Hörerzahl – nich
 templates/              Noch nicht genutzte Abschnitte – nicht hochgeladen
 morkant/                Morkant: Rätsel-Seite mit versiegelter Belohnung (/morkant/). Neu versiegeln:
                         MORKANT_PASS='…' MORKANT_TEXT=$'Titel\nZeile' node scripts/morkant-seal.mjs
+content/brand/          Kanal-Banner (YouTube 2560×1440, Spotify 2660×1140) im Website-Look:
+                        node content/brand/render-banners.js
 content/                Texte im Original (z. B. Dark-Theatre-Geschichte DE/EN) – nicht hochgeladen
 forgevst/               Dokumentation zum VST3-Plugin „Scot & Millfield | Forge“ (Baustein Furnace), /forgevst/,
                         noindex. Gestaltung wie site.css, Schriften lokal. Quelle und Screenshots kommen aus dem
