@@ -31,7 +31,7 @@ const ld = {
   url: "https://scotandmillfield.studio/",
   image: "https://scotandmillfield.studio/assets/img/og-image.jpg",
   logo: "https://scotandmillfield.studio/assets/img/icon-512.png",
-  description: "Balearic Deep House, forged in the Ruhr. Daniel Lyall and Maik Drozdzynski from Mülheim an der Ruhr, releasing on The Night Drive, Armada, Black Hole, Enhanced and Harthouse.",
+  description: "Balearic Deep House, forged in the Ruhr, crafted from coal and steel. Daniel Lyall and Maik Drozdzynski from Mülheim an der Ruhr, releasing on The Night Drive, Armada, Black Hole, Enhanced and Harthouse.",
   genre: ["Balearic Deep House", "Deep House", "Melodic House", "Trance"],
   foundingDate: "1999",
   foundingLocation: { "@type": "Place", name: "Mülheim an der Ruhr, Germany" },
