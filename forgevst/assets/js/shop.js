@@ -25,6 +25,15 @@
   function moonbase() {
     if (loading) return loading;
     loading = new Promise(function (resolve, reject) {
+      // Moonbase keeps its product list in the browser. A list from before a product was added does not
+      // know it ("Product … not found" on "Add to cart"): drop a cached list that misses a product of
+      // this page, so Moonbase fetches a fresh one
+      try {
+        var cached = window.localStorage.getItem("moonbase_storefront");
+        if (cached && products.some(function (product) { return cached.indexOf('"' + product.getAttribute("data-shop-product") + '"') < 0; }))
+          window.localStorage.removeItem("moonbase_storefront");
+      } catch (e) { /* storage blocked: Moonbase loads the list itself */ }
+
       // Moonbase writes the live price of each product into its price element
       products.forEach(function (product) {
         var price = product.querySelector("[data-shop-price]");
