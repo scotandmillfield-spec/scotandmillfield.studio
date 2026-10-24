@@ -12,7 +12,7 @@
 <link rel="preload" href="assets/fonts/archivo-latin-wdth-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="assets/img/hero-a40.webp" type="image/webp" media="(min-width: 901px)">
 <link rel="preload" as="image" href="assets/img/hero-a40-1200.webp" type="image/webp" media="(max-width: 900px)">
-<link rel="stylesheet" href="assets/css/forgevst.css?v=20261023a">
+<link rel="stylesheet" href="assets/css/forgevst.css?v=20261024a">
 <script src="assets/js/forgevst.js?v=20261023a" defer></script>
 <script src="assets/js/shop.js?v=20261023a" defer></script>
 </head>
@@ -65,7 +65,7 @@
   </div>
 </section>
 
-<!-- Produkte: Kacheln je Produkt, zwei nebeneinander (Moonbase-Einstellungen in assets/js/shop.js) -->
+<!-- Produkte: eine Reihe je Produkt, Screenshot abwechselnd links und rechts (Moonbase-Einstellungen in assets/js/shop.js) -->
 <section class="section" id="buy" aria-labelledby="h-products">
   <div class="wrap">
     <div class="section-head">
@@ -80,156 +80,131 @@
 
       <!-- Anvil -->
       <article class="product" id="anvil" data-shop-product="scot-millfield-forge-anvil" aria-labelledby="h-anvil">
-        <div class="product__head">
-          <img class="product__icon" src="assets/img/icon-anvil.webp" width="64" height="64" alt="">
-          <div>
-            <p class="eyebrow">Snare Roll · Generator</p>
-            <h3 class="product__name" id="h-anvil">Forge <span class="amp">:</span><br>Anvil</h3>
-          </div>
-        </div>
-        <p class="product__claim">Hit after hit,<br>into the drop.</p>
-        <p class="product__lead">Snare rolls that build to the drop: the hits get faster – quarters, eighths, sixteenths, thirty-seconds – and louder, with accents and a human touch. Locked to your project tempo, rendered as audio and dragged straight onto the track.</p>
         <a class="product__shot" href="anvil.html">
           <img src="assets/img/anvil-01-classic-build-1100.webp" srcset="assets/img/anvil-01-classic-build-1100.webp 1100w, assets/img/anvil-01-classic-build.webp 2200w"
-               sizes="(max-width: 900px) calc(100vw - 48px), 620px" width="1100" height="720" loading="lazy"
+               sizes="(max-width: 900px) calc(100vw - 48px), 55vw" width="1100" height="720" loading="lazy"
                alt="Forge : Anvil with the factory preset Classic Build: four bars from quarters to thirty-seconds, every hit as a stroke under the rising volume curve">
+          <span class="product__film" aria-hidden="true"><span class="film__play"></span>Video · coming soon</span>
         </a>
-        <h4 class="sub">Factsheet</h4>
-        <ul class="facts">
-          <li><b>½ – 8 bars</b> at your project tempo, ends exactly on the drop</li>
-          <li><b>Grid lane</b> up to six sections with their own note value, triplets too</li>
-          <li><b>Dynamics</b> volume curve, accents, humanize, softer hits sound darker</li>
-          <li><b>Your sound</b> built-in snare and clap or your own samples in two layers</li>
-          <li><b>Motion</b> low cut and pitch over the roll, reverb tail</li>
-          <li><b>Magic Cube</b> rolls a new pattern · 8 factory presets</li>
-          <li><b>24-bit WAV</b> drag onto the track, every hit sample-accurate</li>
-        </ul>
-        <div class="film__frame product__video" role="img" aria-label="Video coming soon">
-          <span class="film__play" aria-hidden="true"></span>
-          <span class="film__label">Video · coming soon</span>
-        </div>
-        <div class="product__buy">
-          <p class="buy__price"><span data-shop-price>Coming soon</span></p>
-          <div class="btn-group">
-            <button type="button" class="btn btn--primary" data-shop-add disabled>Add to cart</button>
-            <a class="btn" href="anvil.html">Documentation</a>
+        <div class="product__body">
+          <div class="product__head">
+            <img class="product__icon" src="assets/img/icon-anvil.webp" width="64" height="64" alt="">
+            <div>
+              <p class="eyebrow">Snare Roll · Generator</p>
+              <h3 class="product__name" id="h-anvil">Forge <span class="amp">:</span> Anvil</h3>
+            </div>
+          </div>
+          <p class="product__claim">Hit after hit, into the drop.</p>
+          <ul class="benefits">
+            <li><b>The snare roll you've been digging for</b>at your tempo, in your length, with your own snare – ready to drag onto the track</li>
+            <li><b>Endless rolls with one-click magic</b>the Magic Cube builds a new pattern, volume curve and accents with every roll. Each roll has a number, so your favourite comes back</li>
+            <li><b>Your drop hits harder</b>the hits speed up to thirty-seconds, the pitch climbs, the low end clears – and the tail carries straight into the one</li>
+            <li><b>Humanized build-ups, out of the box</b>timing and velocity vary like a drummer's hand, accents on the beat, softer hits sound darker</li>
+          </ul>
+          <div class="product__buy">
+            <p class="buy__price"><span data-shop-price>Coming soon</span></p>
+            <div class="btn-group">
+              <button type="button" class="btn btn--primary" data-shop-add disabled>Add to cart</button>
+              <a class="btn" href="anvil.html">Documentation</a>
+            </div>
           </div>
         </div>
       </article>
 
       <!-- Patina -->
       <article class="product" id="patina" data-shop-product="scot-millfield-forge-patina" aria-labelledby="h-patina">
-        <div class="product__head">
-          <img class="product__icon" src="assets/img/icon-patina.webp" width="64" height="64" alt="">
-          <div>
-            <p class="eyebrow">Vintage · Effect</p>
-            <h3 class="product__name" id="h-patina">Forge <span class="amp">:</span><br>Patina</h3>
-          </div>
-        </div>
-        <p class="product__claim">Your track,<br>a few years older.</p>
-        <p class="product__lead">An insert effect that ages what you play: the pitch drifts like tape and rests in between, noise comes and goes with every note, the record crackles and rumbles, and a lo-fi stage takes away bits and bandwidth.</p>
         <a class="product__shot" href="patina.html">
           <img src="assets/img/patina-01-dusty-vinyl-1100.webp" srcset="assets/img/patina-01-dusty-vinyl-1100.webp 1100w, assets/img/patina-01-dusty-vinyl.webp 2200w"
-               sizes="(max-width: 900px) calc(100vw - 48px), 620px" width="1100" height="720" loading="lazy"
+               sizes="(max-width: 900px) calc(100vw - 48px), 55vw" width="1100" height="720" loading="lazy"
                alt="Forge : Patina with the factory preset Dusty Vinyl: the pitch drift swings evenly, lo-fi, noise and vinyl are switched on">
+          <span class="product__film" aria-hidden="true"><span class="film__play"></span>Video · coming soon</span>
         </a>
-        <h4 class="sub">Factsheet</h4>
-        <ul class="facts">
-          <li><b>Drift</b> tape-like pitch that rests and swings out now and then</li>
-          <li><b>Lo-Fi</b> bits, sample rate, bandwidth and drive, with one mix</li>
-          <li><b>Noise</b> follows every note and fades with it</li>
-          <li><b>Vinyl</b> crackle, pops and the rumble of the turntable</li>
-          <li><b>10 factory presets</b> tape, cassette, vinyl, shellac, sampler, telephone</li>
-          <li><b>Insert</b> mono or stereo, latency reported to your DAW</li>
-          <li><b>Same passage, same sound</b> every bounce comes out identical</li>
-        </ul>
-        <div class="film__frame product__video" role="img" aria-label="Video coming soon">
-          <span class="film__play" aria-hidden="true"></span>
-          <span class="film__label">Video · coming soon</span>
-        </div>
-        <div class="product__buy">
-          <p class="buy__price"><span data-shop-price>Coming soon</span></p>
-          <div class="btn-group">
-            <button type="button" class="btn btn--primary" data-shop-add disabled>Add to cart</button>
-            <a class="btn" href="patina.html">Documentation</a>
+        <div class="product__body">
+          <div class="product__head">
+            <img class="product__icon" src="assets/img/icon-patina.webp" width="64" height="64" alt="">
+            <div>
+              <p class="eyebrow">Vintage · Effect</p>
+              <h3 class="product__name" id="h-patina">Forge <span class="amp">:</span> Patina</h3>
+            </div>
+          </div>
+          <p class="product__claim">Your track, a few years older.</p>
+          <ul class="benefits">
+            <li><b>Your track gets the warmth of an old record</b>pitch drift, lo-fi, noise and vinyl in one insert</li>
+            <li><b>The breaks stay clean</b>noise follows every note and fades with it</li>
+            <li><b>The movement stays musical</b>the drift rests, then swings out at irregular moments</li>
+            <li><b>The right era in seconds</b>10 presets: tape, cassette, vinyl, shellac, sampler, telephone</li>
+          </ul>
+          <div class="product__buy">
+            <p class="buy__price"><span data-shop-price>Coming soon</span></p>
+            <div class="btn-group">
+              <button type="button" class="btn btn--primary" data-shop-add disabled>Add to cart</button>
+              <a class="btn" href="patina.html">Documentation</a>
+            </div>
           </div>
         </div>
       </article>
 
       <!-- Ember -->
       <article class="product" id="ember" data-shop-product="scot-millfield-forge-ember" aria-labelledby="h-ember">
-        <div class="product__head">
-          <img class="product__icon" src="assets/img/icon-ember.webp" width="64" height="64" alt="">
-          <div>
-            <p class="eyebrow">Reverse Swell · Vocal</p>
-            <h3 class="product__name" id="h-ember">Forge <span class="amp">:</span><br>Ember</h3>
-          </div>
-        </div>
-        <p class="product__claim">Breathe in<br>before the vocal.</p>
-        <p class="product__lead">Drop a vocal. Ember finds the first syllable, sends it backwards through a reverb and hands you the swell that rises into the voice – ending exactly where the vocal comes in.</p>
         <a class="product__shot" href="ember.html">
           <img src="assets/img/ember-02-reverb-1100.webp" srcset="assets/img/ember-02-reverb-1100.webp 1100w, assets/img/ember-02-reverb.webp 2200w"
-               sizes="(max-width: 900px) calc(100vw - 48px), 620px" width="1100" height="720" loading="lazy"
+               sizes="(max-width: 900px) calc(100vw - 48px), 55vw" width="1100" height="720" loading="lazy"
                alt="Forge : Ember with a loaded vocal, the first syllable marked and the rendered swell in the foot">
+          <span class="product__film" aria-hidden="true"><span class="film__play"></span>Video · coming soon</span>
         </a>
-        <h4 class="sub">Factsheet</h4>
-        <ul class="facts">
-          <li><b>Load</b> WAV, AIFF or FLAC – drop it on the window</li>
-          <li><b>Auto syllable</b> first syllable found for you, handles to adjust</li>
-          <li><b>1 beat – 4 bars</b> at your project tempo, sample-accurate</li>
-          <li><b>Reverb</b> decay, pre-delay, damping, low and high cut, width</li>
-          <li><b>Phaser · Flanger</b> to set the swell in motion</li>
-          <li><b>Magic Cube</b> rolls a new reverb · 5 factory presets</li>
-          <li><b>24-bit WAV</b> drag onto the track, ends on the vocal onset</li>
-        </ul>
-        <div class="film__frame product__video" role="img" aria-label="Video coming soon">
-          <span class="film__play" aria-hidden="true"></span>
-          <span class="film__label">Video · coming soon</span>
-        </div>
-        <div class="product__buy">
-          <p class="buy__price"><span data-shop-price>Coming soon</span></p>
-          <div class="btn-group">
-            <button type="button" class="btn btn--primary" data-shop-add disabled>Add to cart</button>
-            <a class="btn" href="ember.html">Documentation</a>
+        <div class="product__body">
+          <div class="product__head">
+            <img class="product__icon" src="assets/img/icon-ember.webp" width="64" height="64" alt="">
+            <div>
+              <p class="eyebrow">Reverse Swell · Vocal</p>
+              <h3 class="product__name" id="h-ember">Forge <span class="amp">:</span> Ember</h3>
+            </div>
+          </div>
+          <p class="product__claim">Breathe in before the vocal.</p>
+          <ul class="benefits">
+            <li><b>Skip the flip, bounce, flip</b>drag the vocal in – Ember builds the reverse-reverb swell that rises into the first syllable</li>
+            <li><b>Endless swells with one-click magic</b>the Magic Cube rolls decay, pre-delay, damping and width – now and then with phaser or flanger on top</li>
+            <li><b>Goosebumps before the first word</b>the first syllable is found for you, the swell flows seamlessly into its onset – 1 beat to 8 bars at your tempo</li>
+            <li><b>Always in key with your vocal</b>built from the first syllable itself – same pitch, same tone, a swell no one else has</li>
+          </ul>
+          <div class="product__buy">
+            <p class="buy__price"><span data-shop-price>Coming soon</span></p>
+            <div class="btn-group">
+              <button type="button" class="btn btn--primary" data-shop-add disabled>Add to cart</button>
+              <a class="btn" href="ember.html">Documentation</a>
+            </div>
           </div>
         </div>
       </article>
 
       <!-- Furnace -->
       <article class="product" id="furnace" data-shop-product="scot-millfield-forge-furnace" aria-labelledby="h-furnace">
-        <div class="product__head">
-          <img class="product__icon" src="assets/img/icon-furnace.webp" width="64" height="64" alt="">
-          <div>
-            <p class="eyebrow">Riser · Generator</p>
-            <h3 class="product__name" id="h-furnace">Forge <span class="amp">:</span><br>Furnace</h3>
-          </div>
-        </div>
-        <p class="product__claim">Hit the cube.<br>Get a riser.</p>
-        <p class="product__lead">A finished riser in one click – noise risers, sweeps and downlifters over 2 to 32 bars, locked to your project tempo, rendered as audio and dragged straight onto the track.</p>
         <a class="product__shot" href="furnace.html">
           <img src="assets/img/02-furnace-klang-1100.webp" srcset="assets/img/02-furnace-klang-1100.webp 1100w, assets/img/02-furnace-klang.webp 2200w"
-               sizes="(max-width: 900px) calc(100vw - 48px), 620px" width="1100" height="720" loading="lazy"
+               sizes="(max-width: 900px) calc(100vw - 48px), 55vw" width="1100" height="720" loading="lazy"
                alt="Forge : Furnace with the factory preset Tonal Supersaw, tab Sound, play position in bar 4">
+          <span class="product__film" aria-hidden="true"><span class="film__play"></span>Video · coming soon</span>
         </a>
-        <h4 class="sub">Factsheet</h4>
-        <ul class="facts">
-          <li><b>2 – 32 bars</b> riser or downlifter at your project tempo</li>
-          <li><b>Magic Mode</b> one click rolls a complete riser</li>
-          <li><b>12 sections</b> noise, tone, filter, LFO, phaser, space, delay …</li>
-          <li><b>Curves</b> start, end and shape for every moving target</li>
-          <li><b>Follows the song</b> MIDI-triggered, ends exactly on the bar</li>
-          <li><b>5 factory presets</b> and your own</li>
-          <li><b>24-bit WAV</b> preview = export, sample by sample</li>
-        </ul>
-        <div class="film__frame product__video" role="img" aria-label="Video coming soon">
-          <span class="film__play" aria-hidden="true"></span>
-          <span class="film__label">Video · coming soon</span>
-        </div>
-        <div class="product__buy">
-          <p class="buy__price"><span data-shop-price>Coming soon</span></p>
-          <div class="btn-group">
-            <button type="button" class="btn btn--primary" data-shop-add disabled>Add to cart</button>
-            <a class="btn" href="furnace.html">Documentation</a>
+        <div class="product__body">
+          <div class="product__head">
+            <img class="product__icon" src="assets/img/icon-furnace.webp" width="64" height="64" alt="">
+            <div>
+              <p class="eyebrow">Riser · Generator</p>
+              <h3 class="product__name" id="h-furnace">Forge <span class="amp">:</span> Furnace</h3>
+            </div>
+          </div>
+          <p class="product__claim">Hit the cube. Get a riser.</p>
+          <ul class="benefits">
+            <li><b>Endless risers with one-click magic</b>the Magic Cube builds noise, tone, filter and movement with every roll</li>
+            <li><b>The energy carries into the drop</b>noise, tone and filter rise together over 2 to 32 bars and end exactly on the bar</li>
+            <li><b>Sounds the way you hear it in your head</b>start, end and curve for cutoff, pitch, volume and LFO</li>
+          </ul>
+          <div class="product__buy">
+            <p class="buy__price"><span data-shop-price>Coming soon</span></p>
+            <div class="btn-group">
+              <button type="button" class="btn btn--primary" data-shop-add disabled>Add to cart</button>
+              <a class="btn" href="furnace.html">Documentation</a>
+            </div>
           </div>
         </div>
       </article>
