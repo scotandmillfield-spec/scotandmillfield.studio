@@ -11,12 +11,12 @@ window.SITE_DATA = {
   spotifyArtist: "https://open.spotify.com/artist/6LTgaNvQ4z07MLP5Fs3plh",
 
   // Monatliche Hörer laut Spotify – von Hand aktualisieren.
-  monthlyListeners: "128K",
+  monthlyListeners: "126K",
   // Streams gesamt laut Spotify for Artists (Export "songs-all"), abgerundet auf Mio. – von Hand pflegen.
   totalStreams: "18M+",
   totalStreamsAsOf: "2026-10-12",  // 18.280.850 Streams, 126 Songs
 
-  monthlyListenersAsOf: "2026-10-23",
+  monthlyListenersAsOf: "2026-10-24",
 
   // Anzahl der Release-Kacheln unter "Latest output" (neueste zuerst).
   showReleases: 4,
