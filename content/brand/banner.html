@@ -1,0 +1,53 @@
+<!doctype html>
+<!-- Vorlage für Kanal-Banner im Website-Look. Rendern: node content/brand/render-banners.js -->
+<html><head><meta charset="utf-8">
+<style>
+@font-face { font-family: "Archivo"; font-weight: 100 900; font-stretch: 62% 125%;
+  src: url("../../assets/fonts/archivo-latin-wdth-normal.woff2") format("woff2-variations"); }
+@font-face { font-family: "DM Mono"; font-weight: 400;
+  src: url("../../assets/fonts/dm-mono-latin-400-normal.woff2") format("woff2"); }
+:root { --bg: #0C0D0E; --text: #E2E5E5; --text-2: #C7CDCE; --accent: #6E8C91; }
+* { margin: 0; box-sizing: border-box; }
+html, body { width: var(--w); height: var(--h); overflow: hidden; background: var(--bg); }
+.stage { position: relative; width: 100%; height: 100%; overflow: hidden; }
+.photo { position: absolute; inset: -40px; width: calc(100% + 80px); height: calc(100% + 80px);
+  object-fit: cover; object-position: var(--pos, center 45%); filter: blur(var(--blur, 2px)) brightness(0.95); }
+.shade { position: absolute; inset: 0;
+  background:
+    linear-gradient(90deg, rgba(12,13,14,.55) 0%, rgba(12,13,14,0) 30%, rgba(12,13,14,0) 70%, rgba(12,13,14,.55) 100%),
+    linear-gradient(180deg, rgba(12,13,14,.25) 0%, rgba(12,13,14,0) 35%, rgba(12,13,14,.35) 70%, rgba(12,13,14,.85) 100%); }
+.grid { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(var(--cols, 12), 1fr);
+  border-left: 1px solid rgba(255,255,255,.08); }
+.grid span { border-right: 1px solid rgba(255,255,255,.08); }
+/* sicherer Bereich (YouTube 1546 × 423 in der Mitte) */
+.safe { position: absolute; left: 50%; top: 50%; width: 1546px; height: 423px; transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; justify-content: center; padding: 0 40px; color: var(--text); isolation: isolate; }
+.meta { display: flex; justify-content: space-between; font-family: "DM Mono", monospace; font-size: 22px;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--text-2); margin-bottom: 26px; }
+h1 { font-family: "Archivo", sans-serif; font-weight: 800; font-stretch: 125%; text-transform: uppercase;
+  font-size: 150px; line-height: .9; letter-spacing: .01em; }
+h1 .amp { color: var(--accent); }
+.lead { margin-top: 26px; font-family: "Archivo", sans-serif; font-weight: 300; font-size: 34px; color: var(--text-2); }
+.safe::before { content: ""; position: absolute; inset: -140px -260px; z-index: -1;
+  background: radial-gradient(closest-side, rgba(12,13,14,.62), rgba(12,13,14,.35) 60%, rgba(12,13,14,0)); }
+.meta, .lead { text-shadow: 0 1px 14px rgba(12,13,14,.8); }
+h1 { text-shadow: 0 4px 40px rgba(12,13,14,.55); }
+.no-text .safe { display: none; }
+</style></head>
+<body>
+<div class="stage">
+  <img class="photo" src="../../assets/img/hero-a40.jpg" alt="">
+  <div class="shade"></div>
+  <div class="grid" id="grid"></div>
+  <div class="safe">
+    <div class="meta"><span>Deep House · Trance · Balearic</span><span>Est. 1999 · Mülheim an der Ruhr</span></div>
+    <h1>Scot <span class="amp">&amp;</span> Millfield</h1>
+    <p class="lead">Balearic Deep House, forged in the Ruhr, crafted from coal and steel.</p>
+  </div>
+</div>
+<script>
+  var cols = getComputedStyle(document.documentElement).getPropertyValue("--cols").trim() || 12;
+  var g = document.getElementById("grid");
+  for (var i = 0; i < +cols; i++) g.appendChild(document.createElement("span"));
+</script>
+</body></html>
