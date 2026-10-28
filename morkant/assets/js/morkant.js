@@ -12,10 +12,20 @@
   const normalize = (s) => s.normalize("NFC").trim().replace(/\s+/g, " ").toLocaleLowerCase("de");
   const fromB64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
 
+  // Die Entschlüsselung (Web Crypto) gibt es im Browser nur über https. Über http:// fehlt sie:
+  // dann auf die https-Adresse wechseln.
+  if (!window.isSecureContext && location.protocol === "http:") {
+    const secure = "https://" + location.host + location.pathname + location.search;
+    if (/(^|\.)scotandmillfield\.studio$/.test(location.hostname)) { location.replace(secure); return; }
+    msg.innerHTML = 'Das Siegel öffnet sich nur über eine sichere Verbindung: <a href="' + secure + '">' + secure.replace(/^https:\/\//, "") + "</a>";
+    btn.disabled = true;
+    return;
+  }
+
   let vault = null;
   try { vault = JSON.parse(document.getElementById("vault").textContent); } catch (e) {}
   if (!vault || !window.crypto || !crypto.subtle) {
-    msg.textContent = "Dieser Browser kann das Siegel nicht lesen.";
+    msg.textContent = "Dieser Browser kann das Siegel nicht lesen. Versuche es mit einem aktuellen Browser.";
     btn.disabled = true;
     return;
   }
