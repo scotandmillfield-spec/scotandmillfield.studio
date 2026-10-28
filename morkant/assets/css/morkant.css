@@ -83,6 +83,7 @@ h1 { margin: 2px 0 clamp(14px, 3vh, 28px); font-family: "Fell SC", Georgia, seri
 .gate button:hover, .gate button:focus-visible { border-color: var(--lamp); color: var(--lamp); outline: none; }
 .gate button:disabled, .gate input:disabled { opacity: .5; cursor: progress; }
 .gate__answer { min-height: 1.5em; margin: 14px 0 0; font-style: italic; color: var(--lamp); font-size: 17px; }
+.gate__answer a { color: var(--bone); }
 .gate.is-wrong { animation: shake .45s; }
 @keyframes shake { 20% { transform: translateX(-7px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(2px); } }
 
